@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4 text-center">⚙️ 系統進階設定</h2>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-warning">
+                <div class="card-header bg-warning fw-bold">🛡️ 員工 MPF 起扣月份設定</div>
+                <div class="card-body">
+                    <p class="text-muted small">此設定僅針對特定需要扣除 MPF 的員工（如 Wah）。預設情況下，Part-time Promoter 不扣除 MPF。</p>
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>員工暱稱</th>
+                                <th>MPF 生效起始月份</th>
+                                <th style="width: 100px;">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for emp in employees %}
+                            <tr>
+                                <td><strong>{{ emp.nick_name }}</strong></td>
+                                <form action="/update_emp_mpf" method="POST">
+                                    <input type="hidden" name="name" value="{{ emp.nick_name }}">
+                                    <td>
+                                        <input type="month" name="start_month" class="form-control" value="{{ emp.mpf_start_month }}">
+                                    </td>
+                                    <td>
+                                        <button type="submit" class="btn btn-warning fw-bold w-100">儲存</button>
+                                    </td>
+                                </form>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

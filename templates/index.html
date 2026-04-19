@@ -1,0 +1,284 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow-sm mb-4 border-primary">
+            <div class="card-header bg-primary text-white">
+                <span class="fs-5">⚙️ 1. 薪資結算主控台</span>
+            </div>
+            <div class="card-body">
+                <form action="/calculate_payroll" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-primary">選擇要結算的月份</label>
+                        <input class="form-control form-control-lg border-primary" type="month" name="calc_month" value="{{ current_month }}" onchange="window.location.href='/?month=' + this.value" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold mb-3 shadow-sm">🚀 開始計算 {{ current_month }} 薪資</button>
+                    <a href="/validate" class="btn btn-outline-secondary w-100 fw-bold">🔍 歷史數據自動校對 (Excel vs DB)</a>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4 border-warning">
+            <div class="card-header bg-warning text-dark">
+                <span class="fs-5">⏱️ 2. 考勤管理</span>
+            </div>
+            <div class="card-body text-center py-4">
+                <p class="text-muted">管理員工的工時、工作日數及額外報銷款項。</p>
+                <button type="button" class="btn btn-warning fw-bold px-5 shadow-sm" data-bs-toggle="modal" data-bs-target="#attendanceModal" onclick="clearAttendanceModal()">
+                    + 新增 {{ current_month }} 考勤紀錄
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm mb-4 border-success h-100">
+            <div class="card-header bg-success text-white">
+                <span class="fs-5">📝 3. 銷售紀錄管理</span>
+            </div>
+            <div class="card-body text-center d-flex flex-column justify-content-center">
+                <p class="text-muted">手動輸入或修改每日銷售單據數據。</p>
+                <div>
+                    <button type="button" class="btn btn-success btn-lg px-5 shadow-sm fw-bold" data-bs-toggle="modal" data-bs-target="#insertRecordModal">
+                        + 新增 {{ current_month }} 銷售單據
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-warning mb-4">
+    <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-bold">📋 {{ current_month }} 考勤總覽</h5>
+        <button class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#attendanceModal" onclick="clearAttendanceModal()">+ 快速新增</button>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover text-center align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>推廣員</th>
+                        <th>地點</th>
+                        <th>日數</th>
+                        <th>工時</th>
+                        <th>OT</th>
+                        <th class="text-success">報銷</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for att in attendances %}
+                    <tr>
+                        <td class="fw-bold">{{ att.nick_name }}</td>
+                        <td><span class="badge bg-info text-dark">{{ att.location }}</span></td>
+                        <td>{{ att.days_worked }}</td>
+                        <td>{{ att.hours }}</td>
+                        <td>{{ att.ot_hours }}</td>
+                        <td class="text-success fw-bold">${{ "{:,.1f}".format(att.expenses) }}</td>
+                        <td>
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-primary" 
+                                    onclick="editAttendance('{{ att.nick_name }}', '{{ att.location }}', {{ att.days_worked }}, {{ att.hours }}, {{ att.ot_hours }}, {{ att.expenses }})">
+                                    修改
+                                </button>
+                                <form action="/delete_attendance/{{ att.id }}" method="POST" class="m-0" onsubmit="return confirm('確定刪除？')">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">刪除</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="py-4 text-muted fst-italic">
+                            {{ current_month }} 尚未有任何考勤紀錄。
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-success">
+    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-bold">📋 {{ current_month }} 銷售紀錄總覽</h5>
+        <span class="badge bg-light text-dark">刪除後可使用上方按鈕重新新增</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped text-center align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 50px;">ID</th>
+                        <th>銷售日期</th>
+                        <th>推廣員</th>
+                        <th>工作地點</th>
+                        <th>產品型號</th>
+                        <th>數量</th>
+                        <th>單價 ($)</th>
+                        <th style="width: 100px;">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in records %}
+                    <tr>
+                        <td class="text-muted">{{ row.id }}</td>
+                        <td>{{ row.date }}</td>
+                        <td class="fw-bold">{{ row.promoter_name }}</td>
+                        <td><span class="badge bg-info text-dark">{{ row.location }}</span></td>
+                        <td><code class="text-primary fw-bold">{{ row.model }}</code></td>
+                        <td>{{ row.quantity }}</td>
+                        <td>${{ "{:,.2f}".format(row.price) }}</td>
+                        <td>
+                            <form action="/delete_record/{{ row.id }}" method="POST" onsubmit="return confirm('確定要刪除這筆紀錄嗎？');" class="m-0">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">刪除</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="py-4 text-muted fst-italic">
+                            {{ current_month }} 尚未有任何銷售紀錄。
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="attendanceModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-warning shadow">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title fw-bold">⏱️ 錄入/修改 考勤與微調</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/insert_attendance" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="payroll_month" value="{{ current_month }}">
+                    
+                    <div class="row g-3 mb-3">
+                        <div class="col-6"><label class="form-label fw-bold">員工姓名</label><input type="text" class="form-control" name="nick_name" id="att_name" required></div>
+                        <div class="col-6"><label class="form-label fw-bold">工作地點</label><input type="text" class="form-control" name="location" id="att_loc" required></div>
+                    </div>
+
+                    <div class="p-3 bg-light border rounded mb-3">
+                        <p class="fw-bold mb-2 text-secondary">A. 常規考勤 (將依公式計算)</p>
+                        <div class="row g-2">
+                            <div class="col-4"><label class="small">工作日數 (計津貼)</label><input type="number" class="form-control" name="days_worked" id="att_days" value="0"></div>
+                            <div class="col-4"><label class="small">正常工時</label><input type="number" step="0.5" class="form-control" name="hours" id="att_hours" value="0"></div>
+                            <div class="col-4"><label class="small">OT工時</label><input type="number" step="0.5" class="form-control" name="ot_hours" id="att_ot" value="0"></div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-light border border-info rounded mb-3">
+                        <p class="fw-bold mb-2 text-info">B. 款項微調 (直接加總至總收入)</p>
+                        <div class="row g-2">
+                            <div class="col-4"><label class="small text-success fw-bold">報銷 Expenses (+)</label><input type="number" step="0.1" class="form-control border-success" name="expenses" id="att_exp" value="0"></div>
+                            <div class="col-4"><label class="small text-primary fw-bold">出勤獎 Bonus (+)</label><input type="number" step="0.1" class="form-control border-primary" name="attendance_bonus" id="att_bonus" value="0"></div>
+                            <div class="col-4"><label class="small text-danger fw-bold">微調 Adjustment (±)</label><input type="number" step="0.1" class="form-control border-danger" name="adjustment" id="att_adj" value="0" placeholder="可填負數"></div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-warning bg-opacity-10 border border-warning rounded">
+                        <p class="fw-bold mb-2 text-danger">⚠️ C. 強制覆寫 (若填寫，將無視A區公式)</p>
+                        <div class="row g-2">
+                            <div class="col-6"><label class="small">底薪覆寫 ($)</label><input type="number" step="0.1" class="form-control border-warning" name="basic_pay_override" id="att_basic_ov" placeholder="留空則按工時算"></div>
+                            <div class="col-6"><label class="small">津貼覆寫 ($)</label><input type="number" step="0.1" class="form-control border-warning" name="allowance_override" id="att_allow_ov" placeholder="留空則按日數算"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button type="submit" class="btn btn-warning fw-bold w-100">💾 儲存考勤與微調設定</button></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="insertRecordModal" tabindex="-1" aria-labelledby="insertRecordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="insertRecordModalLabel">📝 新增 {{ current_month }} 銷售紀錄</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/insert_record" method="POST">
+                <div class="modal-body">
+                    <div class="alert alert-info border-info">
+                        <strong>提示：</strong> 以下新增的單據將會強制歸屬於 <strong>{{ current_month }}</strong> 月份，方便統一結算。
+                        <input type="hidden" name="payroll_month" value="{{ current_month }}">
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">真實銷售日期 (選填)</label>
+                            <input type="date" class="form-control" name="date">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">推廣員姓名 (Promoter)</label>
+                            <input type="text" class="form-control border-primary" name="promoter_name" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">工作地點 (Location)</label>
+                        <input type="text" class="form-control border-primary" name="location" required>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-5">
+                            <label class="form-label fw-bold">產品型號 (Model)</label>
+                            <input type="text" class="form-control text-uppercase border-primary" name="model" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">數量 (Qty)</label>
+                            <input type="number" class="form-control" name="quantity" value="1" min="1" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">單價 ($)</label>
+                            <input type="number" class="form-control" name="price" step="0.1" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-success fw-bold px-4">💾 儲存單據紀錄</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function editAttendance(name, loc, days, hours, ot, exp) {
+    document.getElementById('att_name').value = name;
+    // 設定為唯讀，防止修改名字或地點導致覆蓋失敗 (變成新增一筆)
+    document.getElementById('att_name').readOnly = true; 
+    document.getElementById('att_loc').value = loc;
+    document.getElementById('att_loc').readOnly = true;
+
+    document.getElementById('att_days').value = days;
+    document.getElementById('att_hours').value = hours;
+    document.getElementById('att_ot').value = ot;
+    document.getElementById('att_exp').value = exp;
+    
+    var myModal = new bootstrap.Modal(document.getElementById('attendanceModal'));
+    myModal.show();
+}
+
+function clearAttendanceModal() {
+    document.getElementById('att_name').value = '';
+    document.getElementById('att_name').readOnly = false; // 解除唯讀
+    document.getElementById('att_loc').value = '';
+    document.getElementById('att_loc').readOnly = false; // 解除唯讀
+    document.getElementById('att_days').value = '0';
+    document.getElementById('att_hours').value = '0';
+    document.getElementById('att_ot').value = '0';
+    document.getElementById('att_exp').value = '0';
+}
+</script>
+{% endblock %}

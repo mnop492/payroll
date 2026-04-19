@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark">📊 {{ calc_month }} 薪資計算結果</h2>
+            <p class="text-muted">以下為系統根據資料庫數據自動結算的結果，請進行校對。</p>
+        </div>
+        <div class="btn-group">
+            <a href="/download/{{ excel_file }}" class="btn btn-outline-success px-4">
+                📥 Excel 總表下載
+            </a>
+            <a href="/print_all/{{ calc_month }}" target="_blank" class="btn btn-primary px-4 shadow-sm">
+                🖨️ 一鍵列印所有糧單
+            </a>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-light border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="text-muted small">總出糧人數</div>
+                    <div class="h4 fw-bold mb-0 text-primary">{{ records|length }} 人</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9 text-end align-self-center">
+            <a href="/" class="btn btn-link text-decoration-none text-secondary">← 返回主控台</a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0 align-middle">
+                    <thead class="table-dark">
+                        <tr class="text-center">
+                            <th>#</th>
+                            <th>員工</th>
+                            <th>工作地點</th>
+                            <th>工時 (Reg+OT)</th>
+                            <th>底薪</th>
+                            <th>總佣金</th>
+                            <th>津貼</th>
+                            <th class="bg-primary text-white">總收入 (Gross)</th>
+                            <th class="text-warning">MPF 扣除</th>
+                            <th class="bg-success text-white">實發薪資 (Net)</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in records %}
+                        <tr class="text-center">
+                            <td class="text-muted">{{ loop.index }}</td>
+                            
+                            <td class="fw-bold text-start">
+                                {{ row['員工'] }}
+                                {% if row['MPF狀態'] == '豁免期' %}
+                                    <span class="badge bg-warning text-dark ms-1" title="此員工目前處於 MPF 豁免期或未設定起扣月份">
+                                        🛡️ 豁免
+                                    </span>
+                                {% endif %}
+                            </td>
+                            
+                            <td>
+                                <span class="badge rounded-pill bg-info text-dark">
+                                    {{ row['地點'] if row['地點'] else '未填寫' }}
+                                </span>
+                            </td>
+                            
+                            <td>{{ row['工時'] }} + {{ row['OT工時'] }}</td>
+                            <td>${{ "{:,.2f}".format(row['底薪']) }}</td>
+                            <td>${{ "{:,.2f}".format(row['總佣金']) }}</td>
+                            <td>${{ "{:,.2f}".format(row['津貼']) }}</td>
+                            <td class="fw-bold text-primary">${{ "{:,.2f}".format(row['總收入']) }}</td>
+                            
+                            <td class="text-danger">
+                                -${{ "{:,.2f}".format(row['MPF扣除']) }}
+                                <div class="text-muted mt-1" style="font-size: 0.75rem;">
+                                    ({{ row['MPF狀態'] }})
+                                </div>
+                            </td>
+                            
+                            <td class="fw-bold text-success" style="font-size: 1.15rem;">
+                                ${{ "{:,.2f}".format(row['實發薪資']) }}
+                            </td>
+                            
+                            <td>
+                                <a href="/view_payslip/{{ loop.index0 }}/{{ calc_month }}" 
+                                   target="_blank" 
+                                   class="btn btn-sm btn-outline-primary">
+                                    📄 查看糧單
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4 p-3 bg-light rounded border">
+        <small class="text-muted">
+            <strong>💡 系統提示：</strong><br>
+            1. <strong>津貼計算：</strong> 系統已自動將「工作日數」乘上員工專屬的「日薪津貼額」。<br>
+            2. <strong>MPF 邏輯：</strong> 帶有「🛡️ 豁免」標籤的員工，代表尚未達到其設定的 MPF 起扣月份。其餘員工依據香港法例（$7,100 - $30,000）自動判斷。<br>
+            3. <strong>特殊佣金：</strong> 若該月份有設定特佣型號（如 ADD8906），系統已自動覆蓋預設比例。<br>
+            4. 如需核對明細，請點擊上方「📥 Excel 總表下載」或至首頁點擊「🔍 歷史數據自動校對」。
+        </small>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>🔍 深度校對報告 (Excel vs 系統)</h2>
+        <div>
+            <a href="/download_validation" class="btn btn-success fw-bold">📥 下載此比對結果 (Excel)</a>
+            <a href="/" class="btn btn-secondary ms-2">返回主控台</a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-sm table-hover table-bordered mb-0 align-middle text-center">
+                    <thead class="table-dark" style="font-size: 0.85rem;">
+                        <tr>
+                            <th rowspan="2">月份</th>
+                            <th rowspan="2">員工</th>
+                            <th rowspan="2">地點</th>
+                            <th colspan="2">底薪 (Basic)</th>
+                            <th colspan="2">佣金 (Comm)</th>
+                            <th colspan="2">津貼 (Allow)</th>
+                            <th colspan="2">MPF</th>
+                            <th colspan="2" class="table-primary text-dark">實發 (Net)</th>
+                            <th rowspan="2">差異</th>
+                            <th rowspan="2">狀態</th>
+                        </tr>
+                        <tr class="table-secondary text-dark">
+                            <th>Ex</th><th>Sys</th>
+                            <th>Ex</th><th>Sys</th>
+                            <th>Ex</th><th>Sys</th>
+                            <th>Ex</th><th>Sys</th>
+                            <th>Ex</th><th>Sys</th>
+                        </tr>
+                    </thead>
+                    <tbody style="font-size: 0.9rem;">
+                        {% for item in results %}
+                        <tr class="{{ 'table-danger' if '❌' in item.status or '❓' in item.status else '' }}">
+                            <td>{{ item.month }}</td>
+                            <td class="fw-bold">{{ item.name }}</td>
+                            <td><small>{{ item.location }}</small></td>
+                            
+                            <td>{{ item.ex_basic }}</td>
+                            <td class="{{ 'text-danger fw-bold' if item.ex_basic != item.sys_basic else 'text-muted' }}">{{ item.sys_basic }}</td>
+                            
+                            <td>{{ item.ex_comm }}</td>
+                            <td class="{{ 'text-danger fw-bold' if item.ex_comm != item.sys_comm else 'text-muted' }}">{{ item.sys_comm }}</td>
+                            
+                            <td>{{ item.ex_allow }}</td>
+                            <td class="{{ 'text-danger fw-bold' if item.ex_allow != item.sys_allow else 'text-muted' }}">{{ item.sys_allow }}</td>
+                            
+                            <td>{{ item.ex_mpf }}</td>
+                            <td class="{{ 'text-danger fw-bold' if item.ex_mpf != item.sys_mpf else 'text-muted' }}">{{ item.sys_mpf }}</td>
+                            
+                            <td class="table-primary">{{ item.ex_net }}</td>
+                            <td class="table-primary fw-bold">{{ item.sys_net }}</td>
+                            
+                            <td class="fw-bold">{{ item.diff }}</td>
+                            <td>{{ item.status }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

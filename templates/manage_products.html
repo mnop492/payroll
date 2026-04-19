@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>📦 產品與佣金綜合管理</h2>
+        <div>
+            <button class="btn btn-info fw-bold shadow-sm text-white me-2" data-bs-toggle="modal" data-bs-target="#manualSpecialModal">
+                ➕ 手動新增特佣 (非目錄產品)
+            </button>
+            <a href="/" class="btn btn-secondary">返回主控台</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card shadow-sm border-info">
+                <div class="card-header bg-info text-white fw-bold fs-5 d-flex justify-content-between align-items-center">
+                    <span>📅 目前生效中的特佣規則 (時段限定)</span>
+                    <small class="bg-white text-info px-2 py-1 rounded fs-6">優先級：特佣規則 > 永久比例</small>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover text-center align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>產品型號 (Model)</th>
+                                    <th>生效開始月份</th>
+                                    <th>生效結束月份</th>
+                                    <th class="text-danger">特佣比例</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for rule in special_rules %}
+                                <tr>
+                                    <td class="fw-bold text-start ps-4"><code>{{ rule.model }}</code></td>
+                                    <td><span class="badge bg-light text-dark border px-3 py-2">{{ rule.start_month }}</span></td>
+                                    <td><span class="badge bg-light text-dark border px-3 py-2">{{ rule.end_month }}</span></td>
+                                    <td class="fw-bold text-danger fs-5">{{ "%.1f"|format(rule.rate * 100) }}%</td>
+                                    <td>
+                                        <a href="/delete_special_comm/{{ rule.id }}" class="btn btn-sm btn-outline-danger px-3" onclick="return confirm('確定要刪除這筆特佣規則嗎？')">
+                                            🗑️ 刪除規則
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="py-4 text-muted fst-italic">目前沒有設定任何時段限定的特佣規則。</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 mb-5">
+            <div class="card shadow-sm border-dark">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                    <span class="fw-bold fs-5">📦 產品主目錄 (永久比例管理)</span>
+                    <div class="input-group" style="width: 380px;">
+                        <span class="input-group-text bg-warning text-dark fw-bold border-warning">批量永久設為</span>
+                        <input type="number" step="0.001" id="bulkRate" class="form-control border-warning" placeholder="例: 0.02">
+                        <button class="btn btn-warning fw-bold border-warning" onclick="submitBulkUpdate()">💾 批量儲存</button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive" style="max-height: 800px; overflow-y: auto;">
+                        <table class="table table-hover align-middle text-center mb-0" id="productTable">
+                            <thead class="table-light position-sticky top-0 shadow-sm" style="z-index: 1;">
+                                <tr>
+                                    <th style="width: 60px; vertical-align: middle;">
+                                        <input type="checkbox" id="selectAll" class="form-check-input border-dark" onclick="toggleSelectAll(this)">
+                                    </th>
+                                    <th style="min-width: 280px;">
+                                        型號 (Model)
+                                        <div class="d-flex gap-2 mt-2">
+                                            <select id="filterModelDrop" class="form-select form-select-sm border-info" onchange="filterTable()">
+                                                <option value="">✅ 所有型號</option>
+                                            </select>
+                                            <input type="text" id="filterModelText" class="form-control form-control-sm border-info" placeholder="搜尋..." onkeyup="filterTable()">
+                                        </div>
+                                    </th>
+                                    <th style="min-width: 280px;">
+                                        系列 (Line)
+                                        <div class="d-flex gap-2 mt-2">
+                                            <select id="filterLineDrop" class="form-select form-select-sm border-info" onchange="filterTable()">
+                                                <option value="">✅ 所有系列</option>
+                                            </select>
+                                            <input type="text" id="filterLineText" class="form-control form-control-sm border-info" placeholder="搜尋..." onkeyup="filterTable()">
+                                        </div>
+                                    </th>
+                                    <th style="vertical-align: middle;">永久佣金比例</th>
+                                    <th style="vertical-align: middle;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for p in products %}
+                                <tr class="product-row">
+                                    <td><input type="checkbox" class="product-checkbox form-check-input border-secondary" value="{{ p.id }}"></td>
+                                    <td class="model-cell fw-bold text-start ps-3"><code class="fs-6 text-dark">{{ p.model }}</code></td>
+                                    <td class="line-cell">{{ p.product_line if p.product_line else '-' }}</td>
+                                    <td class="fw-bold {{ 'text-danger' if p.commission_rate != 0.03 else 'text-primary' }}">
+                                        {{ "%.1f"|format(p.commission_rate * 100) }}%
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary fw-bold px-3 shadow-sm" 
+                                                onclick="openEditModal('{{ p.model }}', {{ p.commission_rate }})">
+                                            ⚙️ 修改 / 設定特佣
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="productEditModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-primary shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold">🔧 修改產品佣金設定</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/update_product_config" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">產品型號</label>
+                        <input type="text" class="form-control bg-light text-dark fw-bold" name="model" id="modalModel" readonly>
+                    </div>
+                    <div class="mb-3 p-3 bg-light rounded border border-secondary">
+                        <label class="form-label d-block fw-bold text-dark mb-2">選擇修改類型：</label>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="update_type" id="typePerm" value="permanent" checked onclick="toggleDateFields('edit')">
+                            <label class="form-check-label fw-bold text-primary" for="typePerm">1. 永久修改 (更新預設比例)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="update_type" id="typeSpec" value="special" onclick="toggleDateFields('edit')">
+                            <label class="form-check-label fw-bold text-danger" for="typeSpec">2. 時段特佣 (限時加碼/減碼)</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">佣金比例 (例 0.05 代表 5%)</label>
+                        <input type="number" step="0.001" class="form-control border-primary form-control-lg" name="rate" id="modalRate" required>
+                    </div>
+                    <div id="dateRangeSection" style="display: none;" class="row g-2 p-3 border border-danger rounded bg-white mt-2">
+                        <div class="col-6">
+                            <label class="small fw-bold">開始月份</label>
+                            <input type="month" class="form-control border-danger" name="start_month" id="modalStart">
+                        </div>
+                        <div class="col-6">
+                            <label class="small fw-bold">結束月份</label>
+                            <input type="month" class="form-control border-danger" name="end_month" id="modalEnd">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="submit" class="btn btn-primary fw-bold px-4 w-100">💾 儲存目錄產品設定</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="manualSpecialModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-info shadow">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title fw-bold">➕ 手動新增時段特佣</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/save_special_comm_manual" method="POST">
+                <div class="modal-body">
+                    <div class="alert alert-secondary py-2 small">
+                        此功能用於設定<strong>不在產品目錄中</strong>的型號特佣。
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">手動輸入型號 (Model)</label>
+                        <input type="text" class="form-control border-info text-uppercase" name="model" placeholder="例如: PH9999" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">特佣比例 (例 0.02)</label>
+                        <input type="number" step="0.001" class="form-control border-info" name="rate" placeholder="0.02" required>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label class="small fw-bold">開始月份</label>
+                            <input type="month" class="form-control border-info" name="start" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="small fw-bold">結束月份</label>
+                            <input type="month" class="form-control border-info" name="end" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-info text-white fw-bold w-100">🚀 立即新增特佣規則</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // 自動生成下拉選單選項
+    let lines = new Set(), models = new Set();
+    document.querySelectorAll(".product-row").forEach(row => {
+        let l = row.querySelector(".line-cell").innerText.trim();
+        let m = row.querySelector(".model-cell").innerText.trim();
+        if(l && l !== '-') lines.add(l);
+        if(m) models.add(m);
+    });
+    let lS = document.getElementById("filterLineDrop");
+    Array.from(lines).sort().forEach(l => lS.appendChild(new Option("🏷️ " + l, l)));
+    let mS = document.getElementById("filterModelDrop");
+    Array.from(models).sort().forEach(m => mS.appendChild(new Option("📦 " + m, m)));
+});
+
+function filterTable() {
+    let mD = document.getElementById("filterModelDrop").value.toUpperCase();
+    let mT = document.getElementById("filterModelText").value.toUpperCase();
+    let lD = document.getElementById("filterLineDrop").value.toUpperCase();
+    let lT = document.getElementById("filterLineText").value.toUpperCase();
+    
+    document.querySelectorAll(".product-row").forEach(row => {
+        let cM = row.querySelector('.model-cell').innerText.toUpperCase().trim();
+        let cL = row.querySelector('.line-cell').innerText.toUpperCase().trim();
+        if (((mD==="")||(cM===mD)) && (cM.indexOf(mT)>-1) && ((lD==="")||(cL===lD)) && (cL.indexOf(lT)>-1)) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+            row.querySelector('.product-checkbox').checked = false;
+        }
+    });
+}
+
+function toggleSelectAll(m) {
+    document.querySelectorAll('.product-checkbox').forEach(cb => {
+        if (cb.closest('tr').style.display !== 'none') cb.checked = m.checked;
+    });
+}
+
+function submitBulkUpdate() {
+    let r = document.getElementById('bulkRate').value;
+    let c = document.querySelectorAll('.product-checkbox:checked');
+    if (!r || c.length === 0) { alert("請輸入比例並勾選產品！"); return; }
+    if (confirm(`確定修改 ${c.length} 項產品？`)) {
+        let f = document.createElement('form');
+        f.action = '/bulk_update_products'; f.method = 'POST';
+        let rI = document.createElement('input'); rI.type='hidden'; rI.name='new_rate'; rI.value=r; f.appendChild(rI);
+        c.forEach(cb => {
+            let i = document.createElement('input'); i.type='hidden'; i.name='product_ids'; i.value=cb.value; f.appendChild(i);
+        });
+        document.body.appendChild(f); f.submit();
+    }
+}
+
+function toggleDateFields(mode) {
+    let isS = document.getElementById('typeSpec').checked;
+    document.getElementById('dateRangeSection').style.display = isS ? 'flex' : 'none';
+    document.getElementById('modalStart').required = isS;
+    document.getElementById('modalEnd').required = isS;
+}
+
+function openEditModal(m, r) {
+    document.getElementById('modalModel').value = m;
+    document.getElementById('modalRate').value = r;
+    document.getElementById('typePerm').checked = true;
+    toggleDateFields('edit');
+    new bootstrap.Modal(document.getElementById('productEditModal')).show();
+}
+</script>
+{% endblock %}

@@ -1,0 +1,57 @@
+<div class="a4-page">
+    <div class="header-section">
+        <div class="logo-box">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+        </div>
+        <div class="company-info">
+            <div class="company-name">i Wall@ / SharpSing Limited</div>
+            <div class="company-addr">
+                Room 1609, 16/F., Golden Era Plaza, No. 39 Sai Yee Street, Mongkok, KLN.<br>
+                Tel: 35868635 &nbsp; Fax: 31889330
+            </div>
+        </div>
+    </div>
+
+    <div class="doc-title">{{ month }} Century Field Promoter Salary Summary</div>
+    <div style="margin-bottom:15px; font-size:15px;">
+        <strong>Name/姓名：</strong> {{ emp['員工'] }}
+    </div>
+
+    <table style="width: 100%; margin-bottom: 25px;">
+        <tr class="bg-grey text-bold">
+            <td style="width: 40%;">Job Detail</td>
+            <td style="width: 60%;">Content</td>
+        </tr>
+        <tr><td>Job Categories</td><td>Promoter</td></tr>
+        <tr><td>Location/工作地點</td><td>{{ emp['地點'] }}</td></tr>
+        <tr><td>Period/工作日子</td><td>{{ month }}</td></tr>
+        <tr><td>Reg.Hour/工作時數</td><td>{{ emp['工時'] + emp['OT工時'] }} hrs</td></tr>
+        <tr><td>Sales Record</td><td>(已計入佣金)</td></tr>
+    </table>
+
+    <table style="width: 100%;">
+        <tr class="bg-grey text-bold">
+            <td style="width: 40%;">Salary Detail</td>
+            <td style="width: 60%;">Sub. Total (HKD)</td>
+        </tr>
+        <tr><td>Basic/酬金</td><td>$ {{ emp['底薪'] }}</td></tr>
+        <tr><td>Commission/佣金</td><td>$ {{ emp['總佣金'] }}</td></tr>
+        <tr><td>Allowance/津貼</td><td>$ {{ emp['津貼'] }}</td></tr>
+        <tr><td class="text-bold">MPF/強積金**</td><td class="text-bold">$ {{ emp['MPF扣除'] }}</td></tr>
+        <tr class="bg-grey text-bold" style="font-size:16px;">
+            <td>Total (Net Pay)</td>
+            <td>$ {{ emp['實發薪資'] }}</td>
+        </tr>
+    </table>
+
+    <div style="font-size:12px; margin-top:30px; line-height:1.6;">
+        **如屬自僱人仕必須自行購買勞工保險及強積金；<br>
+        註 1：如所支付之金額有錯誤，請在兩天內提出；<br>
+        註 2：請自行核對清楚支票上的姓名及金額；
+    </div>
+
+    <div class="sig-container">
+        <div>Promoter 確認簽名 : <span class="sig-line"></span></div>
+        <div>I.D. Card No. : <span class="sig-line" style="width:140px;"></span></div>
+    </div>
+</div>
