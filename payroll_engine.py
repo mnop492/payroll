@@ -11,7 +11,7 @@ def process_payroll_from_db(calc_month, db_path='payroll.db'):
     # ==========================================
     # 1. 讀取所需資料庫
     # ==========================================
-    emp_df = pd.read_sql_query("SELECT nick_name AS Name, hourly_rate, allowance, commission_rate AS default_comm, require_mpf, mpf_start_month FROM Employees", conn)
+    emp_df = pd.read_sql_query("SELECT nick_name AS Name, hourly_rate, allowance, commission_rate AS default_comm, require_mpf, mpf_start_month, full_name FROM Employees", conn)
     
     # ==========================================
     # 2. 讀取考勤與每日明細 (🌟 升級版每日 OT 結算)
@@ -174,8 +174,8 @@ def process_payroll_from_db(calc_month, db_path='payroll.db'):
     # 6. 整理最終輸出格式
     # ==========================================
     # 把新加入的微調欄位送到前端顯示
-    display_df = final_df[['Name', 'Hours', 'OT Hours', 'Basic Pay', 'Calc_Comm', 'Total_Allowance', 'expenses', 'adjustment', 'attendance_bonus', 'Gross Pay', 'MPF', 'MPF狀態', 'Net Pay', 'Location']]
-    display_df.columns = ['員工', '工時', 'OT工時', '底薪', '總佣金', '津貼', '報銷', '微調', '出勤獎', '總收入', 'MPF扣除', 'MPF狀態', '實發薪資', '地點']
+    display_df = final_df[['Name', 'full_name', 'Hours', 'OT Hours', 'Basic Pay', 'Calc_Comm', 'Total_Allowance', 'expenses', 'adjustment', 'attendance_bonus', 'Gross Pay', 'MPF', 'MPF狀態', 'Net Pay', 'Location']]
+    display_df.columns = ['員工','全名', '工時', 'OT工時', '底薪', '總佣金', '津貼', '報銷', '微調', '出勤獎', '總收入', 'MPF扣除', 'MPF狀態', '實發薪資', '地點']
 
     numeric_cols = ['工時', 'OT工時', '底薪', '總佣金', '津貼', '報銷', '微調', '出勤獎', '總收入', 'MPF扣除', '實發薪資']
     display_df[numeric_cols] = display_df[numeric_cols].fillna(0).round(2)

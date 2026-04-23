@@ -373,6 +373,9 @@ def settings():
 @app.route('/update_employee', methods=['POST'])
 def update_employee():
     emp_id = request.form.get('id')
+    # 🌟 核心修復：接收全名
+    full_name = request.form.get('full_name') 
+    
     hourly_rate = float(request.form.get('hourly_rate', 0))
     allowance = float(request.form.get('allowance', 0))
     commission_rate = float(request.form.get('commission_rate', 0.03))
@@ -381,11 +384,12 @@ def update_employee():
     if emp_id:
         conn = get_db_connection()
         try:
+            # 🌟 修正 SQL 語句：加入 full_name = ?
             conn.execute('''
                 UPDATE Employees 
-                SET hourly_rate = ?, allowance = ?, commission_rate = ?, mpf_start_month = ?
+                SET full_name = ?, hourly_rate = ?, allowance = ?, commission_rate = ?, mpf_start_month = ?
                 WHERE id = ?
-            ''', (hourly_rate, allowance, commission_rate, mpf_start_month, emp_id))
+            ''', (full_name, hourly_rate, allowance, commission_rate, mpf_start_month, emp_id))
             conn.commit()
             flash("✅ 員工主檔資料已成功更新", "success")
         except Exception as e:
@@ -609,19 +613,42 @@ def update_daily_records():
     record_ids = request.form.getlist('record_id[]')
     in_times = request.form.getlist('in_time[]')
     out_times = request.form.getlist('out_time[]')
+    normal_hours_list = request.form.getlist('normal_hours[]') # 🌟 接收前端傳來的常規工時
     
     conn = get_db_connection()
     for i in range(len(record_ids)):
-        # 這裡未來可以加入時間相減的邏輯來重算 actual_hours，目前先單純更新時間字串
+        in_t = in_times[i]
+        out_t = out_times[i]
+        norm_h = float(normal_hours_list[i] or 8.0)
+        
+        # 🌟 重新計算實際工時與 OT
+        try:
+            fmt = '%H:%M'
+            from datetime import datetime
+            tdelta = datetime.strptime(out_t, fmt) - datetime.strptime(in_t, fmt)
+            actual_h = tdelta.seconds / 3600
+            # OT = 實際 - 新的常規工時
+            raw_ot = max(0, actual_h - norm_h)
+        except:
+            actual_h, raw_ot = 0, 0
+
+        # 更新資料庫
         conn.execute('''
             UPDATE DailyAttendance 
-            SET in_time = ?, out_time = ? 
+            SET in_time = ?, out_time = ?, normal_hours = ?, actual_hours = ?, ot_hours = ? 
             WHERE id = ?
-        ''', (in_times[i], out_times[i], record_ids[i]))
+        ''', (in_t, out_t, norm_h, actual_h, raw_ot, record_ids[i]))
     
     conn.commit()
+    
+    # 🌟 重新整理該筆結算紀錄 (假設我們需要重新彙總，這一步非常重要)
+    # 這裡需要從其中一筆 ID 找出是誰的紀錄來觸發 sync_attendance_summary
+    sample = conn.execute("SELECT nick_name, location FROM DailyAttendance WHERE id = ?", (record_ids[0],)).fetchone()
+    if sample:
+        sync_attendance_summary(calc_month, sample['nick_name'], sample['location'])
+        
     conn.close()
-    flash("✅ 每日考勤紀錄已更新！請重新點擊「開始計算薪資」以套用新數據。", "success")
+    flash("✅ 考勤紀錄與常規工時已更新並重新結算！", "success")
     return redirect(url_for('index', month=calc_month))
 
 # 🌟 1. 新增單筆每日考勤
@@ -635,15 +662,19 @@ def add_daily_attendance():
     in_t = request.form.get('in_time')
     out_t = request.form.get('out_time')
     
+    # 🌟 從前端接收常規工時，如果沒有傳則預設 8.0
+    normal_h = float(request.form.get('normal_hours', 8.0))
+    
     try:
         fmt = '%H:%M'
         from datetime import datetime
         tdelta = datetime.strptime(out_t, fmt) - datetime.strptime(in_t, fmt)
         actual_h = tdelta.seconds / 3600
-        normal_h = 8.0
+        
+        # 使用動態的 normal_h 來計算 OT
         raw_ot = max(0, actual_h - normal_h)
     except:
-        actual_h, raw_ot, normal_h = 0, 0, 8.0
+        actual_h, raw_ot = 0, 0
 
     conn = get_db_connection()
     conn.execute('''
@@ -653,7 +684,6 @@ def add_daily_attendance():
     conn.commit()
     conn.close()
     
-    # 🌟 關鍵：新增完成後，自動把這家店的明細加總，寫回總表！
     sync_attendance_summary(month, name, loc)
     
     return jsonify({"status": "success", "message": "已新增考勤紀錄並同步總表"})

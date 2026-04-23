@@ -14,7 +14,9 @@
 
     <div class="doc-title">{{ month }} Century Field Promoter Salary Summary</div>
     <div style="margin-bottom:15px; font-size:15px;">
-        <strong>Name/姓名：</strong> {{ emp['員工'] }}
+        <div style="margin-bottom:15px; font-size:15px;">
+            <strong>Name/姓名：</strong> {{ emp['全名'] }} ({{ emp['員工'] }})
+        </div>
     </div>
 
     <table style="width: 100%; margin-bottom: 25px;">

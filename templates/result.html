@@ -39,6 +39,7 @@
                         <tr class="text-center">
                             <th>#</th>
                             <th>員工</th>
+                            <th>全名</th>
                             <th>工作地點</th>
                             <th>工時 (Reg+OT)</th>
                             <th>底薪</th>
@@ -63,7 +64,7 @@
                                     </span>
                                 {% endif %}
                             </td>
-                            
+                            <td>{{ row['全名'] }}</td>
                             <td>
                                 <span class="badge rounded-pill bg-info text-dark">
                                     {{ row['地點'] if row['地點'] else '未填寫' }}

@@ -16,7 +16,7 @@
                     <thead class="table-light">
                         <tr>
                             <th>員工暱稱 (系統唯一)</th>
-                            <th>預設時薪 ($)</th>
+                            <th>全名 (Full Name)</th> <th>預設時薪 ($)</th>
                             <th>日薪津貼 ($)</th>
                             <th>預設佣金比例</th>
                             <th>MPF 起扣月份</th>
@@ -27,6 +27,7 @@
                         {% for emp in employees %}
                         <tr>
                             <td class="fw-bold text-primary">{{ emp.nick_name }}</td>
+                            <td class="text-muted">{{ emp.full_name if emp.full_name and emp.full_name != 'None' else '' }}</td>
                             <td>${{ emp.hourly_rate }}</td>
                             <td>${{ emp.allowance }}</td>
                             <td>{{ (emp.commission_rate * 100) | int }}%</td>
@@ -39,7 +40,7 @@
                             </td>
                             <td class="text-end pe-4">
                                 <button class="btn btn-sm btn-outline-primary" 
-                                        onclick="openEmpModal('{{ emp.id }}', '{{ emp.nick_name }}', '{{ emp.hourly_rate }}', '{{ emp.allowance }}', '{{ emp.commission_rate }}', '{{ emp.mpf_start_month }}')">
+                                        onclick='openEmpModal({{ emp.id|tojson }}, {{ emp.nick_name|tojson }}, {{ (emp.full_name if emp.full_name and emp.full_name != "None" else "")|tojson }}, {{ emp.hourly_rate|tojson }}, {{ emp.allowance|tojson }}, {{ emp.commission_rate|tojson }}, {{ emp.mpf_start_month|tojson }})'>
                                     ✏️ 修改
                                 </button>
                             </td>
@@ -62,7 +63,10 @@
             <form action="/update_employee" method="POST">
                 <div class="modal-body">
                     <input type="hidden" name="id" id="edit_emp_id">
-                    
+                    <div class="mb-3">
+                    <label class="form-label fw-bold">全名 (Full Name)</label>
+                    <input type="text" name="full_name" id="edit_full_name" class="form-control" placeholder="請輸入正式英文全名">
+                </div>
                     <div class="row mb-3">
                         <div class="col-6">
                             <label class="form-label fw-bold">時薪 (Hourly Rate)</label>
@@ -101,14 +105,22 @@
 </div>
 
 <script>
-function openEmpModal(id, name, hr, allow, comm, mpf) {
+function openEmpModal(id, name, fullName, hr, allow, comm, mpf) {
+    // 解決無反應問題：確保所有 getElementById 的 ID 都在 HTML 中存在
     document.getElementById('edit_emp_id').value = id;
     document.getElementById('display_emp_name').innerText = name;
+    
+    // 填入全名
+    document.getElementById('edit_full_name').value = fullName || '';
+    
     document.getElementById('edit_hr').value = hr;
     document.getElementById('edit_allow').value = allow;
     document.getElementById('edit_comm').value = comm;
-    document.getElementById('edit_mpf').value = mpf !== 'None' ? mpf : '';
+    document.getElementById('edit_mpf').value = (mpf && mpf !== 'None') ? mpf : '';
     
+    // 啟動彈窗
+    var myModal = new bootstrap.Modal(document.getElementById('edit_emp_id').closest('.modal')); 
+    // 或者直接使用原本的 ID：
     new bootstrap.Modal(document.getElementById('editEmpModal')).show();
 }
 </script>
