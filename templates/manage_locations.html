@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>📍 標準店鋪管理</h2>
+        <a href="/" class="btn btn-secondary">返回主控台</a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-primary">
+                <div class="card-header bg-primary text-white fw-bold">➕ 新增標準店鋪</div>
+                <div class="card-body">
+                    <form action="/add_location" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">店鋪名稱 (系統唯一識別碼)</label>
+                            <input type="text" name="name" class="form-control" placeholder="例如: CWB Sogo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">所屬區域</label>
+                            <select name="region" class="form-select">
+                                <option value="九龍">九龍</option>
+                                <option value="新界">新界</option>
+                                <option value="香港島">香港島</option>
+                                <option value="Roadshow">Roadshow</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 fw-bold">確認新增</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>區域</th>
+                                <th>標準名稱</th>
+                                <th class="text-end">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for loc in locations %}
+                            <tr>
+                                <td><span class="badge bg-secondary">{{ loc.region }}</span></td>
+                                <td class="fw-bold">{{ loc.name }}</td>
+                                <td class="text-end">
+                                    <button class="btn btn-sm btn-outline-primary me-1" 
+                                            onclick="openEditModal('{{ loc.id }}', '{{ loc.name }}', '{{ loc.region }}')">
+                                        修改
+                                    </button>
+                                    <a href="/delete_location/{{ loc.id }}" class="btn btn-sm btn-outline-danger" 
+                                       onclick="return confirm('確定刪除？')">刪除</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editLocationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">✏️ 修改標準店鋪</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/update_location" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="edit_id">
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">店鋪名稱</label>
+                        <input type="text" name="name" id="edit_name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">所屬區域</label>
+                        <select name="region" id="edit_region" class="form-select">
+                            <option value="九龍">九龍</option>
+                            <option value="新界">新界</option>
+                            <option value="香港島">香港島</option>
+                            <option value="Roadshow">Roadshow</option>
+                            <option value="Excel匯入">Excel匯入</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary px-4">儲存修改</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+    <script>
+    function openEditModal(id, name, region) {
+        // 1. 將資料填入 Modal 的輸入框中
+        document.getElementById('edit_id').value = id;
+        document.getElementById('edit_name').value = name;
+        document.getElementById('edit_region').value = region;
+        
+        // 2. 顯示彈窗
+        var editModal = new bootstrap.Modal(document.getElementById('editLocationModal'));
+        editModal.show();
+    }
+    </script>
+{% endblock %}

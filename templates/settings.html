@@ -1,42 +1,115 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container mt-4">
-    <h2 class="mb-4 text-center">⚙️ 系統進階設定</h2>
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>👤 員工主檔與人事設定</h2>
+        <a href="/" class="btn btn-secondary">返回主控台</a>
+    </div>
 
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-sm border-warning">
-                <div class="card-header bg-warning fw-bold">🛡️ 員工 MPF 起扣月份設定</div>
-                <div class="card-body">
-                    <p class="text-muted small">此設定僅針對特定需要扣除 MPF 的員工（如 Wah）。預設情況下，Part-time Promoter 不扣除 MPF。</p>
-                    <table class="table table-hover align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>員工暱稱</th>
-                                <th>MPF 生效起始月份</th>
-                                <th style="width: 100px;">操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for emp in employees %}
-                            <tr>
-                                <td><strong>{{ emp.nick_name }}</strong></td>
-                                <form action="/update_emp_mpf" method="POST">
-                                    <input type="hidden" name="name" value="{{ emp.nick_name }}">
-                                    <td>
-                                        <input type="month" name="start_month" class="form-control" value="{{ emp.mpf_start_month }}">
-                                    </td>
-                                    <td>
-                                        <button type="submit" class="btn btn-warning fw-bold w-100">儲存</button>
-                                    </td>
-                                </form>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+    <div class="card shadow-sm border-warning">
+        <div class="card-header bg-warning text-dark fw-bold fs-5">
+            📋 員工基礎薪酬與 MPF 設定
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th>員工暱稱 (系統唯一)</th>
+                            <th>預設時薪 ($)</th>
+                            <th>日薪津貼 ($)</th>
+                            <th>預設佣金比例</th>
+                            <th>MPF 起扣月份</th>
+                            <th class="text-end pe-4">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for emp in employees %}
+                        <tr>
+                            <td class="fw-bold text-primary">{{ emp.nick_name }}</td>
+                            <td>${{ emp.hourly_rate }}</td>
+                            <td>${{ emp.allowance }}</td>
+                            <td>{{ (emp.commission_rate * 100) | int }}%</td>
+                            <td>
+                                {% if emp.mpf_start_month %}
+                                    <span class="badge bg-secondary">{{ emp.mpf_start_month }}</span>
+                                {% else %}
+                                    <span class="text-muted small">不扣除</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end pe-4">
+                                <button class="btn btn-sm btn-outline-primary" 
+                                        onclick="openEmpModal('{{ emp.id }}', '{{ emp.nick_name }}', '{{ emp.hourly_rate }}', '{{ emp.allowance }}', '{{ emp.commission_rate }}', '{{ emp.mpf_start_month }}')">
+                                    ✏️ 修改
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="editEmpModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">✏️ 修改員工資料：<span id="display_emp_name"></span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/update_employee" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="edit_emp_id">
+                    
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-bold">時薪 (Hourly Rate)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" step="0.1" name="hourly_rate" id="edit_hr" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-bold">日薪津貼 (Allowance)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" step="0.1" name="allowance" id="edit_allow" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">預設佣金比例 (小數表示，例如 0.03)</label>
+                        <input type="number" step="0.001" name="commission_rate" id="edit_comm" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">MPF 生效起始月份</label>
+                        <input type="month" name="mpf_start_month" id="edit_mpf" class="form-control">
+                        <div class="form-text text-muted">留空代表該員工為 Part-time，免扣 MPF。</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary px-4 fw-bold">儲存修改</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function openEmpModal(id, name, hr, allow, comm, mpf) {
+    document.getElementById('edit_emp_id').value = id;
+    document.getElementById('display_emp_name').innerText = name;
+    document.getElementById('edit_hr').value = hr;
+    document.getElementById('edit_allow').value = allow;
+    document.getElementById('edit_comm').value = comm;
+    document.getElementById('edit_mpf').value = mpf !== 'None' ? mpf : '';
+    
+    new bootstrap.Modal(document.getElementById('editEmpModal')).show();
+}
+</script>
 {% endblock %}

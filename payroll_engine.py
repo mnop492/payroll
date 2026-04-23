@@ -1,161 +1,183 @@
-import pandas as pd
 import sqlite3
-import logging
-import os
+import pandas as pd
+import math  # 🌟 新增：用於精準計算 OT 進位
 
-def get_db_connection():
-    conn = sqlite3.connect('payroll.db')
-    conn.row_factory = sqlite3.Row
-    return conn
+def process_payroll_from_db(calc_month, db_path='payroll.db'):
+    """
+    安全升級版計糧大腦：支援五大彈性微調，並保證不漏算任何員工
+    """
+    conn = sqlite3.connect(db_path)
+    
+    # ==========================================
+    # 1. 讀取所需資料庫
+    # ==========================================
+    emp_df = pd.read_sql_query("SELECT nick_name AS Name, hourly_rate, allowance, commission_rate AS default_comm, require_mpf, mpf_start_month FROM Employees", conn)
+    
+    # ==========================================
+    # 2. 讀取考勤與每日明細 (🌟 升級版每日 OT 結算)
+    # ==========================================
+    # A. 先讀取「每日打卡明細」
+    daily_df = pd.read_sql_query("""
+        SELECT nick_name AS Name, location AS Location, actual_hours, normal_hours, ot_hours AS raw_ot
+        FROM DailyAttendance 
+        WHERE payroll_month = ?
+    """, conn, params=(calc_month,))
 
-def process_payroll_from_db(calc_month):
-    try:
-        # 使用 pandas 直接讀取 sqlite，這裡用標準 connection
-        conn = sqlite3.connect('payroll.db')
+    # B. 讀取原本 Attendance 表中的「五大金剛微調」與「津貼」
+    adj_df = pd.read_sql_query("""
+        SELECT nick_name AS Name, location AS Location, 
+               expenses, adjustment, attendance_bonus, basic_pay_override, allowance_override 
+        FROM Attendance WHERE payroll_month = ?
+    """, conn, params=(calc_month,))
+
+    if not daily_df.empty:
+        # 🌟 核心 OT 規則：不足半小時不計，每半小時跳一級
+        def apply_clean_ot(raw_ot):
+            if pd.isna(raw_ot) or raw_ot < 0.5:
+                return 0.0
+            # math.floor 向下取整：例如 0.9 / 0.5 = 1.8 -> floor(1.8) = 1 -> 1 * 0.5 = 0.5
+            return math.floor(raw_ot / 0.5) * 0.5
+
+        # 逐日清洗 OT 數據
+        daily_df['Clean_OT'] = daily_df['raw_ot'].apply(apply_clean_ot)
         
-        # 1. 讀取基礎資料表 (員工與產品)
-        employees_df = pd.read_sql_query("SELECT * FROM Employees", conn)
-        products_df = pd.read_sql_query("SELECT * FROM Products", conn)
+        # 每日應付底薪工時 = 實際打卡工時 - 原始OT (回歸表定正常工時)
+        daily_df['Payable_Normal'] = daily_df['normal_hours']
+
+        # 針對每位員工在各店鋪進行「按月加總」
+        att_summary = daily_df.groupby(['Name', 'Location']).agg(
+            Days=('Payable_Normal', 'size'),    # 計算返工日數
+            Hours=('Payable_Normal', 'sum'),    # 總底薪工時
+            OT_Hours=('Clean_OT', 'sum')        # 🌟 總結算後的最乾淨 OT
+        ).reset_index()
         
-        # 🌟 讀取特佣規則 (加入 try-except 容錯，防禦資料表還沒建立的情況)
-        try:
-            special_comm_df = pd.read_sql_query("SELECT * FROM SpecialCommissions", conn)
-        except Exception:
-            special_comm_df = pd.DataFrame(columns=['model', 'start_month', 'end_month', 'rate'])
+        # 重新命名以對接後面的計糧公式
+        att_summary.rename(columns={'OT_Hours': 'OT Hours'}, inplace=True)
 
-        # 2. 讀取當月單據與考勤資料
-        sales_db_df = pd.read_sql_query("SELECT * FROM Sales WHERE payroll_month = ?", conn, params=(calc_month,))
-        attendance_df = pd.read_sql_query("SELECT nick_name AS 'Nick Name', location AS 'Location', days_worked AS 'Days', hours AS 'Hours', ot_hours AS 'OT Hours', expenses AS 'Expenses' FROM Attendance WHERE payroll_month = ?", conn, params=(calc_month,))
-        conn.close()
+        # C. 將「精算後的工時」與「五大金剛微調」無縫合併
+        att_df = pd.merge(att_summary, adj_df, on=['Name', 'Location'], how='left')
+        att_df.fillna({'expenses': 0, 'adjustment': 0, 'attendance_bonus': 0}, inplace=True)
+    else:
+        # 防呆：如果該月完全沒有明細紀錄，就退回補零
+        att_df = adj_df.copy() if not adj_df.empty else pd.DataFrame(columns=['Name', 'Location', 'Days', 'Hours', 'OT Hours', 'expenses', 'adjustment', 'attendance_bonus', 'basic_pay_override', 'allowance_override'])
+        if not att_df.empty:
+            att_df['Days'] = 0
+            att_df['Hours'] = 0
+            att_df['OT Hours'] = 0
 
-        # ==========================================
-        # 第一步：處理考勤與津貼數據
-        # ==========================================
-        if not attendance_df.empty:
-            attendance_df['Days'] = pd.to_numeric(attendance_df['Days'], errors='coerce').fillna(0)
-            attendance_df['Hours'] = pd.to_numeric(attendance_df['Hours'], errors='coerce').fillna(0)
-            attendance_df['OT Hours'] = pd.to_numeric(attendance_df['OT Hours'], errors='coerce').fillna(0)
-            # 相同名字與地點的紀錄加總
-            att_summary = attendance_df.groupby(['Nick Name', 'Location']).agg({'Days': 'sum', 'Hours': 'sum', 'OT Hours': 'sum', 'Expenses': 'sum'}).reset_index()
+    # 讀取銷售與特佣規則
+    sales_df = pd.read_sql_query("SELECT promoter_name AS Name, location AS Location, model, quantity, price FROM Sales WHERE payroll_month = ?", conn, params=(calc_month,))
+    prod_df = pd.read_sql_query("SELECT model, commission_rate AS prod_comm FROM Products", conn)
+    spec_df = pd.read_sql_query("SELECT model, start_month, end_month, rate AS spec_comm FROM SpecialCommissions", conn)
+    
+    conn.close()
+
+    # ==========================================
+    # 2. 計算佣金 (三層優先級智能判定)
+    # ==========================================
+    if not sales_df.empty:
+        sales_df = sales_df.merge(prod_df, on='model', how='left')
+        spec_active = spec_df[(spec_df['start_month'] <= calc_month) & (spec_df['end_month'] >= calc_month)]
+        spec_active = spec_active.drop_duplicates(subset=['model'], keep='last')
+        sales_df = sales_df.merge(spec_active[['model', 'spec_comm']], on='model', how='left')
+        sales_df = sales_df.merge(emp_df[['Name', 'default_comm']], on='Name', how='left')
+        
+        # 優先級：時段特佣 > 永久產品比例 > 員工預設比例 > 保底 0.03
+        sales_df['applied_rate'] = sales_df['spec_comm'].combine_first(sales_df['prod_comm']).combine_first(sales_df['default_comm']).fillna(0.03)
+        sales_df['Comm'] = sales_df['quantity'] * sales_df['price'] * sales_df['applied_rate']
+        comm_summary = sales_df.groupby(['Name', 'Location'])['Comm'].sum().reset_index()
+        comm_summary.rename(columns={'Comm': 'Calc_Comm'}, inplace=True)
+    else:
+        comm_summary = pd.DataFrame(columns=['Name', 'Location', 'Calc_Comm'])
+
+    # ==========================================
+    # 3. 數據安全合併 (🌟 關鍵修復：Outer Join 防漏算)
+    # ==========================================
+    if att_df.empty and comm_summary.empty:
+        return []
+
+    if not att_df.empty and not comm_summary.empty:
+        # 使用 outer join，確保「只有打卡沒銷售」或「只有銷售沒打卡」的人都會被保留
+        final_df = pd.merge(att_df, comm_summary, on=['Name', 'Location'], how='outer')
+    elif not att_df.empty:
+        final_df = att_df.copy()
+        final_df['Calc_Comm'] = 0
+    else:
+        final_df = comm_summary.copy()
+        for col in ['Days', 'Hours', 'OT Hours', 'expenses', 'adjustment', 'attendance_bonus', 'basic_pay_override', 'allowance_override']:
+            final_df[col] = 0
+
+    # 關聯員工時薪等基本資料
+    final_df = final_df.merge(emp_df, on='Name', how='left')
+    
+    # 把空值補 0，防止數學計算報錯
+    fill_zero_cols = ['Days', 'Hours', 'OT Hours', 'Calc_Comm', 'hourly_rate', 'allowance', 'expenses', 'adjustment', 'attendance_bonus']
+    for col in fill_zero_cols:
+        if col in final_df.columns:
+            final_df[col] = pd.to_numeric(final_df[col], errors='coerce').fillna(0)
+
+    # ==========================================
+    # 4. 智能彈性計算邏輯 (把微調金額加進去)
+    # ==========================================
+    def calc_basic(row):
+        # 如果有人工覆寫底薪，強制使用覆寫值
+        if 'basic_pay_override' in row and pd.notna(row['basic_pay_override']) and str(row['basic_pay_override']).strip() not in ['', '0', '0.0']:
+            return float(row['basic_pay_override'])
+        return (row['Hours'] + row['OT Hours']) * row['hourly_rate']
+    
+    def calc_allow(row):
+        # 如果有人工覆寫津貼，強制使用覆寫值
+        if 'allowance_override' in row and pd.notna(row['allowance_override']) and str(row['allowance_override']).strip() not in ['', '0', '0.0']:
+            return float(row['allowance_override'])
+        return row['Days'] * row['allowance']
+
+    final_df['Basic Pay'] = final_df.apply(calc_basic, axis=1)
+    final_df['Total_Allowance'] = final_df.apply(calc_allow, axis=1)
+    
+    # 💰 總收入 = 底薪 + 佣金 + 津貼 + 報銷(Expenses) + 微調(Adjustment) + 出勤獎(Attendance Bonus)
+    final_df['Gross Pay'] = final_df['Basic Pay'] + final_df['Calc_Comm'] + final_df['Total_Allowance'] + final_df['expenses'] + final_df['adjustment'] + final_df['attendance_bonus']
+
+    # ==========================================
+    # 5. MPF 計算邏輯 (方案 B：精細化)
+    # ==========================================
+    def calc_mpf(row):
+        mpf_amount = 0
+        mpf_status = ""
+        
+        # 判斷是否為 MPF 計劃參與者
+        if row.get('require_mpf', 1) == 1:
+            start_month = row.get('mpf_start_month')
+            
+            # 判斷是否已過 60 天豁免期 (或未設定則預設已過)
+            if pd.isna(start_month) or str(start_month).strip() == '' or calc_month >= str(start_month):
+                if row['Gross Pay'] >= 7100:
+                    # 符合扣除條件 (5%, 最高 $1500)
+                    mpf_amount = min(row['Gross Pay'] * 0.05, 1500)
+                    mpf_status = "已扣除 (5%)"
+                else:
+                    # 薪資低於下限，員工無需供款
+                    mpf_status = "未達 $7,100 下限"
+            else:
+                # 仍在豁免期內
+                mpf_status = f"🛡️ 豁免期 (起扣:{start_month})"
         else:
-            att_summary = pd.DataFrame(columns=['Nick Name', 'Location', 'Days', 'Hours', 'OT Hours'])
-
-        # ==========================================
-        # 第二步：處理銷售與動態佣金計算
-        # ==========================================
-        if not sales_db_df.empty:
-            # 先合併基礎產品資訊，取得預設 commission_rate
-            merged_sales = pd.merge(sales_db_df, products_df, left_on='model', right_on='model', how='left')
-            merged_sales['commission_rate'] = merged_sales['commission_rate'].fillna(0.03) # 找不到產品就預設 3%
+            # 永久免供款員工 (如大於 65 歲或特定合約)
+            mpf_status = "🚫 永久豁免 (非 MPF 員工)"
             
-            # 🌟 核心特佣邏輯：決定每一筆單據的最終佣金比例
-            def get_effective_rate(row):
-                base_rate = row['commission_rate']
-                model = str(row['model']).strip()
-                
-                if not special_comm_df.empty:
-                    # 在特佣表中尋找：型號一致，且計糧月份落在特佣區間內
-                    match = special_comm_df[
-                        (special_comm_df['model'].str.strip() == model) & 
-                        (special_comm_df['start_month'] <= calc_month) & 
-                        (special_comm_df['end_month'] >= calc_month)
-                    ]
-                    if not match.empty:
-                        return float(match.iloc[0]['rate']) # 優先使用特佣比例
-                return base_rate # 沒特佣就用基礎比例
+        return pd.Series([mpf_amount, mpf_status])
 
-            merged_sales['effective_rate'] = merged_sales.apply(get_effective_rate, axis=1)
-            
-            # 計算該筆單據佣金
-            merged_sales['Sub_Total_Sales'] = merged_sales['quantity'] * merged_sales['price']
-            merged_sales['Calc_Comm'] = merged_sales['Sub_Total_Sales'] * merged_sales['effective_rate']
-            
-            # 依員工與地點加總佣金
-            sales_summary = merged_sales.groupby(['promoter_name', 'location']).agg({'Sub_Total_Sales': 'sum', 'Calc_Comm': 'sum'}).reset_index()
-        else:
-            sales_summary = pd.DataFrame(columns=['promoter_name', 'location', 'Sub_Total_Sales', 'Calc_Comm'])
+    # 執行計算並拆分結果
+    final_df[['MPF', 'MPF狀態']] = final_df.apply(calc_mpf, axis=1)
+    final_df['Net Pay'] = final_df['Gross Pay'] - final_df['MPF']
 
-        # ==========================================
-        # 第三步：名單合併與薪資總計
-        # ==========================================
-        # 萃取所有出現過的人名與地點（確保有打卡沒賣東西，或有賣東西沒打卡的人都不會漏掉）
-        att_keys = att_summary[['Nick Name', 'Location']].rename(columns={'Nick Name': 'Name'})
-        sales_keys = sales_summary[['promoter_name', 'location']].rename(columns={'promoter_name': 'Name', 'location': 'Location'})
-        all_keys = pd.concat([att_keys, sales_keys]).drop_duplicates()
+    # ==========================================
+    # 6. 整理最終輸出格式
+    # ==========================================
+    # 把新加入的微調欄位送到前端顯示
+    display_df = final_df[['Name', 'Hours', 'OT Hours', 'Basic Pay', 'Calc_Comm', 'Total_Allowance', 'expenses', 'adjustment', 'attendance_bonus', 'Gross Pay', 'MPF', 'MPF狀態', 'Net Pay', 'Location']]
+    display_df.columns = ['員工', '工時', 'OT工時', '底薪', '總佣金', '津貼', '報銷', '微調', '出勤獎', '總收入', 'MPF扣除', 'MPF狀態', '實發薪資', '地點']
 
-        # 清理空格，準備合併
-        all_keys['Name'] = all_keys['Name'].str.strip()
-        employees_df['nick_name'] = employees_df['nick_name'].str.strip()
-        att_summary['Nick Name'] = att_summary['Nick Name'].str.strip()
-        sales_summary['promoter_name'] = sales_summary['promoter_name'].str.strip()
+    numeric_cols = ['工時', 'OT工時', '底薪', '總佣金', '津貼', '報銷', '微調', '出勤獎', '總收入', 'MPF扣除', '實發薪資']
+    display_df[numeric_cols] = display_df[numeric_cols].fillna(0).round(2)
 
-        if all_keys.empty:
-            return False, f"找不到 {calc_month} 的紀錄", None, None
-
-        # 以 all_keys 為骨幹，把員工基本資料、考勤、銷售數據貼上去
-        final_df = pd.merge(all_keys, employees_df, left_on='Name', right_on='nick_name', how='left')
-        final_df = pd.merge(final_df, att_summary, left_on=['Name', 'Location'], right_on=['Nick Name', 'Location'], how='left').fillna({'Days': 0, 'Hours': 0, 'OT Hours': 0})
-        final_df = pd.merge(final_df, sales_summary, left_on=['Name', 'Location'], right_on=['promoter_name', 'location'], how='left').fillna({'Calc_Comm': 0})
-
-        # 計算薪水
-        final_df['hourly_rate'] = final_df['hourly_rate'].fillna(0)
-        final_df['allowance'] = final_df['allowance'].fillna(0)
-        
-        # 🌟 津貼 = 日數 x 設定的 allowance 金額
-        final_df['Total_Allowance'] = final_df['Days'] * final_df['allowance']
-        final_df['Basic Pay'] = (final_df['Hours'] + final_df['OT Hours']) * final_df['hourly_rate']
-        final_df['Expenses'] = final_df['Expenses'].fillna(0)
-        final_df['Gross Pay'] = final_df['Basic Pay'] + final_df['Calc_Comm'] + final_df['Total_Allowance'] + final_df['Expenses']
-
-        # ==========================================
-        # 第四步：MPF 特例與標準邏輯判斷
-        # ==========================================
-        def calculate_mpf(row):
-            gross = row['Gross Pay']
-            # 取得該員工設定的 MPF 起始月份 (如 Wah 的 2026-04)
-            mpf_start = row.get('mpf_start_month')
-            
-            # 🌟 特例 1：如果沒設定起始月份，或者目前結算月份「小於」起始月份，一律不扣
-            if pd.isna(mpf_start) or not str(mpf_start).strip() or calc_month < str(mpf_start).strip():
-                return 0.0, "豁免期"
-                
-            # 🌟 特例 2：已經到了起始月份，根據香港法例標準扣除
-            if gross < 7100: 
-                return 0.0, "未達門檻"
-            elif gross > 30000: 
-                return 1500.0, "達上限"
-            else: 
-                return round(gross * 0.05, 2), "正常扣除"
-        
-        # apply 函數會回傳一組 (金額, 狀態文字)，我們把它拆開放入兩個欄位
-        mpf_results = final_df.apply(calculate_mpf, axis=1)
-        final_df['MPF'] = [res[0] for res in mpf_results]
-        final_df['MPF狀態'] = [res[1] for res in mpf_results]
-        
-        final_df['Net Pay'] = final_df['Gross Pay'] - final_df['MPF']
-
-        # ==========================================
-        # 第五步：整理輸出格式
-        # ==========================================
-        display_df = final_df[['Name', 'Hours', 'OT Hours', 'Basic Pay', 'Calc_Comm', 'Total_Allowance', 'Gross Pay', 'MPF', 'MPF狀態', 'Net Pay', 'Location']]
-        display_df.columns = ['員工', '工時', 'OT工時', '底薪', '總佣金', '津貼', '總收入', 'MPF扣除', 'MPF狀態', '實發薪資', '地點']
-
-        # 強制四捨五入到小數點後兩位
-        cols_to_round = ['工時', 'OT工時', '底薪', '總佣金', '津貼', '總收入', 'MPF扣除', '實發薪資']
-        display_df[cols_to_round] = display_df[cols_to_round].round(2)
-
-        # 輸出為 Excel (供下載備份)
-        output_folder = 'outputs'
-        os.makedirs(output_folder, exist_ok=True)
-        output_filename = f'Payroll_Summary_{calc_month}.xlsx'
-        output_path = os.path.join(output_folder, output_filename)
-        display_df.to_excel(output_path, index=False)
-        
-        # 將 DataFrame 轉為字典清單傳給 Flask 前端
-        records = display_df.to_dict(orient='records')
-        
-        return True, "計算成功", records, output_filename
-
-    except Exception as e:
-        logging.error(f"計糧引擎錯誤: {str(e)}")
-        return False, f"計算失敗: {str(e)}", None, None
+    return display_df.to_dict('records')

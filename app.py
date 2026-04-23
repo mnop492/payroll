@@ -1,17 +1,26 @@
 import os
+from werkzeug.utils import secure_filename
 import sqlite3
 import logging
-from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, send_file, jsonify
 import pandas as pd
-from datetime import datetime # 🌟 新增這行：引入時間套件
-from payroll_engine import process_payroll_from_db # 確保匯入名稱正確
+from datetime import datetime
+from payroll_engine import process_payroll_from_db
+from importer import process_excel_import
 
 app = Flask(__name__)
 app.secret_key = "super_secret_key"
 
+# 確保 history 資料夾存在
+HISTORY_FOLDER = 'history'
+os.makedirs(HISTORY_FOLDER, exist_ok=True)
+
+# 🌟 1. 統一管理上傳資料夾名稱
 UPLOAD_FOLDER = 'uploads'
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
 LOG_FOLDER = 'logs'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(LOG_FOLDER, exist_ok=True)
 
 logging.basicConfig(
@@ -20,40 +29,140 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
-# --- 新增：資料庫連線小工具 ---
 def get_db_connection():
     conn = sqlite3.connect('payroll.db')
-    conn.row_factory = sqlite3.Row  # 讓回傳的資料可以像字典一樣操作
+    conn.row_factory = sqlite3.Row
     return conn
 
+# 🌟 全新：自動彙總並同步考勤總表的函數
+def sync_attendance_summary(month, nick_name, location):
+    conn = get_db_connection()
+    
+    # 1. 計算該員工在該店鋪的最新的「總日數、總工時、總OT」
+    # (工時計算邏輯與 Excel 匯入一致：實際工時減去 OT)
+    summary = conn.execute('''
+        SELECT 
+            COUNT(work_date) as t_days,
+            SUM(actual_hours - ot_hours) as t_hours,
+            SUM(ot_hours) as t_ot
+        FROM DailyAttendance 
+        WHERE payroll_month = ? AND nick_name = ? AND location = ?
+    ''', (month, nick_name, location)).fetchone()
+    
+    days = summary['t_days'] or 0
+    hours = summary['t_hours'] or 0.0
+    ot = summary['t_ot'] or 0.0
+    
+    # 2. 確保 Attendance 總表中有這筆紀錄 (避免因為是新加的而找不到)
+    conn.execute('''
+        INSERT OR IGNORE INTO Attendance (payroll_month, nick_name, location, days_worked, hours, ot_hours)
+        VALUES (?, ?, ?, 0, 0, 0)
+    ''', (month, nick_name, location))
+    
+    # 3. 把算出來的最新總計，覆寫回 Attendance 總表
+    conn.execute('''
+        UPDATE Attendance 
+        SET days_worked = ?, hours = ?, ot_hours = ?
+        WHERE payroll_month = ? AND nick_name = ? AND location = ?
+    ''', (days, hours, ot, month, nick_name, location))
+    
+    conn.commit()
+    conn.close()
+    
 @app.route('/')
 def index():
     current_month = request.args.get('month', pd.Timestamp.now().strftime('%Y-%m'))
     conn = get_db_connection()
+    
     # 讀取銷售紀錄
     records = conn.execute("SELECT * FROM Sales WHERE payroll_month = ?", (current_month,)).fetchall()
-    # 🌟 新增：讀取考勤紀錄
-    attendances = conn.execute("SELECT * FROM Attendance WHERE payroll_month = ?", (current_month,)).fetchall()
-    conn.close()
-    return render_template('index.html', current_month=current_month, records=records, attendances=attendances)
+    
+    # 🌟 修改重點：讀取考勤紀錄並處理 None 值
+    attendances_raw = conn.execute("SELECT * FROM Attendance WHERE payroll_month = ?", (current_month,)).fetchall()
+    
+    # 將 Row 物件轉換為字典，並把所有的 None 變成 0 或預設值，防止 HTML 報錯
+    attendances = []
+    for row in attendances_raw:
+        d = dict(row)
+        # 針對可能導致格式化出錯的欄位進行補零
+        fields_to_fix = ['hours', 'days_worked', 'ot_hours', 'expenses', 'adjustment', 'attendance_bonus']
+        for field in fields_to_fix:
+            if d.get(field) is None:
+                d[field] = 0
+        
+        # 針對覆寫欄位，如果為 None 則給予空字串
+        if d.get('basic_pay_override') is None: d['basic_pay_override'] = ''
+        if d.get('allowance_override') is None: d['allowance_override'] = ''
+        
+        attendances.append(d)
+        
+    # 🌟 實作建議 1：按推廣員進行數據彙總 (Summary)
+    # 我們計算每個人的總單數、總金額，並抓取他們最常出現的地點
+    # 🌟 修改：按「推廣員 + 地點」進行雙重彙總
+    staff_summary = conn.execute('''
+        SELECT 
+            promoter_name as name, 
+            location as main_location, 
+            COUNT(*) as total_entries, 
+            SUM(quantity * price) as total_amount 
+        FROM Sales 
+        WHERE payroll_month = ? 
+        GROUP BY promoter_name, location
+        ORDER BY name, total_amount DESC
+    ''', (current_month,)).fetchall()
+        
+    locations = conn.execute("SELECT name FROM Locations ORDER BY name").fetchall()
+    # 🌟 新增：撈取所有標準產品型號，給前端的下拉選單使用
+    products = conn.execute("SELECT model FROM Products ORDER BY model").fetchall()
 
-# 2. 在 app.py 任何地方，加入這個刪除考勤的路由：
+    employees = conn.execute("SELECT nick_name FROM Employees ORDER BY nick_name").fetchall()
+
+    conn.close()
+    # 記得在 return 裡面補上 employees=employees
+    return render_template('index.html', current_month=current_month, staff_summary=staff_summary, 
+                           records=records, attendances=attendances, locations=locations, 
+                           products=products, employees=employees)
+    
 @app.route('/delete_attendance/<int:id>', methods=['POST'])
 def delete_attendance(id):
     conn = get_db_connection()
-    conn.execute("DELETE FROM Attendance WHERE id = ?", (id,))
-    conn.commit()
+    
+    # 🌟 第一步：先找出這筆總表紀錄是誰、在哪、哪個月？
+    # 這樣我們才知道要連帶刪除哪些 DailyAttendance
+    target = conn.execute('''
+        SELECT payroll_month, nick_name, location 
+        FROM Attendance 
+        WHERE id = ?
+    ''', (id,)).fetchone()
+    
+    if target:
+        month = target['payroll_month']
+        name = target['nick_name']
+        loc = target['location']
+        
+        # 🌟 第二步：先清理「每日明細」 (子表)
+        conn.execute('''
+            DELETE FROM DailyAttendance 
+            WHERE payroll_month = ? AND nick_name = ? AND location = ?
+        ''', (month, name, loc))
+        
+        # 🌟 第三步：再刪除「總結算紀錄」 (主表)
+        conn.execute("DELETE FROM Attendance WHERE id = ?", (id,))
+        
+        conn.commit()
+        flash(f"✅ 已徹底刪除 {name} 在 {loc} 的考勤總表及所有每日明細", "success")
+    else:
+        flash("❌ 找不到該筆紀錄", "danger")
+        
     conn.close()
-    flash("考勤紀錄已刪除", "success")
     return redirect(request.referrer or url_for('index'))
 
-# 在 app.py 找到 insert_record 並加入 location 接收
 @app.route('/insert_record', methods=['POST'])
 def insert_record():
     payroll_month = request.form.get('payroll_month')
     date = request.form.get('date')
     promoter = request.form.get('promoter')
-    location = request.form.get('location') # 🌟 新增這行
+    location = request.form.get('location')
     model = request.form.get('model')
     quantity = request.form.get('quantity')
     price = request.form.get('price')
@@ -65,32 +174,56 @@ def insert_record():
     ''', (payroll_month, date, promoter, location, model, quantity, price))
     conn.commit()
     conn.close()
-    # ... 下面維持不變 ...
 
     logging.info(f"成功寫入單據 - 月份: {payroll_month}, 員工: {promoter}")
     flash(f'成功新增一筆 {promoter} 的紀錄 ({payroll_month})！', 'success')
     return redirect(url_for('index'))
 
-# 👇 修改：一鍵計糧路由 (不再需要上傳 Excel 檔案了！)
+# 🌟 修復 1：計算薪資路由 (適應單一回傳值)
+import pandas as pd
+import os
+from flask import render_template, request, flash, redirect, url_for, send_from_directory
+
 @app.route('/calculate_payroll', methods=['POST'])
 def calculate_payroll():
     calc_month = request.form.get('calc_month')
     
-    # 直接呼叫引擎，不傳檔案路徑
-    success, message, records, output_file = process_payroll_from_db(calc_month)
+    # 1. 取得計算結果
+    records = process_payroll_from_db(calc_month)
     
-    if success:
+    if records:
+        # 2. 解決 Total 消失問題：手動計算總和 (對應你 UI 裡的 totals 變數)
+        totals = {
+            'basic': sum(r.get('底薪', 0) for r in records),
+            'comm': sum(r.get('總佣金', 0) for r in records),
+            'net': sum(r.get('實發薪資', 0) for r in records)
+        }
+        
+        # 3. 解決 Not Found 問題：定義 excel_file 變數並產生檔案
+        excel_file = f"Payroll_Summary_{calc_month}.xlsx"
+        
+        # 確保 outputs 資料夾存在並儲存檔案
+        df = pd.DataFrame(records)
+        output_dir = 'outputs'
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        df.to_excel(os.path.join(output_dir, excel_file), index=False)
+        
         flash(f'{calc_month} 月份計算成功！', 'success')
-        # 修改 app.py 裡的這一行
-        return render_template('result.html', records=records, output_file=output_file, calc_month=calc_month)
+        
+        # 4. 關鍵：將所有變數傳回 template，這會讓你的 UI 恢復正常
+        return render_template('result.html', 
+                               records=records, 
+                               calc_month=calc_month, 
+                               excel_file=excel_file, # 補回這個變數
+                               totals=totals)         # 補回這個變數
     else:
-        flash(message, 'danger')
+        flash(f'找不到 {calc_month} 的數據，請確認已輸入資料。', 'danger')
         return redirect(url_for('index'))
 
 @app.route('/delete_record/<int:record_id>', methods=['POST'])
 def delete_record(record_id):
     conn = get_db_connection()
-    # 根據資料表的 ID 來刪除該筆紀錄
     conn.execute('DELETE FROM Sales WHERE id = ?', (record_id,))
     conn.commit()
     conn.close()
@@ -99,16 +232,12 @@ def delete_record(record_id):
     flash(f'紀錄 (ID: {record_id}) 已成功刪除！', 'warning')
     return redirect(url_for('index'))
 
-# 修改 app.py 裡的單獨糧單路由
+# 🌟 修復 2：查看糧單路由
 @app.route('/view_payslip/<int:idx>/<month>')
 def view_payslip(idx, month):
-    from payroll_engine import process_payroll_from_db
+    records = process_payroll_from_db(month)
     
-    # 呼叫引擎算好該月的所有 records
-    success, message, records, _ = process_payroll_from_db(month)
-    
-    if success and idx < len(records):
-        # 🌟 透過索引 (idx) 直接精準定位，不論名字或地點有沒有空格 🌟
+    if records and idx < len(records):
         target_emp = records[idx]
         return render_template('payslip.html', emp=target_emp, month=month)
     
@@ -125,15 +254,14 @@ def insert_attendance():
     payroll_month = request.form.get('payroll_month')
     nick_name = request.form.get('nick_name').strip()
     location = request.form.get('location').strip()
-    days = request.form.get('days_worked', 0) # 🌟 接收日數
-    hours = request.form.get('hours', 0)
-    ot_hours = request.form.get('ot_hours', 0)
-    expenses = request.form.get('expenses', 0)
+    
+    # 🌟 修復 3：確保從表單拿到的數字是真正的數值型態，避免存入字串
+    days = int(request.form.get('days_worked', 0) or 0)
+    hours = float(request.form.get('hours', 0) or 0)
+    ot_hours = float(request.form.get('ot_hours', 0) or 0)
+    expenses = float(request.form.get('expenses', 0) or 0)
     
     conn = get_db_connection()
-    # 加上讀取 expenses，並存入資料庫
-
-
     conn.execute('''
         INSERT INTO Attendance (payroll_month, nick_name, location, days_worked, hours, ot_hours, expenses)
         VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -145,23 +273,20 @@ def insert_attendance():
     flash("考勤紀錄新增成功", "success")
     return redirect(url_for('index'))
 
-# 👇 新增：一鍵生成全公司糧單的路由
+# 🌟 修復 4：列印所有糧單
 @app.route('/print_all/<calc_month>')
 def print_all_payslips(calc_month):
-    # 直接呼叫我們寫好的引擎，重新抓取該月份的所有算好資料
-    from payroll_engine import process_payroll_from_db
-    success, message, records, output_file = process_payroll_from_db(calc_month)
+    records = process_payroll_from_db(calc_month)
     
-    if not success or not records:
+    if not records:
         flash(f'找不到 {calc_month} 的薪資資料，請先計算！', 'danger')
         return redirect(url_for('index'))
         
-    # 將所有人的資料傳給新的 print_all.html 模板
     return render_template('print_all.html', records=records, month=calc_month)
 
 @app.route('/validate')
 def validate_data():
-    results = perform_validation() # 封裝邏輯以便重用
+    results = perform_validation()
     return render_template('validation.html', results=results)
 
 @app.route('/download_validation')
@@ -169,36 +294,33 @@ def download_validation():
     results = perform_validation()
     df = pd.DataFrame(results)
     
-    # 整理 Excel 欄位名稱
     df.columns = ['月份', '員工', '地點', 'Excel底薪', '系統底薪', 'Excel佣金', '系統佣金', 
                   'Excel津貼', '系統津貼', 'Excel_MPF', '系統_MPF', 'Excel實發', '系統實發', '差異', '狀態']
     
     output_path = 'outputs/Validation_Report.xlsx'
+    os.makedirs('outputs', exist_ok=True)
     df.to_excel(output_path, index=False)
     return send_from_directory('outputs', 'Validation_Report.xlsx', as_attachment=True)
 
 def perform_validation():
-    from payroll_engine import process_payroll_from_db
     import os
-    
-    history_dir = 'history'
     validation_results = []
     
-    if not os.path.exists(history_dir): return []
+    if not os.path.exists(HISTORY_FOLDER): return []
 
-    for filename in sorted(os.listdir(history_dir)):
+    for filename in sorted(os.listdir(HISTORY_FOLDER)):
         if filename.endswith('.xlsx') and not filename.startswith('~'):
             month_str = filename[:6]
             payroll_month = f"{month_str[:4]}-{month_str[4:]}"
-            success, _, sys_records, _ = process_payroll_from_db(payroll_month)
-            if not success: continue
+            
+            # 🌟 修復 5：正確接收單一變數
+            sys_records = process_payroll_from_db(payroll_month)
+            if not sys_records: continue
             
             try:
-                filepath = os.path.join(history_dir, filename)
-                # 讀取 Total 頁面，標題在第 7 行 (index 6)
+                filepath = os.path.join(HISTORY_FOLDER, filename)
                 ex_df = pd.read_excel(filepath, sheet_name='Total', header=6)
                 ex_df.columns = ex_df.columns.astype(str).str.strip()
-                # 關鍵欄位對應：Name, Shop, 酬  金 (或底薪), Basic Comm (佣金), Allowance, MPF, Total
                 ex_df = ex_df.dropna(subset=['Name', 'Total'])
             except: continue
 
@@ -206,7 +328,6 @@ def perform_validation():
                 name = str(ex_row['Name']).strip()
                 loc = str(ex_row.get('Shop', '')).strip()
                 
-                # 提取 Excel 各項數值 (處理可能出現的 NaN)
                 ex_vals = {
                     'basic': round(float(ex_row.get('酬  金', 0)), 0),
                     'comm': round(float(ex_row.get('Basic Comm', 0)), 0),
@@ -215,7 +336,6 @@ def perform_validation():
                     'net': round(float(ex_row['Total']), 0)
                 }
 
-                # 尋找系統匹配項
                 sys = next((r for r in sys_records if r['員工'] == name and r['地點'] == loc), None)
                 
                 res = {
@@ -242,18 +362,39 @@ def perform_validation():
                 validation_results.append(res)
     return validation_results
 
-# 1. 進入設定頁面：顯示目前的特佣規則與員工清單
 @app.route('/settings')
 def settings():
     conn = get_db_connection()
-    # 讀取所有特殊佣金規則
-    special_comms = conn.execute("SELECT * FROM SpecialCommissions").fetchall()
-    # 讀取所有員工，用於設定 MPF 開始月份
-    employees = conn.execute("SELECT * FROM Employees").fetchall()
+    # 撈取所有員工資料
+    employees = conn.execute("SELECT * FROM Employees ORDER BY nick_name").fetchall()
     conn.close()
-    return render_template('settings.html', special_comms=special_comms, employees=employees)
+    return render_template('settings.html', employees=employees)
 
-# 2. 儲存特殊佣金規則
+@app.route('/update_employee', methods=['POST'])
+def update_employee():
+    emp_id = request.form.get('id')
+    hourly_rate = float(request.form.get('hourly_rate', 0))
+    allowance = float(request.form.get('allowance', 0))
+    commission_rate = float(request.form.get('commission_rate', 0.03))
+    mpf_start_month = request.form.get('mpf_start_month')
+    
+    if emp_id:
+        conn = get_db_connection()
+        try:
+            conn.execute('''
+                UPDATE Employees 
+                SET hourly_rate = ?, allowance = ?, commission_rate = ?, mpf_start_month = ?
+                WHERE id = ?
+            ''', (hourly_rate, allowance, commission_rate, mpf_start_month, emp_id))
+            conn.commit()
+            flash("✅ 員工主檔資料已成功更新", "success")
+        except Exception as e:
+            flash(f"⚠️ 更新失敗：{str(e)}", "danger")
+        finally:
+            conn.close()
+            
+    return redirect(url_for('settings'))
+
 @app.route('/save_special_comm', methods=['POST'])
 def save_special_comm():
     model = request.form.get('model').strip()
@@ -269,19 +410,14 @@ def save_special_comm():
     flash(f"已成功加入 {model} 的特殊佣金規則", "success")
     return redirect(url_for('settings'))
 
-# 3. 刪除特殊佣金規則
 @app.route('/delete_special_comm/<int:id>')
 def delete_special_comm(id):
     conn = get_db_connection()
-    # 確保是從 SpecialCommissions 表刪除
     conn.execute("DELETE FROM SpecialCommissions WHERE id = ?", (id,))
     conn.commit()
     conn.close()
-    
-    # 🌟 自動返回觸發刪除的頁面 (即管理頁面)
     return redirect(request.referrer or url_for('manage_products'))
 
-# 4. 更新員工 MPF 開始月份
 @app.route('/update_emp_mpf', methods=['POST'])
 def update_emp_mpf():
     name = request.form.get('name')
@@ -294,16 +430,10 @@ def update_emp_mpf():
     flash(f"已更新 {name} 的 MPF 起扣月份", "success")
     return redirect(url_for('settings'))
 
-# ==========================================
-# 產品與佣金批量管理
-# ==========================================
-# app.py 新增路由
-
 @app.route('/manage_products')
 def manage_products():
     conn = get_db_connection()
     products = conn.execute("SELECT * FROM Products ORDER BY model").fetchall()
-    # 同時讀取所有特佣規則，方便在頁面顯示
     special_rules = conn.execute("SELECT * FROM SpecialCommissions ORDER BY start_month DESC").fetchall()
     conn.close()
     return render_template('manage_products.html', products=products, special_rules=special_rules)
@@ -311,16 +441,14 @@ def manage_products():
 @app.route('/update_product_config', methods=['POST'])
 def update_product_config():
     model = request.form.get('model')
-    update_type = request.form.get('update_type') # 'permanent' 或 'special'
+    update_type = request.form.get('update_type') 
     rate = float(request.form.get('rate'))
     
     conn = get_db_connection()
     if update_type == 'permanent':
-        # 更新 Products 表的預設比例
         conn.execute("UPDATE Products SET commission_rate = ? WHERE model = ?", (rate, model))
         flash(f"✅ 已更新 {model} 的永久佣金比例為 {rate*100}%", "success")
     else:
-        # 新增到 SpecialCommissions 表
         start = request.form.get('start_month')
         end = request.form.get('end_month')
         if not start or not end:
@@ -337,7 +465,6 @@ def update_product_config():
 
 @app.route('/bulk_update_products', methods=['POST'])
 def bulk_update_products():
-    # 獲取打勾的產品 ID 列表
     product_ids = request.form.getlist('product_ids')
     new_rate = request.form.get('new_rate')
 
@@ -346,11 +473,9 @@ def bulk_update_products():
         return redirect(url_for('manage_products'))
 
     conn = get_db_connection()
-    # 根據打勾的數量，動態生成 SQL 語句
     placeholders = ','.join('?' * len(product_ids))
     sql = f"UPDATE Products SET commission_rate = ? WHERE id IN ({placeholders})"
     
-    # 參數：[新比例, id1, id2, id3...]
     params = [float(new_rate)] + product_ids
     conn.execute(sql, params)
     conn.commit()
@@ -358,8 +483,6 @@ def bulk_update_products():
     
     flash(f"✅ 成功將 {len(product_ids)} 件產品的永久佣金比例更新為 {float(new_rate)*100}%！", "success")
     return redirect(url_for('manage_products'))
-
-# app.py 新增路由
 
 @app.route('/update_sales_record', methods=['POST'])
 def update_sales_record():
@@ -371,16 +494,286 @@ def update_sales_record():
     location = request.form.get('location')
 
     conn = get_db_connection()
+    # 🌟 修復 6：你原本寫 UPDATE SalesRecords，但正確的表名是 Sales
     conn.execute('''
-        UPDATE SalesRecords 
-        SET model = ?, quantity = ?, month = ?, staff_name = ?, location = ?
+        UPDATE Sales 
+        SET model = ?, quantity = ?, date = ?, promoter_name = ?, location = ?
         WHERE id = ?
-    ''', (model, quantity, month, staff_name, location, record_id))
+    ''', (model, quantity, f"{month}-01", staff_name, location, record_id))
     conn.commit()
     conn.close()
     
     flash(f"✅ 已成功更新 {staff_name} 的銷售紀錄", "success")
     return redirect(url_for('index'))
 
+@app.route('/manage_locations')
+def manage_locations():
+    conn = get_db_connection()
+    locations = conn.execute("SELECT * FROM Locations ORDER BY region, name").fetchall()
+    conn.close()
+    return render_template('manage_locations.html', locations=locations)
+
+@app.route('/add_location', methods=['POST'])
+def add_location():
+    name = request.form.get('name').strip()
+    region = request.form.get('region')
+    if name:
+        conn = get_db_connection()
+        try:
+            conn.execute("INSERT INTO Locations (name, region) VALUES (?, ?)", (name, region))
+            conn.commit()
+            flash(f"✅ 成功新增店鋪：{name}", "success")
+        except sqlite3.IntegrityError:
+            flash("⚠️ 店鋪名稱已存在", "danger")
+        conn.close()
+    return redirect(url_for('manage_locations'))
+
+@app.route('/delete_location/<int:id>')
+def delete_location(id):
+    conn = get_db_connection()
+    conn.execute("DELETE FROM Locations WHERE id = ?", (id,))
+    conn.commit()
+    conn.close()
+    flash("🗑️ 店鋪已刪除", "info")
+    return redirect(url_for('manage_locations'))
+
+@app.route('/update_location', methods=['POST'])
+def update_location():
+    loc_id = request.form.get('id')
+    name = request.form.get('name').strip()
+    region = request.form.get('region')
+    
+    if loc_id and name:
+        conn = get_db_connection()
+        try:
+            conn.execute("UPDATE Locations SET name = ?, region = ? WHERE id = ?", (name, region, loc_id))
+            conn.commit()
+            flash(f"✅ 店鋪資料已更新", "success")
+        except sqlite3.IntegrityError:
+            flash("⚠️ 修改失敗：店鋪名稱可能與現有重複", "danger")
+        conn.close()
+    return redirect(url_for('manage_locations'))
+
+@app.route('/upload_and_import', methods=['POST'])
+def upload_and_import():
+    calc_month = request.form.get('calc_month') # 格式: 2026-04
+    # 🌟 獲取 Checkbox 狀態：有勾選會回傳 'on'，沒勾選是 None
+    update_emp = request.form.get('update_emp') == 'on'
+    if 'excel_file' not in request.files:
+        flash("❌ 未選擇檔案", "danger")
+        return redirect(url_for('index', month=calc_month))
+    
+    file = request.files['excel_file']
+    if file.filename == '':
+        flash("❌ 未選擇檔案", "danger")
+        return redirect(url_for('index', month=calc_month))
+
+    if file:
+        # 🌟 規範化檔名：YYYYMM_OriginalName.xlsx
+        original_filename = secure_filename(file.filename)
+        new_filename = original_filename
+        file_path = os.path.join(UPLOAD_FOLDER, new_filename)
+        
+        # 儲存檔案到 history 資料夾
+        file.save(file_path)
+        
+        # 🌟 重用匯入邏輯 (呼叫之前定義的處理函數)
+        # 假設你已經將 rebuild_and_import 的邏輯封裝進 process_excel_import
+        success, message = process_excel_import(file_path, calc_month, update_emp=update_emp)
+        
+        if success:
+            flash(f"✅ 檔案已上傳至 history 並成功匯入數據！", "success")
+        else:
+            flash(f"⚠️ 檔案已上傳但匯入失敗: {message}", "warning")
+            
+    return redirect(url_for('index', month=calc_month))
+
+# 🌟 API 1：獲取員工單月每日打卡紀錄
+@app.route('/api/daily_attendance/<month>/<nick_name>/<path:location>')
+def get_daily_attendance(month, nick_name, location):
+    conn = get_db_connection()
+    # 增加 location = ? 的過濾條件
+    records = conn.execute('''
+        SELECT id, work_date, in_time, out_time, normal_hours, actual_hours, ot_hours ,location
+        FROM DailyAttendance 
+        WHERE payroll_month = ? AND nick_name = ? AND location = ?
+        ORDER BY work_date
+    ''', (month, nick_name, location)).fetchall()
+    conn.close()
+    return jsonify([dict(r) for r in records])
+
+# 🌟 API 2：儲存修改後的每日紀錄
+@app.route('/update_daily_records', methods=['POST'])
+def update_daily_records():
+    calc_month = request.form.get('calc_month')
+    record_ids = request.form.getlist('record_id[]')
+    in_times = request.form.getlist('in_time[]')
+    out_times = request.form.getlist('out_time[]')
+    
+    conn = get_db_connection()
+    for i in range(len(record_ids)):
+        # 這裡未來可以加入時間相減的邏輯來重算 actual_hours，目前先單純更新時間字串
+        conn.execute('''
+            UPDATE DailyAttendance 
+            SET in_time = ?, out_time = ? 
+            WHERE id = ?
+        ''', (in_times[i], out_times[i], record_ids[i]))
+    
+    conn.commit()
+    conn.close()
+    flash("✅ 每日考勤紀錄已更新！請重新點擊「開始計算薪資」以套用新數據。", "success")
+    return redirect(url_for('index', month=calc_month))
+
+# 🌟 1. 新增單筆每日考勤
+# 🌟 修改 1：新增考勤紀錄後，觸發同步
+@app.route('/add_daily_attendance', methods=['POST'])
+def add_daily_attendance():
+    month = request.form.get('payroll_month')
+    name = request.form.get('nick_name')
+    date = request.form.get('work_date')
+    loc = request.form.get('location')
+    in_t = request.form.get('in_time')
+    out_t = request.form.get('out_time')
+    
+    try:
+        fmt = '%H:%M'
+        from datetime import datetime
+        tdelta = datetime.strptime(out_t, fmt) - datetime.strptime(in_t, fmt)
+        actual_h = tdelta.seconds / 3600
+        normal_h = 8.0
+        raw_ot = max(0, actual_h - normal_h)
+    except:
+        actual_h, raw_ot, normal_h = 0, 0, 8.0
+
+    conn = get_db_connection()
+    conn.execute('''
+        INSERT INTO DailyAttendance (payroll_month, work_date, nick_name, location, in_time, out_time, normal_hours, actual_hours, ot_hours)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ''', (month, date, name, loc, in_t, out_t, normal_h, actual_h, raw_ot))
+    conn.commit()
+    conn.close()
+    
+    # 🌟 關鍵：新增完成後，自動把這家店的明細加總，寫回總表！
+    sync_attendance_summary(month, name, loc)
+    
+    return jsonify({"status": "success", "message": "已新增考勤紀錄並同步總表"})
+
+# 🌟 修改 2：刪除考勤紀錄後，觸發同步
+@app.route('/delete_daily_attendance/<int:id>', methods=['POST'])
+def delete_daily_attendance(id):
+    conn = get_db_connection()
+    # 必須先抓出這筆紀錄是「誰、哪個月、哪間店」，刪除後我們才知道要重算誰的帳
+    record = conn.execute("SELECT payroll_month, nick_name, location FROM DailyAttendance WHERE id = ?", (id,)).fetchone()
+    
+    if record:
+        month, name, loc = record['payroll_month'], record['nick_name'], record['location']
+        conn.execute("DELETE FROM DailyAttendance WHERE id = ?", (id,))
+        conn.commit()
+        conn.close()
+        
+        # 🌟 關鍵：刪除後，重新彙總一次，如果都被刪光了，總表的日數就會自動變成 0
+        sync_attendance_summary(month, name, loc)
+    else:
+        conn.close()
+        
+    return jsonify({"status": "success", "message": "紀錄已刪除並重新計算總表"})
+
+# 🌟 補回缺失的路由：更新月結微調
+@app.route('/update_attendance', methods=['POST'])
+def update_attendance():
+    month = request.form.get('calc_month')
+    name = request.form.get('nick_name')
+    location = request.form.get('location') # 🌟 現在前端會帶回正確的地點
+    
+    # 數值防呆
+    exp = float(request.form.get('expenses', 0) or 0)
+    adj = float(request.form.get('adjustment', 0) or 0)
+    bonus = float(request.form.get('attendance_bonus', 0) or 0)
+    
+    conn = get_db_connection()
+    
+    # 🌟 核心：支援新紀錄 (Upsert 邏輯)
+    # 第一步：如果是新加入的人/店鋪，先確保 Attendance 表裡有這行
+    conn.execute('''
+        INSERT OR IGNORE INTO Attendance (payroll_month, nick_name, location, days_worked, hours, ot_hours)
+        VALUES (?, ?, ?, 0, 0, 0)
+    ''', (month, name, location))
+    
+    # 第二步：精準更新該筆紀錄的微調值
+    conn.execute('''
+        UPDATE Attendance 
+        SET expenses = ?, adjustment = ?, attendance_bonus = ?
+        WHERE payroll_month = ? AND nick_name = ? AND location = ?
+    ''', (exp, adj, bonus, month, name, location))
+    
+    conn.commit()
+    conn.close()
+    
+    flash(f"✅ 已儲存 {name} 在 {location} 的月結微調數據", "success")
+    return redirect(url_for('index', month=month))
+
+# 🌟 1. 獲取員工單月所有銷售明細
+# 🌟 修改：API 現在需要同時接收名字與地點
+@app.route('/api/sales_records/<month>/<nick_name>/<location>')
+def get_sales_records(month, nick_name, location):
+    conn = get_db_connection()
+    records = conn.execute('''
+        SELECT id, date, location, model, quantity, price 
+        FROM Sales 
+        WHERE payroll_month = ? AND promoter_name = ? AND location = ?
+        ORDER BY date
+    ''', (month, nick_name, location)).fetchall()
+    conn.close()
+    return jsonify([dict(r) for r in records])
+
+# 🌟 2. 新增單筆銷售紀錄
+@app.route('/add_sales_record', methods=['POST'])
+def add_sales_record():
+    month = request.form.get('payroll_month')
+    name = request.form.get('promoter_name')
+    date = request.form.get('date')
+    loc = request.form.get('location')
+    model = request.form.get('model').strip() # 去除前後空白
+    qty = int(request.form.get('quantity', 1))
+    price = float(request.form.get('price', 0.0))
+    
+    conn = get_db_connection()
+    # 💡 數據正規化：如果輸入了一個全新的型號，自動將其加入 Products 主檔中，預設分類為「單據新增」
+    if model:
+        conn.execute("INSERT OR IGNORE INTO Products (model, product_line) VALUES (?, '未分類 (單據新增)')", (model,))
+        
+    conn.execute('''
+        INSERT INTO Sales (payroll_month, date, promoter_name, location, model, quantity, price)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    ''', (month, date, name, loc, model, qty, price))
+    conn.commit()
+    conn.close()
+    return jsonify({"status": "success", "message": "已新增銷售紀錄"})
+
+# 🌟 3. 刪除單筆銷售紀錄
+@app.route('/delete_sales_record/<int:id>', methods=['POST'])
+def delete_sales_record(id):
+    conn = get_db_connection()
+    conn.execute("DELETE FROM Sales WHERE id = ?", (id,))
+    conn.commit()
+    conn.close()
+    return jsonify({"status": "success", "message": "紀錄已刪除"})
+
+# 🌟 4. 清空某員工在特定地點的所有銷售單據
+@app.route('/delete_sales_group', methods=['POST'])
+def delete_sales_group():
+    month = request.form.get('month')
+    promoter = request.form.get('promoter')
+    location = request.form.get('location')
+    
+    conn = get_db_connection()
+    conn.execute('DELETE FROM Sales WHERE payroll_month = ? AND promoter_name = ? AND location = ?', 
+                 (month, promoter, location))
+    conn.commit()
+    conn.close()
+    
+    flash(f"✅ 已清空 {promoter} 於 {location} 的所有單據", "success")
+    return redirect(url_for('index', month=month))
+
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    app.run(host="0.0.0.0", port=5001, debug=True )

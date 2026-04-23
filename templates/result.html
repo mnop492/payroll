@@ -57,8 +57,8 @@
                             
                             <td class="fw-bold text-start">
                                 {{ row['員工'] }}
-                                {% if row['MPF狀態'] == '豁免期' %}
-                                    <span class="badge bg-warning text-dark ms-1" title="此員工目前處於 MPF 豁免期或未設定起扣月份">
+                                {% if '豁免' in row['MPF狀態'] %}
+                                    <span class="badge bg-warning text-dark ms-1" title="{{ row['MPF狀態'] }}">
                                         🛡️ 豁免
                                     </span>
                                 {% endif %}
@@ -77,10 +77,11 @@
                             <td class="fw-bold text-primary">${{ "{:,.2f}".format(row['總收入']) }}</td>
                             
                             <td class="text-danger">
-                                -${{ "{:,.2f}".format(row['MPF扣除']) }}
-                                <div class="text-muted mt-1" style="font-size: 0.75rem;">
-                                    ({{ row['MPF狀態'] }})
-                                </div>
+                                {% if row['MPF扣除'] > 0 %}
+                                    -${{ "{:,.2f}".format(row['MPF扣除']) }}
+                                {% else %}
+                                    $0.00
+                                {% endif %}
                             </td>
                             
                             <td class="fw-bold text-success" style="font-size: 1.15rem;">
@@ -106,7 +107,7 @@
         <small class="text-muted">
             <strong>💡 系統提示：</strong><br>
             1. <strong>津貼計算：</strong> 系統已自動將「工作日數」乘上員工專屬的「日薪津貼額」。<br>
-            2. <strong>MPF 邏輯：</strong> 帶有「🛡️ 豁免」標籤的員工，代表尚未達到其設定的 MPF 起扣月份。其餘員工依據香港法例（$7,100 - $30,000）自動判斷。<br>
+            2. <strong>MPF 標籤：</strong> 「🛡️ 暫免」代表新員工未達起扣月；「🚫 免供款」代表設定為非 MPF 員工；「📉 未達門檻」代表本月入息低於 $7,100 法定下限。<br>
             3. <strong>特殊佣金：</strong> 若該月份有設定特佣型號（如 ADD8906），系統已自動覆蓋預設比例。<br>
             4. 如需核對明細，請點擊上方「📥 Excel 總表下載」或至首頁點擊「🔍 歷史數據自動校對」。
         </small>
