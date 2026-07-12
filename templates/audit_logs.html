@@ -1,126 +1,275 @@
 <!doctype html>
-<html>
+<html lang="zh-TW">
 <head>
     <meta charset="utf-8">
-    <title>Audit Logs</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-    <style>pre {white-space: pre-wrap; word-wrap: break-word;}</style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>系統稽核紀錄面板 (Audit Logs)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        body { 
+            background-color: #f8f9fa; 
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        /* 美化 JSON 顯示區塊，模擬程式碼編輯器 */
+        .json-block { 
+            max-height: 160px; 
+            overflow-y: auto; 
+            font-size: 0.825rem; 
+            background: #1e1e1e; 
+            color: #d4d4d4; 
+            padding: 10px; 
+            border-radius: 6px; 
+            border: 1px solid #2d2d2d; 
+            margin-bottom: 0;
+            text-align: left;
+            font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+        .json-block.empty { 
+            background: #f1f3f5; 
+            color: #adb5bd; 
+            border-color: #dee2e6; 
+            font-style: italic;
+        }
+        /* 表格固定標頭與高度限制 */
+        .table-responsive { 
+            max-height: 720px; 
+            overflow-y: auto; 
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.02);
+        }
+        .sticky-thead th { 
+            position: sticky; 
+            top: 0; 
+            background-color: #212529 !important; 
+            color: #ffffff; 
+            z-index: 2; 
+        }
+        /* 動態變更的高亮樣式（優雅的淡黃色） */
+        .highlight-tr { 
+            background-color: #fff3cd !important; 
+            transition: background-color 0.25s ease;
+        }
+        .highlight-tr td {
+            background-color: #fff3cd !important;
+        }
+    </style>
 </head>
-<body class="p-4">
-<div class="container-fluid">
-    <h3>Audit Logs</h3>
-    <form class="form-inline mb-3" id="filterForm">
-        <select class="form-control mr-2" name="table">
-            <option value="">All Tables</option>
-            {% for t in tables %}
-            <option value="{{ t }}" {% if t == table %}selected{% endif %}>{{ t }}</option>
-            {% endfor %}
-        </select>
-        <select class="form-control mr-2" name="action">
-            <option value="">All Actions</option>
-            {% for a in actions %}
-            <option value="{{ a }}" {% if a == action %}selected{% endif %}>{{ a }}</option>
-            {% endfor %}
-        </select>
-        <select class="form-control mr-2" name="user">
-            <option value="">All Users</option>
-            {% for u in users %}
-            <option value="{{ u }}" {% if u == user %}selected{% endif %}>{{ u }}</option>
-            {% endfor %}
-        </select>
-        <input class="form-control mr-2" name="q" placeholder="Search" value="{{ q or '' }}">
-        <button class="btn btn-primary mr-2">Filter</button>
-        <a class="btn btn-outline-secondary mr-2" id="exportAllBtn" href="#">Export CSV</a>
-        <button type="button" class="btn btn-outline-secondary mr-2" id="exportSelectedBtn">Export Selected</button>
-        <button type="button" class="btn btn-outline-secondary" id="highlightChangesBtn">Highlight Changes</button>
-    </form>
+<body class="py-4">
+<div class="container-fluid px-4">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h3 class="fw-bold text-dark mb-0">
+            <i class="bi bi-shield-shaded text-primary me-2"></i>系統稽核紀錄 (Audit Logs)
+        </h3>
+        <a class="btn btn-outline-secondary fw-bold shadow-sm btn-sm" href="/">
+            <i class="bi bi-arrow-left-short"></i> 返回主控台
+        </a>
+    </div>
 
-    <p>Showing {{ entries|length }} of {{ total }} entries.</p>
-    <table class="table table-sm table-bordered" id="auditTable">
-        <thead>
-            <tr>
-                <th><input type="checkbox" id="selectAll"></th>
-                <th>ID</th>
-                <th>Timestamp</th>
-                <th>User</th>
-                <th>Action</th>
-                <th>Table</th>
-                <th>Record</th>
-                <th>Old</th>
-                <th>New</th>
-                <th>IP</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for e in entries %}
-            <tr data-entry-id="{{ e.id }}" data-table="{{ e.table_name }}" data-record-id="{{ e.record_id }}">
-                <td><input type="checkbox" class="rowCheckbox" data-entry-id="{{ e.id }}"></td>
-                <td>{{ e.id }}</td>
-                <td>{{ e.timestamp }}</td>
-                <td>{{ e.user }}</td>
-                <td>{{ e.action }}</td>
-                <td>{{ e.table_name }}</td>
-                <td>{{ e.record_id }}</td>
-                <td><pre class="oldValue">{{ e.old_value_pretty }}</pre></td>
-                <td><pre class="newValue">{{ e.new_value_pretty }}</pre></td>
-                <td>{{ e.ip }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-white py-3 fw-bold text-secondary">
+            <i class="bi bi-funnel text-muted me-1"></i> 進階資料篩選與工具
+        </div>
+        <div class="card-body bg-light-subtle">
+            <form id="filterForm" class="row g-2 align-items-center">
+                <div class="col-md-2">
+                    <select class="form-select border-secondary-subtle" name="table">
+                        <option value="">📁 所有資料表</option>
+                        {% for t in tables %}
+                        <option value="{{ t }}" {% if t == table %}selected{% endif %}>{{ t }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select border-secondary-subtle" name="action">
+                        <option value="">⚡ 所有動作</option>
+                        {% for a in actions %}
+                        <option value="{{ a }}" {% if a == action %}selected{% endif %}>{{ a }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select border-secondary-subtle" name="user">
+                        <option value="">👤 所有操作者</option>
+                        {% for u in users %}
+                        <option value="{{ u }}" {% if u == user %}selected{% endif %}>{{ u }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-secondary-subtle"><i class="bi bi-search text-muted"></i></span>
+                        <input class="form-control border-start-0 border-secondary-subtle" name="q" placeholder="全文搜尋紀錄..." value="{{ q or '' }}">
+                    </div>
+                </div>
+                <div class="col-md-3 d-flex gap-1">
+                    <button class="btn btn-primary flex-grow-1 fw-bold shadow-sm">
+                        <i class="bi bi-filter"></i> 執行篩選
+                    </button>
+                    <button type="button" class="btn btn-warning fw-bold shadow-sm text-dark" id="highlightChangesBtn" title="一鍵比對新舊值差異並標記顏色">
+                        <i class="bi bi-eye"></i> 對比變更
+                    </button>
+                </div>
+            </form>
 
-    <script>
-        // Build export-all link with current filters
-        (function(){
-            const form = document.getElementById('filterForm');
-            const exportBtn = document.getElementById('exportAllBtn');
-            exportBtn.addEventListener('click', function(e){
-                e.preventDefault();
-                const params = new URLSearchParams(new FormData(form));
-                window.location = '/audit_logs/export?' + params.toString();
-            });
+            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top border-light-subtle">
+                <div class="text-muted small">
+                    <i class="bi bi-info-circle me-1"></i>目前顯示本頁 <strong>{{ entries|length }}</strong> 筆紀錄（總計 <strong>{{ total }}</strong> 筆）
+                </div>
+                <div class="d-flex gap-2">
+                    <a class="btn btn-outline-success btn-sm fw-bold shadow-sm" id="exportAllBtn" href="#">
+                        <i class="bi bi-file-earmark-arrow-down"></i> 匯出符合條件 CSV
+                    </a>
+                    <button type="button" class="btn btn-outline-dark btn-sm fw-bold shadow-sm" id="exportSelectedBtn">
+                        <i class="bi bi-check2-square"></i> 匯出選取項目
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            // select all
-            const selectAll = document.getElementById('selectAll');
-            selectAll && selectAll.addEventListener('change', function(){
-                document.querySelectorAll('.rowCheckbox').forEach(cb => cb.checked = selectAll.checked);
-            });
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive rounded-top">
+                <table class="table table-sm table-hover align-middle mb-0 text-center" id="auditTable">
+                    <thead class="sticky-thead">
+                        <tr>
+                            <th style="width: 45px;"><input type="checkbox" id="selectAll" class="form-check-input border-secondary"></th>
+                            <th style="width: 70px;">ID</th>
+                            <th style="width: 170px;">時間戳記 (UTC)</th>
+                            <th style="width: 120px;">操作用戶</th>
+                            <th style="width: 90px;">動作</th>
+                            <th style="width: 140px;">目標資料表</th>
+                            <th style="width: 90px;">紀錄 ID</th>
+                            <th>修改前舊值 (Old Value)</th>
+                            <th>修改後新值 (New Value)</th>
+                            <th style="width: 140px;">操作 IP</th>
+                        </tr>
+                    </thead>
+                    <tbody style="font-size: 0.9rem;">
+                    {% for e in entries %}
+                        <tr data-entry-id="{{ e.id }}" data-table="{{ e.table_name }}" data-record-id="{{ e.record_id }}">
+                            <td><input type="checkbox" class="rowCheckbox form-check-input border-secondary" data-entry-id="{{ e.id }}"></td>
+                            <td class="text-muted small fw-bold">#{{ e.id }}</td>
+                            <td class="small text-secondary">{{ e.timestamp }}</td>
+                            <td>
+                                {% if e.user %}
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1"><i class="bi bi-person-fill"></i> {{ e.user }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary-subtle text-secondary px-2 py-1">Anonymous</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if e.action == 'create' %}
+                                    <span class="badge bg-success px-2 py-1"><i class="bi bi-plus-circle"></i> 新增</span>
+                                {% elif e.action == 'update' %}
+                                    <span class="badge bg-warning text-dark px-2 py-1"><i class="bi bi-pencil-square"></i> 修改</span>
+                                {% elif e.action == 'delete' %}
+                                    <span class="badge bg-danger px-2 py-1"><i class="bi bi-trash"></i> 刪除</span>
+                                {% else %}
+                                    <span class="badge bg-info text-dark px-2 py-1">{{ e.action }}</span>
+                                {% endif %}
+                            </td>
+                            <td><code class="text-dark fw-bold">{{ e.table_name }}</code></td>
+                            <td><span class="badge bg-light text-dark border px-2">{{ e.record_id if e.record_id and e.record_id != 'None' else '-' }}</span></td>
+                            <td style="width: 25%;">
+                                {% if e.old_value_pretty and e.old_value_pretty != 'null' %}
+                                    <pre class="oldValue json-block">{{ e.old_value_pretty }}</pre>
+                                {% else %}
+                                    <pre class="oldValue json-block empty"><em>(無歷史資料)</em></pre>
+                                {% endif %}
+                            </td>
+                            <td style="width: 25%;">
+                                {% if e.new_value_pretty and e.new_value_pretty != 'null' %}
+                                    <pre class="newValue json-block">{{ e.new_value_pretty }}</pre>
+                                {% else %}
+                                    <pre class="newValue json-block empty"><em>(無變更資料)</em></pre>
+                                {% endif %}
+                            </td>
+                            <td class="small text-muted font-monospace"><i class="bi bi-laptop text-muted me-1"></i>{{ e.ip or '-' }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-            document.getElementById('exportSelectedBtn').addEventListener('click', function(){
-                const ids = Array.from(document.querySelectorAll('.rowCheckbox:checked')).map(cb => cb.getAttribute('data-entry-id'));
-                if(ids.length === 0){ alert('請先選取要匯出的項目'); return; }
-                const params = new URLSearchParams(new FormData(form));
-                params.set('ids', ids.join(','));
-                window.location = '/audit_logs/export?' + params.toString();
-            });
-
-            document.getElementById('highlightChangesBtn').addEventListener('click', function(){
-                document.querySelectorAll('#auditTable tbody tr').forEach(tr => {
-                    const oldPre = tr.querySelector('.oldValue');
-                    const newPre = tr.querySelector('.newValue');
-                    if(!oldPre || !newPre) return;
-                    const oldText = oldPre.innerText.trim();
-                    const newText = newPre.innerText.trim();
-                    if(oldText !== newText){
-                        tr.style.backgroundColor = '#fff3cd';
-                    } else {
-                        tr.style.backgroundColor = '';
-                    }
-                });
-            });
-        })();
-    </script>
-
-    <nav>
-      <ul class="pagination">
+    <nav class="mt-4">
+      <ul class="pagination justify-content-center shadow-sm d-inline-flex rounded">
         {% if page > 1 %}
-        <li class="page-item"><a class="page-link" href="?page={{ page-1 }}&per_page={{ per_page }}">Previous</a></li>
+        <li class="page-item">
+            <a class="page-link py-2 px-3 text-dark fw-bold" href="?page={{ page-1 }}&per_page={{ per_page }}{% if table %}&table={{ table }}{% endif %}{% if action %}&action={{ action }}{% endif %}{% if user %}&user={{ user }}{% endif %}{% if q %}&q={{ q }}{% endif %}">
+                <i class="bi bi-chevron-left"></i> 上一頁
+            </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link py-2 px-3 bg-light text-muted">上一頁</span></li>
         {% endif %}
+        
+        <li class="page-item active"><span class="page-link py-2 px-4 fw-bold">第 {{ page }} 頁</span></li>
+        
         {% if (page*per_page) < total %}
-        <li class="page-item"><a class="page-link" href="?page={{ page+1 }}&per_page={{ per_page }}">Next</a></li>
+        <li class="page-item">
+            <a class="page-link py-2 px-3 text-dark fw-bold" href="?page={{ page+1 }}&per_page={{ per_page }}{% if table %}&table={{ table }}{% endif %}{% if action %}&action={{ action }}{% endif %}{% if user %}&user={{ user }}{% endif %}{% if q %}&q={{ q }}{% endif %}">
+                下一頁 <i class="bi bi-chevron-right"></i>
+            </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link py-2 px-3 bg-light text-muted">下一頁</span></li>
         {% endif %}
       </ul>
     </nav>
 </div>
+
+<script>
+    (function(){
+        const form = document.getElementById('filterForm');
+        
+        // 1. 條件匯出全部功能
+        const exportBtn = document.getElementById('exportAllBtn');
+        exportBtn.addEventListener('click', function(e){
+            e.preventDefault();
+            const params = new URLSearchParams(new FormData(form));
+            window.location = '/audit_logs/export?' + params.toString();
+        });
+
+        // 2. 表頭全選功能
+        const selectAll = document.getElementById('selectAll');
+        selectAll && selectAll.addEventListener('change', function(){
+            document.querySelectorAll('.rowCheckbox').forEach(cb => cb.checked = selectAll.checked);
+        });
+
+        // 3. 勾選特定資料項匯出功能
+        document.getElementById('exportSelectedBtn').addEventListener('click', function(){
+            const ids = Array.from(document.querySelectorAll('.rowCheckbox:checked')).map(cb => cb.getAttribute('data-entry-id'));
+            if(ids.length === 0){ alert('請先勾選要匯出的日誌項目！'); return; }
+            const params = new URLSearchParams(new FormData(form));
+            params.set('ids', ids.join(','));
+            window.location = '/audit_logs/export?' + params.toString();
+        });
+
+        // 4. 新舊變更智能對比高亮（切換為更具質感的 Class 注入控制）
+        document.getElementById('highlightChangesBtn').addEventListener('click', function(){
+            document.querySelectorAll('#auditTable tbody tr').forEach(tr => {
+                const oldPre = tr.querySelector('.oldValue');
+                const newPre = tr.querySelector('.newValue');
+                if(!oldPre || !newPre) return;
+                
+                const oldText = oldPre.innerText.trim();
+                const newText = newPre.innerText.trim();
+                
+                // 比對資料字串是否相符，不符則注入高亮效果
+                if(oldText !== newText){
+                    tr.classList.toggle('highlight-tr');
+                } else {
+                    tr.classList.remove('highlight-tr');
+                }
+            });
+        });
+    })();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
