@@ -114,7 +114,7 @@
             <table class="table table-hover text-center align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th>推廣員</th>
+                        <th style="width: 70px;">ID</th> <th>推廣員</th>
                         <th>地點</th>
                         <th>日數</th>
                         <th>工時</th>
@@ -126,7 +126,7 @@
                 <tbody>
                     {% for att in attendances %}
                     <tr>
-                        <td class="fw-bold">{{ att.nick_name }}</td>
+                        <td class="text-muted small">{{ loop.index }}</td> <td class="fw-bold">{{ att.nick_name }}</td>
                         <td><span class="badge bg-info text-dark">{{ att.location }}</span></td>
                         <td>{{ att.days_worked }}</td>
                         <td>{{ "%g" | format(att.hours) }}</td>
@@ -169,7 +169,7 @@
             <table class="table table-hover text-center align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th>推廣員 (Name)</th>
+                        <th style="width: 70px;">ID</th> <th>推廣員 (Name)</th>
                         <th>地點 (Location)</th>
                         <th>單據數量</th>
                         <th>當月總銷額</th>
@@ -180,7 +180,7 @@
                 <tbody>
                     {% for staff in staff_summary %}
                     <tr>
-                        <td class="fw-bold text-primary">{{ staff.name }}</td>
+                        <td class="text-muted small">{{ loop.index }}</td> <td class="fw-bold text-primary">{{ staff.name }}</td>
                         <td><span class="badge bg-info text-dark">{{ staff.main_location }}</span></td>
                         <td>{{ staff.total_entries }} 筆</td>
                         <td class="fw-bold text-success">${{ "{:,.2f}".format(staff.total_amount) }}</td>
@@ -229,7 +229,7 @@
                     <table class="table table-hover table-sm align-middle mb-0 text-center" style="font-size: 0.9rem;">
                         <thead class="table-light sticky-top">
                             <tr>
-                                <th style="width: 12%;">日期</th>
+                                <th style="width: 8%;">ID</th> <th style="width: 12%;">日期</th>
                                 <th style="width: 18%;">地點</th>
                                 <th style="width: 12%;">簽到</th>
                                 <th style="width: 12%;">簽退</th>
@@ -242,8 +242,7 @@
                         </tbody>
                         <tfoot class="table-info">
                             <tr>
-                                <td><input type="date" id="new_date" class="form-control form-control-sm"></td>
-                                
+                                <td></td> <td><input type="date" id="new_date" class="form-control form-control-sm"></td>                                
                                 <td>
                                     <input type="text" id="new_loc" class="form-control form-control-sm bg-light text-muted" readonly>
                                 </td>
@@ -321,7 +320,7 @@
                     <table class="table table-hover table-sm align-middle mb-0 text-center" style="font-size: 0.9rem;">
                         <thead class="table-light sticky-top">
                             <tr>
-                                <th style="width: 15%;">銷售日期</th>
+                                <th style="width: 70px;">ID</th> <th style="width: 15%;">銷售日期</th>
                                 <th style="width: 20%;">售出地點</th>
                                 <th style="width: 25%;">產品型號 (Model)</th>
                                 <th style="width: 10%;">數量</th>
@@ -330,11 +329,10 @@
                             </tr>
                         </thead>
                         <tbody id="sales_records_body">
-                            <tr><td colspan="6" class="text-muted py-4">正在載入數據...</td></tr>
-                        </tbody>
+                            <tr><td colspan="7" class="py-4 text-center">正在載入數據...</td></tr> </tbody>
                         <tfoot class="table-success">
                             <tr>
-                                <td><input type="date" id="new_sales_date" class="form-control form-control-sm"></td>
+                                <td></td> <td><input type="date" id="new_sales_date" class="form-control form-control-sm"></td>            
                                 <td>
                                     <select id="new_sales_loc" class="form-select form-select-sm">
                                         <option value="">-- 選擇店鋪 --</option>
@@ -518,8 +516,6 @@ document.addEventListener("DOMContentLoaded", function() {
 // 2. 核心函數：抓取數據並「動態生成帶有 Delete 按鈕的表格」
 function refreshDailyTable(name, location) {
     const month = "{{ current_month }}";
-    
-    // Fetch URL 包含地點參數 (使用 encodeURIComponent 處理空格)
     fetch(`/api/daily_attendance/${month}/${encodeURIComponent(name)}/${encodeURIComponent(location)}`)
         .then(response => response.json())
         .then(data => {
@@ -527,16 +523,15 @@ function refreshDailyTable(name, location) {
             tbody.innerHTML = ''; 
 
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" class="text-muted py-3">此地點尚無打卡明細。</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" class="text-muted py-3">此地點尚無打卡明細。</td></tr>'; // 🌟 colspan 改為 9
                 return;
             }
 
-            // 🌟 index.html 中的 refreshDailyTable 修正
-            // 🌟 修正點：讓「常規工時」從資料庫讀取，不再寫死
-            data.forEach(record => {
+            // 🌟 這裡傳入 index 參數 (從 0 開始)
+            data.forEach((record, index) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="fw-bold align-middle">${record.work_date}</td>
+                    <td class="align-middle text-muted small">${index + 1}</td> <td class="fw-bold align-middle">${record.work_date}</td>
                     <td class="align-middle"><span class="badge bg-secondary">${record.location}</span></td>
                     <td>
                         <input type="hidden" name="record_id[]" value="${record.id}">
@@ -663,7 +658,7 @@ function refreshSalesTable(name, location) {
             tbody.innerHTML = ''; 
 
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-muted py-3">此地點尚無銷售紀錄。</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="text-muted py-3">此地點尚無銷售紀錄。</td></tr>'; // 🌟 colspan 改為 7
                 return;
             }
 
@@ -677,8 +672,8 @@ function refreshSalesTable(name, location) {
                 maxDate = `${month}-${String(lastDay).padStart(2, '0')}`;
             }
 
-            data.forEach(record => {
-                // 🌟 日期清洗防呆：確保 YYYY-MM-DD 格式能完美 prefill
+            // 🌟 這裡引入 index 參數來生成遞增序號
+            data.forEach((record, index) => {
                 let safeDate = '';
                 if (record.date) {
                     safeDate = String(record.date).replace(/\//g, '-').substring(0, 10);
@@ -686,7 +681,7 @@ function refreshSalesTable(name, location) {
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="align-middle">
+                    <td class="align-middle text-muted small">${index + 1}</td> <td class="align-middle">
                         <input type="date" class="form-control form-control-sm edit-sales-date" value="${safeDate}" min="${minDate}" max="${maxDate}">
                     </td>
                     <td class="align-middle"><span class="badge bg-secondary">${record.location}</span></td>
@@ -716,7 +711,7 @@ function refreshSalesTable(name, location) {
         })
         .catch(error => {
             console.error('Error:', error);
-            document.getElementById('sales_records_body').innerHTML = '<tr><td colspan="6" class="text-danger py-3">⚠️ 讀取失敗。</td></tr>';
+            document.getElementById('sales_records_body').innerHTML = '<tr><td colspan="7" class="text-danger py-3">⚠️ 讀取失敗。</td></tr>';
         });
 }
 
