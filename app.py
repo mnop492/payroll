@@ -2,14 +2,24 @@ import os
 from werkzeug.utils import secure_filename
 import sqlite3
 import logging
-from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, send_file, jsonify
+import json
+from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, send_file, jsonify, session
 import pandas as pd
+import io
+import csv
 from datetime import datetime
 from payroll_engine import process_payroll_from_db
 from importer import process_excel_import
 
 app = Flask(__name__)
 app.secret_key = "super_secret_key"
+
+# 管理員稽核訪問設定
+ADMIN_USERS = {'admin', 'auditor', 'superuser'}
+AUDIT_ADMIN_PASSWORD = os.environ.get('AUDIT_ADMIN_PASSWORD', 'audit2026')
+
+def is_audit_admin():
+    return bool(session.get('is_admin')) or session.get('user') in ADMIN_USERS
 
 # 確保 history 資料夾存在
 HISTORY_FOLDER = 'history'
@@ -33,6 +43,54 @@ def get_db_connection():
     conn = sqlite3.connect('payroll.db')
     conn.row_factory = sqlite3.Row
     return conn
+
+
+# --- Audit log helpers ---------------------------------
+def ensure_audit_table():
+    conn = get_db_connection()
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS AuditLog (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            timestamp TEXT NOT NULL,
+            user TEXT,
+            action TEXT NOT NULL,
+            table_name TEXT,
+            record_id TEXT,
+            old_value TEXT,
+            new_value TEXT,
+            ip TEXT
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+
+def log_audit(action, table_name, record_id=None, old_value=None, new_value=None, user=None, ip=None):
+    """Insert an audit entry into AuditLog."""
+    try:
+        ts = datetime.utcnow().isoformat()
+        # if user not provided, try to pick from session or headers
+        if not user:
+            try:
+                user = session.get('user')
+            except Exception:
+                user = None
+        conn = get_db_connection()
+        conn.execute('''
+            INSERT INTO AuditLog (timestamp, user, action, table_name, record_id, old_value, new_value, ip)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (ts, user, action, table_name, str(record_id) if record_id is not None else None,
+              json.dumps(old_value, ensure_ascii=False) if old_value is not None else None,
+              json.dumps(new_value, ensure_ascii=False) if new_value is not None else None,
+              ip))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        logging.exception('Failed to write audit log: %s', e)
+
+
+# ensure table exists at startup
+ensure_audit_table()
 
 # 🌟 全新：自動彙總並同步考勤總表的函數
 def sync_attendance_summary(month, nick_name, location):
@@ -182,11 +240,17 @@ def insert_record():
     price = request.form.get('price')
 
     conn = get_db_connection()
-    conn.execute('''
+    cur = conn.execute('''
         INSERT INTO Sales (payroll_month, date, promoter_name, location, model, quantity, price)
         VALUES (?, ?, ?, ?, ?, ?, ?)
     ''', (payroll_month, date, promoter, location, model, quantity, price))
     conn.commit()
+    new_id = cur.lastrowid
+    # audit
+    try:
+        log_audit('create', 'Sales', record_id=new_id, new_value={'payroll_month': payroll_month, 'date': date, 'promoter_name': promoter, 'location': location, 'model': model, 'quantity': quantity, 'price': price}, user=None, ip=request.remote_addr)
+    except Exception:
+        pass
     conn.close()
 
     logging.info(f"成功寫入單據 - 月份: {payroll_month}, 員工: {promoter}")
@@ -238,9 +302,15 @@ def calculate_payroll():
 @app.route('/delete_record/<int:record_id>', methods=['POST'])
 def delete_record(record_id):
     conn = get_db_connection()
+    old = conn.execute('SELECT * FROM Sales WHERE id = ?', (record_id,)).fetchone()
+    old_dict = dict(old) if old else None
     conn.execute('DELETE FROM Sales WHERE id = ?', (record_id,))
     conn.commit()
     conn.close()
+    try:
+        log_audit('delete', 'Sales', record_id=record_id, old_value=old_dict, user=None, ip=request.remote_addr)
+    except Exception:
+        pass
 
     logging.info(f"已刪除銷售紀錄 ID: {record_id}")
     flash(f'紀錄 (ID: {record_id}) 已成功刪除！', 'warning')
@@ -398,6 +468,10 @@ def update_employee():
     if emp_id:
         conn = get_db_connection()
         try:
+            # capture old
+            old = conn.execute('SELECT * FROM Employees WHERE id = ?', (emp_id,)).fetchone()
+            old_dict = dict(old) if old else None
+
             # 🌟 修正 SQL 語句：加入 full_name = ?
             conn.execute('''
                 UPDATE Employees 
@@ -405,6 +479,15 @@ def update_employee():
                 WHERE id = ?
             ''', (full_name, hourly_rate, allowance, commission_rate, mpf_start_month, emp_id))
             conn.commit()
+
+            # capture new and audit
+            new = conn.execute('SELECT * FROM Employees WHERE id = ?', (emp_id,)).fetchone()
+            new_dict = dict(new) if new else None
+            try:
+                log_audit('update', 'Employees', record_id=emp_id, old_value=old_dict, new_value=new_dict, user=None, ip=request.remote_addr)
+            except Exception:
+                pass
+
             flash("✅ 員工主檔資料已成功更新", "success")
         except Exception as e:
             flash(f"⚠️ 更新失敗：{str(e)}", "danger")
@@ -421,9 +504,14 @@ def save_special_comm():
     rate = request.form.get('rate')
     
     conn = get_db_connection()
-    conn.execute("INSERT INTO SpecialCommissions (model, start_month, end_month, rate) VALUES (?, ?, ?, ?)",
+    cur = conn.execute("INSERT INTO SpecialCommissions (model, start_month, end_month, rate) VALUES (?, ?, ?, ?)",
                  (model, start, end, float(rate)))
     conn.commit()
+    new_id = cur.lastrowid
+    try:
+        log_audit('create', 'SpecialCommissions', record_id=new_id, new_value={'model': model, 'start_month': start, 'end_month': end, 'rate': float(rate)}, user=None, ip=request.remote_addr)
+    except Exception:
+        pass
     conn.close()
     flash(f"已成功加入 {model} 的特殊佣金規則", "success")
     return redirect(url_for('settings'))
@@ -431,9 +519,15 @@ def save_special_comm():
 @app.route('/delete_special_comm/<int:id>')
 def delete_special_comm(id):
     conn = get_db_connection()
+    old = conn.execute('SELECT * FROM SpecialCommissions WHERE id = ?', (id,)).fetchone()
+    old_dict = dict(old) if old else None
     conn.execute("DELETE FROM SpecialCommissions WHERE id = ?", (id,))
     conn.commit()
     conn.close()
+    try:
+        log_audit('delete', 'SpecialCommissions', record_id=id, old_value=old_dict, user=None, ip=request.remote_addr)
+    except Exception:
+        pass
     return redirect(request.referrer or url_for('manage_products'))
 
 @app.route('/update_emp_mpf', methods=['POST'])
@@ -442,8 +536,18 @@ def update_emp_mpf():
     start_month = request.form.get('start_month')
     
     conn = get_db_connection()
+    # capture old
+    old = conn.execute('SELECT * FROM Employees WHERE nick_name = ?', (name,)).fetchone()
+    old_dict = dict(old) if old else None
     conn.execute("UPDATE Employees SET mpf_start_month = ? WHERE nick_name = ?", (start_month, name))
     conn.commit()
+    # capture new
+    new = conn.execute('SELECT * FROM Employees WHERE nick_name = ?', (name,)).fetchone()
+    new_dict = dict(new) if new else None
+    try:
+        log_audit('update', 'Employees', record_id=new_dict.get('id') if new_dict else None, old_value=old_dict, new_value=new_dict, user=None, ip=request.remote_addr)
+    except Exception:
+        pass
     conn.close()
     flash(f"已更新 {name} 的 MPF 起扣月份", "success")
     return redirect(url_for('settings'))
@@ -456,6 +560,30 @@ def manage_products():
     conn.close()
     return render_template('manage_products.html', products=products, special_rules=special_rules)
 
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        user = request.form.get('user')
+        password = request.form.get('password')
+        if user:
+            session['user'] = user
+            session['is_admin'] = False
+            if user in ADMIN_USERS or (password and password == AUDIT_ADMIN_PASSWORD):
+                session['is_admin'] = True
+            flash(f'歡迎，{user}', 'success')
+            return redirect(request.args.get('next') or url_for('index'))
+        flash('請輸入使用者名稱', 'warning')
+    return render_template('login.html')
+
+
+@app.route('/logout')
+def logout():
+    session.pop('user', None)
+    session.pop('is_admin', None)
+    flash('已登出', 'info')
+    return redirect(url_for('index'))
+
 @app.route('/update_product_config', methods=['POST'])
 def update_product_config():
     model = request.form.get('model')
@@ -464,7 +592,18 @@ def update_product_config():
     
     conn = get_db_connection()
     if update_type == 'permanent':
+        # capture old
+        old = conn.execute('SELECT * FROM Products WHERE model = ?', (model,)).fetchone()
+        old_dict = dict(old) if old else None
         conn.execute("UPDATE Products SET commission_rate = ? WHERE model = ?", (rate, model))
+        conn.commit()
+        new = conn.execute('SELECT * FROM Products WHERE model = ?', (model,)).fetchone()
+        new_dict = dict(new) if new else None
+        try:
+            log_audit('update', 'Products', record_id=new_dict.get('id') if new_dict else None, old_value=old_dict, new_value=new_dict, user=None, ip=request.remote_addr)
+        except Exception:
+            pass
+
         flash(f"✅ 已更新 {model} 的永久佣金比例為 {rate*100}%", "success")
     else:
         start = request.form.get('start_month')
@@ -473,13 +612,137 @@ def update_product_config():
             flash("❌ 設定特佣時必須填寫開始與結束月份", "danger")
             return redirect(url_for('manage_products'))
         
-        conn.execute("INSERT INTO SpecialCommissions (model, start_month, end_month, rate) VALUES (?, ?, ?, ?)",
+        cur = conn.execute("INSERT INTO SpecialCommissions (model, start_month, end_month, rate) VALUES (?, ?, ?, ?)",
                      (model, start, end, rate))
+        conn.commit()
+        new_id = cur.lastrowid
+        try:
+            log_audit('create', 'SpecialCommissions', record_id=new_id, new_value={'model': model, 'start_month': start, 'end_month': end, 'rate': rate}, user=None, ip=request.remote_addr)
+        except Exception:
+            pass
         flash(f"✅ 已成功為 {model} 加入特佣規則 ({start} 至 {end})", "success")
     
-    conn.commit()
     conn.close()
     return redirect(url_for('manage_products'))
+
+
+@app.route('/audit_logs')
+def audit_logs():
+    if not is_audit_admin():
+        flash('需要管理員權限才能查看稽核紀錄', 'warning')
+        return redirect(url_for('login', next=request.path))
+    page = int(request.args.get('page', 1))
+    per_page = int(request.args.get('per_page', 50))
+    table = request.args.get('table')
+    action = request.args.get('action')
+    user_q = request.args.get('user')
+    q = request.args.get('q')
+
+    where = []
+    params = []
+    if table:
+        where.append('table_name = ?')
+        params.append(table)
+    if action:
+        where.append('action = ?')
+        params.append(action)
+    if user_q:
+        where.append('user = ?')
+        params.append(user_q)
+    if q:
+        where.append('(record_id = ? OR timestamp LIKE ? OR old_value LIKE ? OR new_value LIKE ?)')
+        params.extend([q, f"%{q}%", f"%{q}%", f"%{q}%"])
+
+    where_sql = ' AND '.join(where)
+    if where_sql:
+        where_sql = 'WHERE ' + where_sql
+
+    conn = get_db_connection()
+    total = conn.execute(f"SELECT COUNT(*) as c FROM AuditLog {where_sql}", params).fetchone()['c']
+    offset = (page - 1) * per_page
+    rows = conn.execute(f"SELECT * FROM AuditLog {where_sql} ORDER BY id DESC LIMIT ? OFFSET ?", params + [per_page, offset]).fetchall()
+    tables = [row['table_name'] for row in conn.execute('SELECT DISTINCT table_name FROM AuditLog ORDER BY table_name').fetchall()]
+    actions = [row['action'] for row in conn.execute('SELECT DISTINCT action FROM AuditLog ORDER BY action').fetchall()]
+    users = [row['user'] for row in conn.execute('SELECT DISTINCT user FROM AuditLog ORDER BY user').fetchall() if row['user']]
+    conn.close()
+
+    entries = []
+    for r in rows:
+        d = dict(r)
+        # pretty-print JSON fields for template
+        try:
+            d['old_value_pretty'] = json.dumps(json.loads(d['old_value']) if d.get('old_value') else None, ensure_ascii=False, indent=2)
+        except Exception:
+            d['old_value_pretty'] = d.get('old_value')
+        try:
+            d['new_value_pretty'] = json.dumps(json.loads(d['new_value']) if d.get('new_value') else None, ensure_ascii=False, indent=2)
+        except Exception:
+            d['new_value_pretty'] = d.get('new_value')
+        entries.append(d)
+
+    return render_template('audit_logs.html', entries=entries, page=page, per_page=per_page, total=total, table=table, action=action, user=user_q, q=q, tables=tables, actions=actions, users=users)
+
+
+@app.route('/audit_logs/export')
+def audit_logs_export():
+    # Require a logged-in audit admin to export audit logs
+    if not is_audit_admin():
+        flash('需要管理員權限才能匯出稽核紀錄', 'warning')
+        return redirect(url_for('login', next=request.path))
+
+    table = request.args.get('table')
+    action = request.args.get('action')
+    user_q = request.args.get('user')
+    q = request.args.get('q')
+    ids = request.args.get('ids')
+
+    where = []
+    params = []
+    if ids:
+        # expect comma separated ids
+        id_list = [i for i in ids.split(',') if i.strip().isdigit()]
+        if id_list:
+            placeholders = ','.join('?' * len(id_list))
+            where.append(f'id IN ({placeholders})')
+            params.extend(id_list)
+    if table:
+        where.append('table_name = ?')
+        params.append(table)
+    if action:
+        where.append('action = ?')
+        params.append(action)
+    if user_q:
+        where.append('user = ?')
+        params.append(user_q)
+    if q:
+        where.append('(record_id = ? OR timestamp LIKE ? OR old_value LIKE ? OR new_value LIKE ?)')
+        params.extend([q, f"%{q}%", f"%{q}%", f"%{q}%"])
+
+    where_sql = ' AND '.join(where)
+    if where_sql:
+        where_sql = 'WHERE ' + where_sql
+
+    conn = get_db_connection()
+    rows = conn.execute(f"SELECT * FROM AuditLog {where_sql} ORDER BY id DESC", params).fetchall()
+    conn.close()
+
+    # prepare CSV
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['id', 'timestamp', 'user', 'action', 'table_name', 'record_id', 'old_value', 'new_value', 'ip'])
+    for r in rows:
+        row = list(r)
+        # ensure strings
+        row = [row[0], row[1], row[2], row[3], row[4], row[5], row[6] or '', row[7] or '', row[8] or '']
+        writer.writerow(row)
+
+    csv_data = output.getvalue()
+    output.close()
+
+    return (csv_data, 200, {
+        'Content-Type': 'text/csv; charset=utf-8',
+        'Content-Disposition': 'attachment; filename="audit_logs.csv"'
+    })
 
 @app.route('/bulk_update_products', methods=['POST'])
 def bulk_update_products():
@@ -491,12 +754,24 @@ def bulk_update_products():
         return redirect(url_for('manage_products'))
 
     conn = get_db_connection()
+    # capture olds
     placeholders = ','.join('?' * len(product_ids))
+    olds = conn.execute(f"SELECT * FROM Products WHERE id IN ({placeholders})", product_ids).fetchall()
+    olds_list = [dict(r) for r in olds]
+
     sql = f"UPDATE Products SET commission_rate = ? WHERE id IN ({placeholders})"
-    
     params = [float(new_rate)] + product_ids
     conn.execute(sql, params)
     conn.commit()
+
+    # capture news
+    news = conn.execute(f"SELECT * FROM Products WHERE id IN ({placeholders})", product_ids).fetchall()
+    news_list = [dict(r) for r in news]
+    try:
+        log_audit('bulk_update', 'Products', record_id=None, old_value=olds_list, new_value=news_list, user=None, ip=request.remote_addr)
+    except Exception:
+        pass
+
     conn.close()
     
     flash(f"✅ 成功將 {len(product_ids)} 件產品的永久佣金比例更新為 {float(new_rate)*100}%！", "success")
@@ -516,6 +791,10 @@ def update_sales_record():
         return jsonify({"status": "error", "message": "缺少記錄 ID"})
 
     conn = get_db_connection()
+    # capture old
+    old = conn.execute("SELECT * FROM Sales WHERE id = ?", (record_id,)).fetchone()
+    old_dict = dict(old) if old else None
+
     if model:
         conn.execute("INSERT OR IGNORE INTO Products (model, product_line) VALUES (?, '未分類 (單據新增)')", (model,))
 
@@ -525,6 +804,15 @@ def update_sales_record():
         WHERE id = ?
     ''', (date, model, quantity, price, promoter_name, location, record_id))
     conn.commit()
+
+    # capture new
+    new = conn.execute("SELECT * FROM Sales WHERE id = ?", (record_id,)).fetchone()
+    new_dict = dict(new) if new else None
+    try:
+        log_audit('update', 'Sales', record_id=record_id, old_value=old_dict, new_value=new_dict, user=None, ip=request.remote_addr)
+    except Exception:
+        pass
+
     conn.close()
 
     return jsonify({"status": "success", "message": "已更新銷售紀錄"})
@@ -543,8 +831,14 @@ def add_location():
     if name:
         conn = get_db_connection()
         try:
-            conn.execute("INSERT INTO Locations (name, region) VALUES (?, ?)", (name, region))
+            cur = conn.execute("INSERT INTO Locations (name, region) VALUES (?, ?)", (name, region))
             conn.commit()
+            new_id = cur.lastrowid
+            # audit
+            try:
+                log_audit('create', 'Locations', record_id=new_id, new_value={'name': name, 'region': region}, user=None, ip=request.remote_addr)
+            except Exception:
+                pass
             flash(f"✅ 成功新增店鋪：{name}", "success")
         except sqlite3.IntegrityError:
             flash("⚠️ 店鋪名稱已存在", "danger")
@@ -554,9 +848,16 @@ def add_location():
 @app.route('/delete_location/<int:id>')
 def delete_location(id):
     conn = get_db_connection()
+    # capture old
+    old = conn.execute("SELECT * FROM Locations WHERE id = ?", (id,)).fetchone()
+    old_dict = dict(old) if old else None
     conn.execute("DELETE FROM Locations WHERE id = ?", (id,))
     conn.commit()
     conn.close()
+    try:
+        log_audit('delete', 'Locations', record_id=id, old_value=old_dict, user=None, ip=request.remote_addr)
+    except Exception:
+        pass
     flash("🗑️ 店鋪已刪除", "info")
     return redirect(url_for('manage_locations'))
 
@@ -569,8 +870,20 @@ def update_location():
     if loc_id and name:
         conn = get_db_connection()
         try:
+            # capture old
+            old = conn.execute("SELECT * FROM Locations WHERE id = ?", (loc_id,)).fetchone()
+            old_dict = dict(old) if old else None
+
             conn.execute("UPDATE Locations SET name = ?, region = ? WHERE id = ?", (name, region, loc_id))
             conn.commit()
+
+            # capture new
+            new = conn.execute("SELECT * FROM Locations WHERE id = ?", (loc_id,)).fetchone()
+            new_dict = dict(new) if new else None
+            try:
+                log_audit('update', 'Locations', record_id=loc_id, old_value=old_dict, new_value=new_dict, user=None, ip=request.remote_addr)
+            except Exception:
+                pass
             flash(f"✅ 店鋪資料已更新", "success")
         except sqlite3.IntegrityError:
             flash("⚠️ 修改失敗：店鋪名稱可能與現有重複", "danger")
@@ -635,6 +948,12 @@ def update_daily_records():
     normal_hours_list = request.form.getlist('normal_hours[]') # 🌟 接收前端傳來的常規工時
     
     conn = get_db_connection()
+    # capture olds
+    olds = {}
+    for rid in record_ids:
+        r = conn.execute('SELECT * FROM DailyAttendance WHERE id = ?', (rid,)).fetchone()
+        olds[rid] = dict(r) if r else None
+
     for i in range(len(record_ids)):
         in_t = in_times[i]
         out_t = out_times[i]
@@ -665,7 +984,15 @@ def update_daily_records():
     sample = conn.execute("SELECT nick_name, location FROM DailyAttendance WHERE id = ?", (record_ids[0],)).fetchone()
     if sample:
         sync_attendance_summary(calc_month, sample['nick_name'], sample['location'])
-        
+    # capture news and log per-record updates
+    try:
+        for rid in record_ids:
+            new = conn.execute('SELECT * FROM DailyAttendance WHERE id = ?', (rid,)).fetchone()
+            new_dict = dict(new) if new else None
+            log_audit('update', 'DailyAttendance', record_id=rid, old_value=olds.get(rid), new_value=new_dict, user=None, ip=request.remote_addr)
+    except Exception:
+        pass
+
     conn.close()
     flash("✅ 考勤紀錄與常規工時已更新並重新結算！", "success")
     return redirect(url_for('index', month=calc_month))
@@ -696,11 +1023,17 @@ def add_daily_attendance():
         actual_h, raw_ot = 0, 0
 
     conn = get_db_connection()
-    conn.execute('''
+    cur = conn.execute('''
         INSERT INTO DailyAttendance (payroll_month, work_date, nick_name, location, in_time, out_time, normal_hours, actual_hours, ot_hours)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     ''', (month, date, name, loc, in_t, out_t, normal_h, actual_h, raw_ot))
     conn.commit()
+    new_id = cur.lastrowid
+    # audit
+    try:
+        log_audit('create', 'DailyAttendance', record_id=new_id, new_value={'payroll_month': month, 'work_date': date, 'nick_name': name, 'location': loc, 'in_time': in_t, 'out_time': out_t, 'normal_hours': normal_h, 'actual_hours': actual_h, 'ot_hours': raw_ot}, user=None, ip=request.remote_addr)
+    except Exception:
+        pass
     conn.close()
     
     sync_attendance_summary(month, name, loc)
@@ -716,12 +1049,19 @@ def delete_daily_attendance(id):
     
     if record:
         month, name, loc = record['payroll_month'], record['nick_name'], record['location']
+        # capture old for audit
+        old = conn.execute("SELECT * FROM DailyAttendance WHERE id = ?", (id,)).fetchone()
+        old_dict = dict(old) if old else None
         conn.execute("DELETE FROM DailyAttendance WHERE id = ?", (id,))
         conn.commit()
         conn.close()
         
         # 🌟 關鍵：刪除後，重新彙總一次，如果都被刪光了，總表的日數就會自動變成 0
         sync_attendance_summary(month, name, loc)
+        try:
+            log_audit('delete', 'DailyAttendance', record_id=id, old_value=old_dict, user=None, ip=request.remote_addr)
+        except Exception:
+            pass
     else:
         conn.close()
         
@@ -740,7 +1080,10 @@ def update_attendance():
     bonus = float(request.form.get('attendance_bonus', 0) or 0)
     
     conn = get_db_connection()
-    
+    # capture old
+    old = conn.execute('SELECT * FROM Attendance WHERE payroll_month = ? AND nick_name = ? AND location = ?', (month, name, location)).fetchone()
+    old_dict = dict(old) if old else None
+
     # 🌟 核心：支援新紀錄 (Upsert 邏輯)
     # 第一步：如果是新加入的人/店鋪，先確保 Attendance 表裡有這行
     conn.execute('''
@@ -756,6 +1099,13 @@ def update_attendance():
     ''', (exp, adj, bonus, month, name, location))
     
     conn.commit()
+    # capture new
+    new = conn.execute('SELECT * FROM Attendance WHERE payroll_month = ? AND nick_name = ? AND location = ?', (month, name, location)).fetchone()
+    new_dict = dict(new) if new else None
+    try:
+        log_audit('update', 'Attendance', record_id=new_dict.get('id') if new_dict else None, old_value=old_dict, new_value=new_dict, user=None, ip=request.remote_addr)
+    except Exception:
+        pass
     conn.close()
     
     flash(f"✅ 已儲存 {name} 在 {location} 的月結微調數據", "success")
@@ -791,11 +1141,17 @@ def add_sales_record():
     if model:
         conn.execute("INSERT OR IGNORE INTO Products (model, product_line) VALUES (?, '未分類 (單據新增)')", (model,))
         
-    conn.execute('''
+    cur = conn.execute('''
         INSERT INTO Sales (payroll_month, date, promoter_name, location, model, quantity, price)
         VALUES (?, ?, ?, ?, ?, ?, ?)
     ''', (month, date, name, loc, model, qty, price))
     conn.commit()
+    new_id = cur.lastrowid
+    # audit
+    try:
+        log_audit('create', 'Sales', record_id=new_id, new_value={'payroll_month': month, 'date': date, 'promoter_name': name, 'location': loc, 'model': model, 'quantity': qty, 'price': price}, user=None, ip=request.remote_addr)
+    except Exception:
+        pass
     conn.close()
     return jsonify({"status": "success", "message": "已新增銷售紀錄"})
 
@@ -803,9 +1159,15 @@ def add_sales_record():
 @app.route('/delete_sales_record/<int:id>', methods=['POST'])
 def delete_sales_record(id):
     conn = get_db_connection()
+    old = conn.execute("SELECT * FROM Sales WHERE id = ?", (id,)).fetchone()
+    old_dict = dict(old) if old else None
     conn.execute("DELETE FROM Sales WHERE id = ?", (id,))
     conn.commit()
     conn.close()
+    try:
+        log_audit('delete', 'Sales', record_id=id, old_value=old_dict, user=None, ip=request.remote_addr)
+    except Exception:
+        pass
     return jsonify({"status": "success", "message": "紀錄已刪除"})
 
 # 🌟 4. 清空某員工在特定地點的所有銷售單據
@@ -816,11 +1178,20 @@ def delete_sales_group():
     location = request.form.get('location')
     
     conn = get_db_connection()
+    # fetch affected rows for audit
+    rows = conn.execute('SELECT * FROM Sales WHERE payroll_month = ? AND promoter_name = ? AND location = ?', (month, promoter, location)).fetchall()
+    rows_list = [dict(r) for r in rows]
+
     conn.execute('DELETE FROM Sales WHERE payroll_month = ? AND promoter_name = ? AND location = ?', 
                  (month, promoter, location))
     conn.commit()
     conn.close()
-    
+
+    try:
+        log_audit('delete_group', 'Sales', record_id=None, old_value=rows_list, user=None, ip=request.remote_addr)
+    except Exception:
+        pass
+
     flash(f"✅ 已清空 {promoter} 於 {location} 的所有單據", "success")
     return redirect(url_for('index', month=month))
 

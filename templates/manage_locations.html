@@ -44,7 +44,7 @@
                         </thead>
                         <tbody>
                             {% for loc in locations %}
-                            <tr>
+                            <tr id="loc-{{ loc.id }}" data-row-id="{{ loc.id }}" data-type="location">
                                 <td><span class="badge bg-secondary">{{ loc.region }}</span></td>
                                 <td class="fw-bold">{{ loc.name }}</td>
                                 <td class="text-end">

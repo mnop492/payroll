@@ -32,7 +32,7 @@
                             </thead>
                             <tbody>
                                 {% for rule in special_rules %}
-                                <tr>
+                                <tr id="special-{{ rule.id }}" data-row-id="{{ rule.id }}" data-type="special_comm">
                                     <td class="fw-bold text-start ps-4"><code>{{ rule.model }}</code></td>
                                     <td><span class="badge bg-light text-dark border px-3 py-2">{{ rule.start_month }}</span></td>
                                     <td><span class="badge bg-light text-dark border px-3 py-2">{{ rule.end_month }}</span></td>
@@ -97,7 +97,7 @@
                             </thead>
                             <tbody>
                                 {% for p in products %}
-                                <tr class="product-row">
+                                <tr id="product-{{ p.id }}" data-row-id="{{ p.id }}" data-type="product" class="product-row">
                                     <td><input type="checkbox" class="product-checkbox form-check-input border-secondary" value="{{ p.id }}"></td>
                                     <td class="model-cell fw-bold text-start ps-3"><code class="fs-6 text-dark">{{ p.model }}</code></td>
                                     <td class="line-cell">{{ p.product_line if p.product_line else '-' }}</td>

@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Audit Logs</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <style>pre {white-space: pre-wrap; word-wrap: break-word;}</style>
+</head>
+<body class="p-4">
+<div class="container-fluid">
+    <h3>Audit Logs</h3>
+    <form class="form-inline mb-3" id="filterForm">
+        <select class="form-control mr-2" name="table">
+            <option value="">All Tables</option>
+            {% for t in tables %}
+            <option value="{{ t }}" {% if t == table %}selected{% endif %}>{{ t }}</option>
+            {% endfor %}
+        </select>
+        <select class="form-control mr-2" name="action">
+            <option value="">All Actions</option>
+            {% for a in actions %}
+            <option value="{{ a }}" {% if a == action %}selected{% endif %}>{{ a }}</option>
+            {% endfor %}
+        </select>
+        <select class="form-control mr-2" name="user">
+            <option value="">All Users</option>
+            {% for u in users %}
+            <option value="{{ u }}" {% if u == user %}selected{% endif %}>{{ u }}</option>
+            {% endfor %}
+        </select>
+        <input class="form-control mr-2" name="q" placeholder="Search" value="{{ q or '' }}">
+        <button class="btn btn-primary mr-2">Filter</button>
+        <a class="btn btn-outline-secondary mr-2" id="exportAllBtn" href="#">Export CSV</a>
+        <button type="button" class="btn btn-outline-secondary mr-2" id="exportSelectedBtn">Export Selected</button>
+        <button type="button" class="btn btn-outline-secondary" id="highlightChangesBtn">Highlight Changes</button>
+    </form>
+
+    <p>Showing {{ entries|length }} of {{ total }} entries.</p>
+    <table class="table table-sm table-bordered" id="auditTable">
+        <thead>
+            <tr>
+                <th><input type="checkbox" id="selectAll"></th>
+                <th>ID</th>
+                <th>Timestamp</th>
+                <th>User</th>
+                <th>Action</th>
+                <th>Table</th>
+                <th>Record</th>
+                <th>Old</th>
+                <th>New</th>
+                <th>IP</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for e in entries %}
+            <tr data-entry-id="{{ e.id }}" data-table="{{ e.table_name }}" data-record-id="{{ e.record_id }}">
+                <td><input type="checkbox" class="rowCheckbox" data-entry-id="{{ e.id }}"></td>
+                <td>{{ e.id }}</td>
+                <td>{{ e.timestamp }}</td>
+                <td>{{ e.user }}</td>
+                <td>{{ e.action }}</td>
+                <td>{{ e.table_name }}</td>
+                <td>{{ e.record_id }}</td>
+                <td><pre class="oldValue">{{ e.old_value_pretty }}</pre></td>
+                <td><pre class="newValue">{{ e.new_value_pretty }}</pre></td>
+                <td>{{ e.ip }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        // Build export-all link with current filters
+        (function(){
+            const form = document.getElementById('filterForm');
+            const exportBtn = document.getElementById('exportAllBtn');
+            exportBtn.addEventListener('click', function(e){
+                e.preventDefault();
+                const params = new URLSearchParams(new FormData(form));
+                window.location = '/audit_logs/export?' + params.toString();
+            });
+
+            // select all
+            const selectAll = document.getElementById('selectAll');
+            selectAll && selectAll.addEventListener('change', function(){
+                document.querySelectorAll('.rowCheckbox').forEach(cb => cb.checked = selectAll.checked);
+            });
+
+            document.getElementById('exportSelectedBtn').addEventListener('click', function(){
+                const ids = Array.from(document.querySelectorAll('.rowCheckbox:checked')).map(cb => cb.getAttribute('data-entry-id'));
+                if(ids.length === 0){ alert('請先選取要匯出的項目'); return; }
+                const params = new URLSearchParams(new FormData(form));
+                params.set('ids', ids.join(','));
+                window.location = '/audit_logs/export?' + params.toString();
+            });
+
+            document.getElementById('highlightChangesBtn').addEventListener('click', function(){
+                document.querySelectorAll('#auditTable tbody tr').forEach(tr => {
+                    const oldPre = tr.querySelector('.oldValue');
+                    const newPre = tr.querySelector('.newValue');
+                    if(!oldPre || !newPre) return;
+                    const oldText = oldPre.innerText.trim();
+                    const newText = newPre.innerText.trim();
+                    if(oldText !== newText){
+                        tr.style.backgroundColor = '#fff3cd';
+                    } else {
+                        tr.style.backgroundColor = '';
+                    }
+                });
+            });
+        })();
+    </script>
+
+    <nav>
+      <ul class="pagination">
+        {% if page > 1 %}
+        <li class="page-item"><a class="page-link" href="?page={{ page-1 }}&per_page={{ per_page }}">Previous</a></li>
+        {% endif %}
+        {% if (page*per_page) < total %}
+        <li class="page-item"><a class="page-link" href="?page={{ page+1 }}&per_page={{ per_page }}">Next</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+</div>
+</body>
+</html>

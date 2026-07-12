@@ -36,7 +36,7 @@
                     </thead>
                     <tbody style="font-size: 0.9rem;">
                         {% for item in results %}
-                        <tr class="{{ 'table-danger' if '❌' in item.status or '❓' in item.status else '' }}">
+                        <tr id="val-{{ loop.index }}" data-row-id="{{ item.name }}|{{ item.month }}|{{ item.location }}" data-type="validation" class="{{ 'table-danger' if '❌' in item.status or '❓' in item.status else '' }}">
                             <td>{{ item.month }}</td>
                             <td class="fw-bold">{{ item.name }}</td>
                             <td><small>{{ item.location }}</small></td>

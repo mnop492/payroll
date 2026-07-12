@@ -53,7 +53,7 @@
                     </thead>
                     <tbody>
                         {% for row in records %}
-                        <tr class="text-center">
+                        <tr id="payroll-{{ loop.index }}" data-row-id="{{ row['員工'] }}" data-type="payroll" class="text-center">
                             <td class="text-muted">{{ loop.index }}</td>
                             
                             <td class="fw-bold text-start">

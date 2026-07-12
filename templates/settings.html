@@ -25,7 +25,7 @@
                     </thead>
                     <tbody>
                         {% for emp in employees %}
-                        <tr>
+                        <tr id="emp-{{ emp.id }}" data-row-id="{{ emp.id }}" data-type="employee">
                             <td class="fw-bold text-primary">{{ emp.nick_name }}</td>
                             <td class="text-muted">{{ emp.full_name if emp.full_name and emp.full_name != 'None' else '' }}</td>
                             <td>${{ emp.hourly_rate }}</td>

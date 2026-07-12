@@ -26,9 +26,26 @@
       <div class="container">
         <a class="navbar-brand fw-bold" href="/">📋 糧單管理系統</a>
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          {% if session.get('is_admin') %}
+          <li class="nav-item">
+            <a class="nav-link" href="/audit_logs">📝 稽核紀錄</a>
+          </li>
+          {% endif %}
             <li class="nav-item">
                 <a class="nav-link" href="/">🏠 主控台</a>
             </li>
+          {% if session.get('user') %}
+          <li class="nav-item">
+            <a class="nav-link" href="#">👤 {{ session.get('user') }}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/logout">登出</a>
+          </li>
+          {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="/login?next={{ request.path }}">登入</a>
+          </li>
+          {% endif %}
             
             <li class="nav-item dropdown dropdown-hover">
                 <a class="nav-link dropdown-toggle" href="#" id="settingsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
