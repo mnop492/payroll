@@ -505,24 +505,29 @@ def bulk_update_products():
 @app.route('/update_sales_record', methods=['POST'])
 def update_sales_record():
     record_id = request.form.get('id')
-    model = request.form.get('model')
-    quantity = int(request.form.get('quantity'))
-    month = request.form.get('month')
-    staff_name = request.form.get('staff_name')
+    date = request.form.get('date')
+    model = request.form.get('model', '').strip()
+    quantity = int(request.form.get('quantity', 1))
+    price = float(request.form.get('price', 0.0))
+    promoter_name = request.form.get('promoter_name') or request.form.get('staff_name')
     location = request.form.get('location')
 
+    if not record_id:
+        return jsonify({"status": "error", "message": "缺少記錄 ID"})
+
     conn = get_db_connection()
-    # 🌟 修復 6：你原本寫 UPDATE SalesRecords，但正確的表名是 Sales
+    if model:
+        conn.execute("INSERT OR IGNORE INTO Products (model, product_line) VALUES (?, '未分類 (單據新增)')", (model,))
+
     conn.execute('''
-        UPDATE Sales 
-        SET model = ?, quantity = ?, date = ?, promoter_name = ?, location = ?
+        UPDATE Sales
+        SET date = ?, model = ?, quantity = ?, price = ?, promoter_name = ?, location = ?
         WHERE id = ?
-    ''', (model, quantity, f"{month}-01", staff_name, location, record_id))
+    ''', (date, model, quantity, price, promoter_name, location, record_id))
     conn.commit()
     conn.close()
-    
-    flash(f"✅ 已成功更新 {staff_name} 的銷售紀錄", "success")
-    return redirect(url_for('index'))
+
+    return jsonify({"status": "success", "message": "已更新銷售紀錄"})
 
 @app.route('/manage_locations')
 def manage_locations():

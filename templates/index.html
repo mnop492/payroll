@@ -445,6 +445,13 @@
 </div>
 
 <script>
+// 🌟 新增：將後端的產品型號清單轉換為 JavaScript 陣列，供行內編輯使用
+const availableProducts = [
+    {% for p in products %}
+    "{{ p.model }}",
+    {% endfor %}
+];
+
 // 🌟 1. 升級版：點擊編輯或新增時，確保資料乾淨且準確帶入
 function editAttendance(name, loc, days, hours, ot, exp, adj, bonus) {
     document.getElementById('att_name_display').innerText = name;
@@ -624,13 +631,28 @@ function openSalesModal(name, location) {
         locSelect.disabled = true; // 鎖死下拉選單，強制防呆
     }
 
+    const month = "{{ current_month }}";
+    if (month) {
+        const [year, monthNum] = month.split('-');
+        const lastDay = new Date(year, monthNum, 0).getDate();
+        const minDate = `${month}-01`;
+        const maxDate = `${month}-${String(lastDay).padStart(2, '0')}`;
+        const newDateInput = document.getElementById('new_sales_date');
+
+        newDateInput.min = minDate;
+        newDateInput.max = maxDate;
+        if (!newDateInput.value) {
+            newDateInput.value = minDate;
+        }
+    }
+
     document.getElementById('sales_records_body').innerHTML = '<tr><td colspan="6" class="py-4 text-center"><div class="spinner-border text-success" role="status"></div><br>正在撈取該店銷售紀錄...</td></tr>';
     
     new bootstrap.Modal(document.getElementById('salesModal')).show();
     refreshSalesTable(name, location);
 }
 
-// 2. 核心：動態渲染表格 (加入 encodeURIComponent 處理店名的空格)
+// 核心：動態渲染表格 (修正日期 Pre-fill，且產品型號維持「可輸入或選擇」)
 function refreshSalesTable(name, location) {
     const month = "{{ current_month }}";
     
@@ -645,20 +667,50 @@ function refreshSalesTable(name, location) {
                 return;
             }
 
+            const month = "{{ current_month }}";
+            let minDate = '';
+            let maxDate = '';
+            if (month) {
+                const [year, monthNum] = month.split('-');
+                const lastDay = new Date(year, monthNum, 0).getDate();
+                minDate = `${month}-01`;
+                maxDate = `${month}-${String(lastDay).padStart(2, '0')}`;
+            }
+
             data.forEach(record => {
+                // 🌟 日期清洗防呆：確保 YYYY-MM-DD 格式能完美 prefill
+                let safeDate = '';
+                if (record.date) {
+                    safeDate = String(record.date).replace(/\//g, '-').substring(0, 10);
+                }
+
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="align-middle">${record.date || '無日期'}</td>
-                    <td class="align-middle"><span class="badge bg-secondary">${record.location}</span></td>
-                    <td class="fw-bold text-primary align-middle">${record.model}</td>
-                    <td class="align-middle">${record.quantity}</td>
-                    <td class="fw-bold align-middle">$${parseFloat(record.price).toFixed(2)}</td>
                     <td class="align-middle">
-                        <button type="button" class="btn btn-sm btn-outline-danger w-100" onclick="deleteSalesRecord(${record.id}, '${name}', '${location}')">
-                            🗑️ 刪除
-                        </button>
+                        <input type="date" class="form-control form-control-sm edit-sales-date" value="${safeDate}" min="${minDate}" max="${maxDate}">
+                    </td>
+                    <td class="align-middle"><span class="badge bg-secondary">${record.location}</span></td>
+                    <td class="align-middle">
+                        <input list="productModels" type="text" class="form-control form-control-sm edit-sales-model" value="${record.model || ''}" placeholder="輸入或選擇型號">
+                    </td>
+                    <td class="align-middle">
+                        <input type="number" min="1" class="form-control form-control-sm edit-sales-qty" value="${record.quantity || 1}">
+                    </td>
+                    <td class="align-middle">
+                        <input type="number" step="0.1" class="form-control form-control-sm edit-sales-price" value="${parseFloat(record.price || 0).toFixed(2)}">
+                    </td>
+                    <td class="align-middle">
+                        <div class="d-flex gap-1">
+                            <button type="button" class="btn btn-sm btn-outline-primary w-50" onclick="saveSalesRecord(${record.id})">
+                                💾 修改
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger w-50" onclick="deleteSalesRecord(${record.id}, '${name}', '${location}')">
+                                🗑️ 刪除
+                            </button>
+                        </div>
                     </td>
                 `;
+                tr.setAttribute('data-sales-id', record.id);
                 tbody.appendChild(tr);
             });
         })
@@ -677,6 +729,46 @@ function deleteSalesRecord(id, name, location) {
                 if(result.status === 'success') refreshSalesTable(name, location);
             });
     }
+}
+
+function saveSalesRecord(id) {
+    const row = document.querySelector(`tr[data-sales-id="${id}"]`);
+    if (!row) return;
+
+    const dateValue = row.querySelector('.edit-sales-date').value;
+    const modelValue = row.querySelector('.edit-sales-model').value.trim();
+    const quantityValue = row.querySelector('.edit-sales-qty').value;
+    const priceValue = row.querySelector('.edit-sales-price').value;
+    const name = document.getElementById('sales_name_display').innerText;
+    const location = document.getElementById('sales_loc_display').innerText;
+
+    if (!modelValue || !priceValue) {
+        alert('請完整填寫「型號」與「單價」！');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('id', id);
+    formData.append('date', dateValue);
+    formData.append('model', modelValue);
+    formData.append('quantity', quantityValue);
+    formData.append('price', priceValue);
+    formData.append('promoter_name', name);
+    formData.append('location', location);
+
+    fetch('/update_sales_record', { method: 'POST', body: formData })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'success') {
+                refreshSalesTable(name, location);
+            } else {
+                alert(result.message || '更新失敗');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('更新發生錯誤，請稍後再試');
+        });
 }
 
 // 4. 手動新增銷售紀錄 (自動帶入被鎖定的地點)
