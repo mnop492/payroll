@@ -187,10 +187,23 @@ def index():
     # 🌟 新增：撈取所有標準產品型號，給前端的下拉選單使用
     products = conn.execute("SELECT model FROM Products ORDER BY model").fetchall()
 
-    employees = conn.execute("SELECT nick_name FROM Employees ORDER BY nick_name").fetchall()
+    # fetch employees with full names for display
+    employees_rows = conn.execute("SELECT nick_name, full_name FROM Employees ORDER BY nick_name").fetchall()
+    employees = employees_rows
+
+    # build a quick lookup for full_name by nick_name
+    emp_full_map = {r['nick_name']: (r['full_name'] or '') for r in employees_rows}
 
     conn.close()
     # 記得在 return 裡面補上 employees=employees
+    # enrich attendances with full_name when available
+    for a in attendances:
+        a['full_name'] = emp_full_map.get(a.get('nick_name'), '')
+
+    # enrich staff_summary with full_name when available
+    for s in staff_summary:
+        s['full_name'] = emp_full_map.get(s.get('name'), '')
+
     return render_template('index.html', current_month=current_month, staff_summary=staff_summary, 
                            records=records, attendances=attendances, locations=locations, 
                            products=products, employees=employees)

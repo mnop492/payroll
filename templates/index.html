@@ -114,7 +114,7 @@
             <table class="table table-hover text-center align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th style="width: 70px;">ID</th> <th>推廣員</th>
+                        <th style="width: 70px;">ID</th> <th>推廣員</th> <th>全名</th>
                         <th>地點</th>
                         <th>日數</th>
                         <th>工時</th>
@@ -126,7 +126,7 @@
                 <tbody>
                     {% for att in attendances %}
                     <tr>
-                        <td class="text-muted small">{{ loop.index }}</td> <td class="fw-bold">{{ att.nick_name }}</td>
+                        <td class="fw-bold">{{ loop.index }}</td> <td class="fw-bold text-primary">{{ att.nick_name }}</td> <td class="fw-bold">{{ att.full_name }}</td>
                         <td><span class="badge bg-info text-dark">{{ att.location }}</span></td>
                         <td>{{ att.days_worked }}</td>
                         <td>{{ "%g" | format(att.hours) }}</td>
@@ -146,7 +146,7 @@
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="7" class="py-4 text-muted fst-italic">
+                        <td colspan="9" class="py-4 text-muted fst-italic">
                             {{ current_month }} 尚未有任何考勤紀錄。
                         </td>
                     </tr>
@@ -169,8 +169,8 @@
             <table class="table table-hover text-center align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th style="width: 70px;">ID</th> <th>推廣員 (Name)</th>
-                        <th>地點 (Location)</th>
+                        <th style="width: 70px;">ID</th> <th>推廣員</th> <th>全名</th>
+                        <th>地點</th>
                         <th>單據數量</th>
                         <th>當月總銷額</th>
                         <th>當月總佣金</th>
@@ -180,7 +180,7 @@
                 <tbody>
                     {% for staff in staff_summary %}
                     <tr>
-                        <td class="text-muted small">{{ loop.index }}</td> <td class="fw-bold text-primary">{{ staff.name }}</td>
+                        <td class="fw-bold">{{ loop.index }}</td> <td class="fw-bold text-primary">{{ staff.name }}</td> <td class="fw-bold">{{ staff.full_name }}</td>
                         <td><span class="badge bg-info text-dark">{{ staff.main_location }}</span></td>
                         <td>{{ staff.total_entries }} 筆</td>
                         <td class="fw-bold text-success">${{ "{:,.2f}".format(staff.total_amount) }}</td>
@@ -203,7 +203,7 @@
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="5" class="py-4 text-muted fst-italic">
+                        <td colspan="8" class="py-4 text-muted fst-italic">
                             {{ current_month }} 尚未有任何匯入數據。
                         </td>
                     </tr>
@@ -382,7 +382,7 @@
                     <select id="init_att_promoter" class="form-select border-warning">
                         <option value="">-- 請選擇系統員工 --</option>
                         {% for emp in employees %}
-                        <option value="{{ emp.nick_name }}">{{ emp.nick_name }}</option>
+                        <option value="{{ emp.nick_name }}">{{ emp.full_name if emp.full_name else emp.nick_name }}</option>
                         {% endfor %}
                     </select>
                 </div>
