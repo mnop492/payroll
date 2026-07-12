@@ -18,7 +18,7 @@ def process_payroll_from_db(calc_month, db_path='payroll.db'):
     # ==========================================
     # A. 先讀取「每日打卡明細」
     daily_df = pd.read_sql_query("""
-        SELECT nick_name AS Name, location AS Location, actual_hours, normal_hours, ot_hours AS raw_ot
+        SELECT nick_name AS Name, location AS Location, work_date, actual_hours, normal_hours, ot_hours AS raw_ot
         FROM DailyAttendance 
         WHERE payroll_month = ?
     """, conn, params=(calc_month,))
@@ -56,7 +56,7 @@ def process_payroll_from_db(calc_month, db_path='payroll.db'):
 
         # C. 將「精算後的工時」與「五大金剛微調」無縫合併
         att_df = pd.merge(att_summary, adj_df, on=['Name', 'Location'], how='left')
-        att_df.fillna({'expenses': 0, 'adjustment': 0, 'attendance_bonus': 0}, inplace=True)
+        att_df = att_df.fillna({'expenses': 0, 'adjustment': 0, 'attendance_bonus': 0})
     else:
         # 防呆：如果該月完全沒有明細紀錄，就退回補零
         att_df = adj_df.copy() if not adj_df.empty else pd.DataFrame(columns=['Name', 'Location', 'Days', 'Hours', 'OT Hours', 'expenses', 'adjustment', 'attendance_bonus', 'basic_pay_override', 'allowance_override'])
@@ -66,14 +66,23 @@ def process_payroll_from_db(calc_month, db_path='payroll.db'):
             att_df['OT Hours'] = 0
 
     # 讀取銷售與特佣規則
-    sales_df = pd.read_sql_query("SELECT promoter_name AS Name, location AS Location, model, quantity, price FROM Sales WHERE payroll_month = ?", conn, params=(calc_month,))
+    sales_df = pd.read_sql_query("SELECT promoter_name AS Name, location AS Location, date, model, quantity, price FROM Sales WHERE payroll_month = ?", conn, params=(calc_month,))
     prod_df = pd.read_sql_query("SELECT model, commission_rate AS prod_comm FROM Products", conn)
     spec_df = pd.read_sql_query("SELECT model, start_month, end_month, rate AS spec_comm FROM SpecialCommissions", conn)
-    
+
+    # 正規化 sales_df 欄位：date 格式化為 YYYY-MM-DD；quantity, price 轉為數值
+    if not sales_df.empty:
+        # 轉為 datetime，再格式化為與 DailyAttendance.work_date 相同的字串格式
+        sales_df['date'] = pd.to_datetime(sales_df['date'], errors='coerce').dt.strftime('%Y-%m-%d')
+        # 若某些日期解析失敗，保留原字串（避免全部變成 NaN 而丟失資料）
+        sales_df['date'] = sales_df['date'].fillna(sales_df['date'].astype(str))
+        sales_df['quantity'] = pd.to_numeric(sales_df.get('quantity', 0), errors='coerce').fillna(0)
+        sales_df['price'] = pd.to_numeric(sales_df.get('price', 0), errors='coerce').fillna(0.0)
+
     conn.close()
 
     # ==========================================
-    # 2. 計算佣金 (三層優先級智能判定)
+    # 2. 計算佣金 (同一店鋪同一日平均分配)
     # ==========================================
     if not sales_df.empty:
         sales_df = sales_df.merge(prod_df, on='model', how='left')
@@ -82,11 +91,35 @@ def process_payroll_from_db(calc_month, db_path='payroll.db'):
         sales_df = sales_df.merge(spec_active[['model', 'spec_comm']], on='model', how='left')
         sales_df = sales_df.merge(emp_df[['Name', 'default_comm']], on='Name', how='left')
         
+        # 先將佣金比例轉成數值，避免 combine_first 造成 dtype warning
+        for col in ['spec_comm', 'prod_comm', 'default_comm']:
+            if col in sales_df.columns:
+                sales_df[col] = pd.to_numeric(sales_df[col], errors='coerce')
+
         # 優先級：時段特佣 > 永久產品比例 > 員工預設比例 > 保底 0.03
-        sales_df['applied_rate'] = sales_df['spec_comm'].combine_first(sales_df['prod_comm']).combine_first(sales_df['default_comm']).fillna(0.03)
+        sales_df['applied_rate'] = sales_df['spec_comm'].fillna(sales_df['prod_comm']).fillna(sales_df['default_comm']).fillna(0.03)
         sales_df['Comm'] = sales_df['quantity'] * sales_df['price'] * sales_df['applied_rate']
-        comm_summary = sales_df.groupby(['Name', 'Location'])['Comm'].sum().reset_index()
-        comm_summary.rename(columns={'Comm': 'Calc_Comm'}, inplace=True)
+        
+        # 先算出每個日期+店鋪的總佣金
+        daily_comm = sales_df.groupby(['date', 'Location'])['Comm'].sum().reset_index(name='Total_Comm')
+
+        # 計算同一日期同一店鋪的出勤人數，用以平均分配佣金
+        worker_days = daily_df[['work_date', 'Name', 'Location']].drop_duplicates()
+        worker_count = worker_days.groupby(['work_date', 'Location'])['Name'].nunique().reset_index(name='worker_count')
+        worker_count.rename(columns={'work_date': 'date'}, inplace=True)
+
+        # 平均分配給當日當店的每位員工
+        daily_comm = daily_comm.merge(worker_count, on=['date', 'Location'], how='left')
+        daily_comm['worker_count'] = daily_comm['worker_count'].fillna(1).replace(0, 1)
+        daily_comm['share_per_person'] = daily_comm['Total_Comm'] / daily_comm['worker_count']
+
+        # 每位員工每個出勤日分得一份
+        daily_shares = worker_days.rename(columns={'work_date': 'date'}).merge(
+            daily_comm[['date', 'Location', 'share_per_person']], on=['date', 'Location'], how='left'
+        )
+        daily_shares['share_per_person'] = daily_shares['share_per_person'].fillna(0)
+
+        comm_summary = daily_shares.groupby(['Name', 'Location'])['share_per_person'].sum().reset_index(name='Calc_Comm')
     else:
         comm_summary = pd.DataFrame(columns=['Name', 'Location', 'Calc_Comm'])
 

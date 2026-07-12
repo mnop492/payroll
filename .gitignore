@@ -1,0 +1,10 @@
+# Ignore Python bytecode
+*.pyc
+__pycache__/
+
+# Ignore Office/Excel temporary files that start with "~$" (e.g. ~$202604 Century Field Payroll ...)
+~$*
+
+# Other temp files
+*.tmp
+*.temp
