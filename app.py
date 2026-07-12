@@ -99,7 +99,7 @@ def index():
     # 🌟 實作建議 1：按推廣員進行數據彙總 (Summary)
     # 我們計算每個人的總單數、總金額，並抓取他們最常出現的地點
     # 🌟 修改：按「推廣員 + 地點」進行雙重彙總
-    staff_summary = conn.execute('''
+    staff_summary_raw = conn.execute('''
         SELECT 
             promoter_name as name, 
             location as main_location, 
@@ -110,7 +110,21 @@ def index():
         GROUP BY promoter_name, location
         ORDER BY name, total_amount DESC
     ''', (current_month,)).fetchall()
-        
+
+    # 計算當月各人各店的實際總佣金
+    payroll_results = process_payroll_from_db(current_month)
+    commission_map = {
+        (row['員工'], row['地點']): float(row['總佣金'])
+        for row in payroll_results
+    }
+
+    staff_summary = []
+    for row in staff_summary_raw:
+        d = dict(row)
+        d['total_amount'] = float(d['total_amount'] or 0)
+        d['total_comm'] = commission_map.get((d['name'], d['main_location']), 0.0)
+        staff_summary.append(d)
+
     locations = conn.execute("SELECT name FROM Locations ORDER BY name").fetchall()
     # 🌟 新增：撈取所有標準產品型號，給前端的下拉選單使用
     products = conn.execute("SELECT model FROM Products ORDER BY model").fetchall()

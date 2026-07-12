@@ -173,6 +173,7 @@
                         <th>地點 (Location)</th>
                         <th>單據數量</th>
                         <th>當月總銷額</th>
+                        <th>當月總佣金</th>
                         <th style="width: 180px;">操作</th>
                     </tr>
                 </thead>
@@ -183,6 +184,7 @@
                         <td><span class="badge bg-info text-dark">{{ staff.main_location }}</span></td>
                         <td>{{ staff.total_entries }} 筆</td>
                         <td class="fw-bold text-success">${{ "{:,.2f}".format(staff.total_amount) }}</td>
+                        <td class="fw-bold text-primary">${{ "{:,.2f}".format(staff.total_comm) }}</td>
                         <td>
                             <div class="d-flex justify-content-center gap-1">
                                 <button class="btn btn-sm btn-success fw-bold flex-grow-1 shadow-sm" 
