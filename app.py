@@ -149,49 +149,31 @@ def index():
     current_month = request.args.get('month', pd.Timestamp.now().strftime('%Y-%m'))
     conn = get_db_connection()
     
-    # 讀取銷售紀錄
+    # 1. 讀取銷售與考勤紀錄
     records = conn.execute("SELECT * FROM Sales WHERE payroll_month = ?", (current_month,)).fetchall()
-    
-    # 🌟 修改重點：讀取考勤紀錄並處理 None 值
     attendances_raw = conn.execute("SELECT * FROM Attendance WHERE payroll_month = ?", (current_month,)).fetchall()
     
-    # 將 Row 物件轉換為字典，並把所有的 None 變成 0 或預設值，防止 HTML 報錯
+    # 處理 None 值避免 HTML 報錯
     attendances = []
     for row in attendances_raw:
         d = dict(row)
-        # 針對可能導致格式化出錯的欄位進行補零
         fields_to_fix = ['hours', 'days_worked', 'ot_hours', 'expenses', 'adjustment', 'attendance_bonus']
         for field in fields_to_fix:
-            if d.get(field) is None:
-                d[field] = 0
-        
-        # 針對覆寫欄位，如果為 None 則給予空字串
+            if d.get(field) is None: d[field] = 0
         if d.get('basic_pay_override') is None: d['basic_pay_override'] = ''
         if d.get('allowance_override') is None: d['allowance_override'] = ''
-        
         attendances.append(d)
         
-    # 🌟 實作建議 1：按推廣員進行數據彙總 (Summary)
-    # 我們計算每個人的總單數、總金額，並抓取他們最常出現的地點
-    # 🌟 修改：按「推廣員 + 地點」進行雙重彙總
+    # 2. 銷售彙總計算
     staff_summary_raw = conn.execute('''
-        SELECT 
-            promoter_name as name, 
-            location as main_location, 
-            COUNT(*) as total_entries, 
-            SUM(quantity * price) as total_amount 
-        FROM Sales 
-        WHERE payroll_month = ? 
-        GROUP BY promoter_name, location
-        ORDER BY name, total_amount DESC
+        SELECT promoter_name as name, location as main_location, 
+               COUNT(*) as total_entries, SUM(quantity * price) as total_amount 
+        FROM Sales WHERE payroll_month = ? 
+        GROUP BY promoter_name, location ORDER BY name, total_amount DESC
     ''', (current_month,)).fetchall()
 
-    # 計算當月各人各店的實際總佣金
     payroll_results = process_payroll_from_db(current_month)
-    commission_map = {
-        (row['員工'], row['地點']): float(row['總佣金'])
-        for row in payroll_results
-    }
+    commission_map = {(row['員工'], row['地點']): float(row['總佣金']) for row in payroll_results}
 
     staff_summary = []
     for row in staff_summary_raw:
@@ -200,40 +182,65 @@ def index():
         d['total_comm'] = commission_map.get((d['name'], d['main_location']), 0.0)
         staff_summary.append(d)
 
+    # 3. 讀取其他主檔資料
     locations = conn.execute("SELECT name FROM Locations ORDER BY name").fetchall()
-    # 🌟 新增：撈取所有標準產品型號，給前端的下拉選單使用
     products = conn.execute("SELECT model FROM Products ORDER BY model").fetchall()
-
-    # fetch employees with full names for display
-    employees_rows = conn.execute("SELECT nick_name, full_name, hourly_rate FROM Employees ORDER BY nick_name").fetchall()
     
-    monthly_rates_rows = conn.execute("SELECT nick_name, hourly_rate FROM MonthlyRates WHERE payroll_month = ?", (current_month,)).fetchall()
+    # ✅ 確保同時撈取 hourly_rate 與 commission_rate
+    employees_rows = conn.execute("SELECT nick_name, full_name, hourly_rate, commission_rate FROM Employees ORDER BY nick_name").fetchall()
+    monthly_rates_rows = conn.execute("SELECT nick_name, hourly_rate, commission_rate FROM MonthlyRates WHERE payroll_month = ?", (current_month,)).fetchall()
+    
     employees = employees_rows
-    monthly_rate_map = {r['nick_name']: float(r['hourly_rate']) for r in monthly_rates_rows}
-
-    # build a quick lookup for full_name by nick_name
-    emp_full_map = {r['nick_name']: (r['full_name'] or '') for r in employees_rows}
     
-    # ✅ 新增：建立預設時薪的字典對照表
+    # 4. 建立對照字典 (包含時薪與佣金)
+    monthly_rate_map = {r['nick_name']: float(r['hourly_rate']) if r['hourly_rate'] is not None else None for r in monthly_rates_rows}
+    monthly_comm_map = {r['nick_name']: float(r['commission_rate']) if r['commission_rate'] is not None else None for r in monthly_rates_rows}
+    
+    emp_full_map = {r['nick_name']: (r['full_name'] or '') for r in employees_rows}
     emp_default_hr_map = {r['nick_name']: float(r['hourly_rate'] or 0) for r in employees_rows}
+    emp_default_comm_map = {r['nick_name']: float(r['commission_rate'] or 0.03) for r in employees_rows}
 
     conn.close()
 
-    # enrich attendances with full_name when available
+    # 🌟 關鍵修復 1：確保「考勤紀錄」有被正確塞入時薪與全名
     for a in attendances:
         a['full_name'] = emp_full_map.get(a.get('nick_name'), '')
         a['monthly_hourly_rate'] = monthly_rate_map.get(a.get('nick_name'))
-        # ✅ 新增：把預設時薪也塞進考勤資料裡
         a['default_hourly_rate'] = emp_default_hr_map.get(a.get('nick_name'), 0)
 
-    # enrich staff_summary with full_name when available
+    # 🌟 關鍵修復 2：確保「銷售彙總」有被正確塞入佣金與全名
     for s in staff_summary:
         s['full_name'] = emp_full_map.get(s.get('name'), '')
         s['monthly_hourly_rate'] = monthly_rate_map.get(s.get('name'))
+        s['monthly_comm'] = monthly_comm_map.get(s.get('name'))
+        s['default_comm'] = emp_default_comm_map.get(s.get('name'), 0.03)
 
     return render_template('index.html', current_month=current_month, staff_summary=staff_summary, 
                            records=records, attendances=attendances, locations=locations, 
                            products=products, employees=employees)
+
+# 🌟 API：從銷售介面快速更新月度佣金
+@app.route('/update_monthly_comm_api', methods=['POST'])
+def update_monthly_comm_api():
+    month = request.form.get('month')
+    name = request.form.get('promoter')
+    comm_val = request.form.get('monthly_comm', '').strip()
+    
+    conn = get_db_connection()
+    if comm_val == '':
+        # 若清空，則將該月佣金欄位設為 NULL (不刪除整列，因為可能還有時薪資料)
+        conn.execute('UPDATE MonthlyRates SET commission_rate = NULL WHERE payroll_month = ? AND nick_name = ?', (month, name))
+    else:
+        # 新增或更新
+        conn.execute('''
+            INSERT INTO MonthlyRates (payroll_month, nick_name, commission_rate)
+            VALUES (?, ?, ?)
+            ON CONFLICT(payroll_month, nick_name) DO UPDATE SET commission_rate = excluded.commission_rate
+        ''', (month, name, float(comm_val)))
+    
+    conn.commit()
+    conn.close()
+    return jsonify({"status": "success"})
     
 @app.route('/delete_attendance/<int:id>', methods=['POST'])
 def delete_attendance(id):
@@ -490,13 +497,18 @@ def perform_validation():
 def settings():
     current_month = request.args.get('month', pd.Timestamp.now().strftime('%Y-%m'))
     conn = get_db_connection()
-    # 撈取所有員工資料
     employees = conn.execute("SELECT * FROM Employees ORDER BY nick_name").fetchall()
-    monthly_rates = conn.execute("SELECT nick_name, hourly_rate FROM MonthlyRates WHERE payroll_month = ?", (current_month,)).fetchall()
+    
+    # ✅ 修改：把 commission_rate 也撈出來
+    monthly_rates = conn.execute("SELECT nick_name, hourly_rate, commission_rate FROM MonthlyRates WHERE payroll_month = ?", (current_month,)).fetchall()
+    
     monthly_map = {r['nick_name']: r['hourly_rate'] for r in monthly_rates}
+    monthly_comm_map = {r['nick_name']: r['commission_rate'] for r in monthly_rates} # ✅ 新增字典
     conn.close()
-    return render_template('settings.html', employees=employees, current_month=current_month, monthly_map=monthly_map)
-
+    
+    # ✅ 修改：把 monthly_comm_map 傳給前端
+    return render_template('settings.html', employees=employees, current_month=current_month, 
+                           monthly_map=monthly_map, monthly_comm_map=monthly_comm_map)
 @app.route('/update_monthly_rate', methods=['POST'])
 def update_monthly_rate():
     payroll_month = request.form.get('payroll_month') or pd.Timestamp.now().strftime('%Y-%m')
@@ -553,7 +565,8 @@ def update_employee():
     mpf_start_month = request.form.get('mpf_start_month')
     payroll_month = request.form.get('payroll_month') or pd.Timestamp.now().strftime('%Y-%m')
     monthly_hourly_rate = request.form.get('monthly_hourly_rate', '').strip()
-    
+    monthly_commission_rate = request.form.get('monthly_commission_rate', '').strip() # ✅ 新增這行
+
     if emp_id:
         conn = get_db_connection()
         try:
@@ -570,16 +583,24 @@ def update_employee():
             ''', (full_name, hourly_rate, allowance, commission_rate, mpf_start_month, emp_id))
             conn.commit()
 
+            # ✅ 修改：同時處理 月度時薪 與 月度佣金
             if nick_name:
-                if monthly_hourly_rate == '':
+                # 如果兩個都留白，代表完全沒有覆寫，刪除該月紀錄
+                if monthly_hourly_rate == '' and monthly_commission_rate == '':
                     conn.execute('DELETE FROM MonthlyRates WHERE payroll_month = ? AND nick_name = ?', (payroll_month, nick_name))
                 else:
-                    monthly_rate_value = float(monthly_hourly_rate)
+                    # 允許其中一個有值、另一個為空 (空值會存成 NULL)
+                    hr_val = float(monthly_hourly_rate) if monthly_hourly_rate != '' else None
+                    comm_val = float(monthly_commission_rate) if monthly_commission_rate != '' else None
+                    
                     conn.execute('''
-                        INSERT INTO MonthlyRates (payroll_month, nick_name, hourly_rate)
-                        VALUES (?, ?, ?)
-                        ON CONFLICT(payroll_month, nick_name) DO UPDATE SET hourly_rate = excluded.hourly_rate
-                    ''', (payroll_month, nick_name, monthly_rate_value))
+                        INSERT INTO MonthlyRates (payroll_month, nick_name, hourly_rate, commission_rate)
+                        VALUES (?, ?, ?, ?)
+                        ON CONFLICT(payroll_month, nick_name) DO UPDATE SET 
+                        hourly_rate = excluded.hourly_rate,
+                        commission_rate = excluded.commission_rate
+                    ''', (payroll_month, nick_name, hr_val, comm_val))
+                
                 conn.commit()
 
             # capture new and audit

@@ -129,15 +129,13 @@
                     <tr>
                         <td class="fw-bold">{{ loop.index }}</td> <td class="fw-bold text-primary">{{ att.nick_name }}</td> <td class="fw-bold">{{ att.full_name }}</td>
                         <td>
-                            {% if att.monthly_hourly_rate is not none %}
-                                <!-- 有設定「本月覆寫時薪」時，用搶眼的藍色 Badge 顯示 -->
+                            {% if att.monthly_hourly_rate is defined and att.monthly_hourly_rate is not none %}
                                 <span class="badge bg-primary fs-6 shadow-sm" data-bs-toggle="tooltip" title="本月專屬時薪">
                                     ${{ "{:,.2f}".format(att.monthly_hourly_rate) }}
                                 </span>
                             {% else %}
-                                <!-- 沒設定時，顯示「預設時薪」，並用淺灰色標示 -->
                                 <span class="text-secondary fw-bold">
-                                    ${{ "{:,.2f}".format(att.default_hourly_rate) }}
+                                    ${{ "{:,.2f}".format(att.default_hourly_rate | default(0)) }}
                                 </span>
                                 <span class="text-muted small ms-1">(預設)</span>
                             {% endif %}
@@ -186,6 +184,7 @@
                     <tr>
                         <th style="width: 70px;">ID</th> <th>推廣員</th> <th>全名</th>
                         <th>地點</th>
+                        <th style="width: 12%;">本月佣金</th>
                         <th>單據數量</th>
                         <th>當月總銷額</th>
                         <th>當月總佣金</th>
@@ -197,13 +196,25 @@
                     <tr>
                         <td class="fw-bold">{{ loop.index }}</td> <td class="fw-bold text-primary">{{ staff.name }}</td> <td class="fw-bold">{{ staff.full_name }}</td>
                         <td><span class="badge bg-info text-dark">{{ staff.main_location }}</span></td>
+                        <td>
+                            {% if staff.monthly_comm is not none %}
+                                <span class="badge bg-primary fs-6 shadow-sm" data-bs-toggle="tooltip" title="本月專屬佣金">
+                                    {{ (staff.monthly_comm * 100) | int }}%
+                                </span>
+                            {% else %}
+                                <span class="text-secondary fw-bold">
+                                    {{ (staff.default_comm * 100) | int }}%
+                                </span>
+                                <span class="text-muted small ms-1">(預設)</span>
+                            {% endif %}
+                        </td>
                         <td>{{ staff.total_entries }} 筆</td>
                         <td class="fw-bold text-success">${{ "{:,.2f}".format(staff.total_amount) }}</td>
                         <td class="fw-bold text-primary">${{ "{:,.2f}".format(staff.total_comm) }}</td>
                         <td>
                             <div class="d-flex justify-content-center gap-1">
                                 <button class="btn btn-sm btn-success fw-bold flex-grow-1 shadow-sm" 
-                                        onclick="openSalesModal('{{ staff.name }}', '{{ staff.main_location }}')">
+                                        onclick="openSalesModal('{{ staff.name }}', '{{ staff.main_location }}', {{ staff.monthly_comm if staff.monthly_comm is not none else 'null' }}, {{ staff.default_comm }})">
                                     🛒 管理
                                 </button>
                                 <form action="/delete_sales_group" method="POST" class="m-0" 
@@ -385,6 +396,15 @@
                     </table>
                 </div>
             </div>
+            <div class="p-3 bg-light border-top d-flex flex-wrap align-items-center justify-content-between gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <h6 class="fw-bold mb-0 me-2"><i class="bi bi-percent"></i> 月結佣金微調</h6>
+                        <label class="form-label mb-0 small fw-bold text-primary text-nowrap">本月專屬佣金</label>
+                        <input type="number" step="0.001" id="sales_monthly_comm_input" class="form-control form-control-sm border-primary" style="width: 120px;" placeholder="預設">
+                        <span id="sales_comm_hint" class="text-muted small ms-2"></span>
+                    </div>
+                    <button class="btn btn-sm btn-warning fw-bold shadow-sm px-4" onclick="saveSalesComm()">儲存佣金設定</button>
+                </div>
             <div class="modal-footer bg-light">
                 <span class="text-muted small me-auto">💡 系統會自動將未知的新型號加入產品目錄中。修改後請重新結算薪資。</span>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
@@ -448,12 +468,21 @@
             <div class="modal-body">
                 <div class="mb-3">
                     <label class="form-label fw-bold">1. 選擇推廣員 (Promoter)</label>
-                    <select id="init_sales_promoter" class="form-select border-success">
-                        <option value="">-- 請選擇系統員工 --</option>
+                    <select id="init_sales_promoter" class="form-select border-success" onchange="updateInitSalesDefaultComm()">
+                        <option value="" data-comm="">-- 請選擇系統員工 --</option>
                         {% for emp in employees %}
-                        <option value="{{ emp.nick_name }}">{{ emp.nick_name }}</option>
+                        <option value="{{ emp.nick_name }}" data-comm="{{ emp.commission_rate }}">{{ emp.nick_name }}</option>
                         {% endfor %}
                     </select>
+                </div>
+                <div class="mb-3 mt-3">
+                    <label class="form-label fw-bold text-primary">3. 本月專屬佣金 (選填)</label>
+                    <div class="input-group shadow-sm">
+                        <input type="number" step="0.001" id="init_sales_monthly_comm" class="form-control border-success" placeholder="留空則使用預設">
+                    </div>
+                    <div class="form-text text-muted mt-1" id="init_sales_comm_hint">
+                        <i class="bi bi-info-circle"></i> 請先選擇推廣員，小數表示 (例: 3% 輸入 0.03)
+                    </div>
                 </div>
                 <div class="mb-4">
                     <label class="form-label fw-bold">2. 選擇主戰場 (Location)</label>
@@ -683,36 +712,66 @@ function addNewRecordFromUI() {
 // ==========================================
 
 // 1. 打開銷售 Modal 並載入數據
-function openSalesModal(name, location) {
+// 🌟 1. 更新 openSalesModal，接收佣金參數並更新 UI
+function openSalesModal(name, location, monthlyComm, defaultComm) {
     document.getElementById('sales_name_display').innerText = name;
     document.getElementById('sales_loc_display').innerText = location;
     
-    // 鎖定手動新增列的地點，防止員工在 A 店的糧單裡新增了 B 店的單據
     const locSelect = document.getElementById('new_sales_loc');
-    if(locSelect) {
-        locSelect.value = location;
-        locSelect.disabled = true; // 鎖死下拉選單，強制防呆
-    }
+    if(locSelect) { locSelect.value = location; locSelect.disabled = true; }
 
-    const month = "{{ current_month }}";
-    if (month) {
-        const [year, monthNum] = month.split('-');
-        const lastDay = new Date(year, monthNum, 0).getDate();
-        const minDate = `${month}-01`;
-        const maxDate = `${month}-${String(lastDay).padStart(2, '0')}`;
-        const newDateInput = document.getElementById('new_sales_date');
-
-        newDateInput.min = minDate;
-        newDateInput.max = maxDate;
-        if (!newDateInput.value) {
-            newDateInput.value = minDate;
-        }
-    }
-
-    document.getElementById('sales_records_body').innerHTML = '<tr><td colspan="6" class="py-4 text-center"><div class="spinner-border text-success" role="status"></div><br>正在撈取該店銷售紀錄...</td></tr>';
+    // ✅ 填入佣金設定與提示文字
+    const commInput = document.getElementById('sales_monthly_comm_input');
+    commInput.value = (monthlyComm !== null && monthlyComm !== undefined) ? monthlyComm : '';
+    commInput.placeholder = `預設 ${defaultComm}`;
     
+    const hintEl = document.getElementById('sales_comm_hint');
+    if (hintEl) {
+        hintEl.innerHTML = `<i class="bi bi-info-circle"></i> 該員工預設：${(defaultComm * 100).toFixed(0)}%`;
+    }
+
+    /* ... 下方的日期與撈取資料的邏輯保持不變 ... */
+    document.getElementById('sales_records_body').innerHTML = '<tr><td colspan="7" class="py-4 text-center"><div class="spinner-border text-success" role="status"></div><br>正在撈取該店銷售紀錄...</td></tr>';
     new bootstrap.Modal(document.getElementById('salesModal')).show();
     refreshSalesTable(name, location);
+}
+
+// 🌟 2. 獨立儲存佣金的 API 呼叫函數
+function saveSalesComm() {
+    const name = document.getElementById('sales_name_display').innerText;
+    const commValue = document.getElementById('sales_monthly_comm_input').value;
+    const month = "{{ current_month }}";
+
+    const formData = new FormData();
+    formData.append('month', month);
+    formData.append('promoter', name);
+    formData.append('monthly_comm', commValue);
+
+    fetch('/update_monthly_comm_api', { method: 'POST', body: formData })
+        .then(response => response.json())
+        .then(result => {
+            if(result.status === 'success') {
+                alert("✅ 月度佣金設定已儲存！關閉視窗後將重新整理。");
+            }
+        });
+}
+
+function updateInitSalesDefaultComm() {
+    const select = document.getElementById('init_sales_promoter');
+    const selectedOption = select.options[select.selectedIndex];
+    const defaultComm = selectedOption.getAttribute('data-comm');
+    
+    const hintEl = document.getElementById('init_sales_comm_hint');
+    const inputEl = document.getElementById('init_sales_monthly_comm');
+    
+    if (defaultComm) {
+        const pct = (parseFloat(defaultComm) * 100).toFixed(0);
+        hintEl.innerHTML = `<i class="bi bi-info-circle"></i> 該員工預設佣金為 <strong>${pct}%</strong>`;
+        inputEl.placeholder = `預設 ${defaultComm}`;
+    } else {
+        hintEl.innerHTML = `<i class="bi bi-info-circle"></i> 請先選擇推廣員，小數表示 (例: 3% 輸入 0.03)`;
+        inputEl.placeholder = `若留空則使用預設`;
+    }
 }
 
 // 核心：動態渲染表格 (修正日期 Pre-fill，且產品型號維持「可輸入或選擇」)
@@ -869,21 +928,26 @@ function addNewSalesRecordFromUI() {
         });
 }
 
-// 🌟 橋樑函數：從初始化 Modal 直接跳轉到編輯 Modal
+// 🌟 4. 修改 startNewSalesGroup，將佣金帶入編輯視窗
 function startNewSalesGroup() {
-    const promoter = document.getElementById('init_sales_promoter').value;
+    const select = document.getElementById('init_sales_promoter');
+    const promoter = select.value;
     const location = document.getElementById('init_sales_loc').value;
+    const monthly_comm = document.getElementById('init_sales_monthly_comm').value; // ✅ 抓取佣金
     
     if(!promoter || !location) {
         alert("請完整選擇推廣員與店鋪！");
         return;
     }
     
-    // 1. 隱藏前導 Modal
+    const selectedOption = select.options[select.selectedIndex];
+    const defaultComm = selectedOption ? parseFloat(selectedOption.getAttribute('data-comm')) : 0.03;
+    const comm_val = monthly_comm ? parseFloat(monthly_comm) : null;
+    
     bootstrap.Modal.getInstance(document.getElementById('newSalesGroupModal')).hide();
     
-    // 2. 呼叫現成的編輯 Modal (此時撈出來會是空的，可以直接在底部新增)
-    openSalesModal(promoter, location);
+    // ✅ 傳入金錢參數
+    openSalesModal(promoter, location, comm_val, defaultComm);
 }
 
 // 🌟 體驗優化：當銷售明細 Modal 關閉時，自動重整頁面，讓最新的彙總數據顯示出來

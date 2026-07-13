@@ -16,6 +16,7 @@ def process_payroll_from_db(calc_month, db_path='payroll.db'):
         SELECT e.nick_name AS Name,
                e.hourly_rate AS hourly_rate,
                mr.hourly_rate AS monthly_hourly_rate,
+               mr.commission_rate AS monthly_comm,  -- ✅ 新增這行：把月度佣金撈出來
                e.allowance,
                e.commission_rate AS default_comm,
                e.require_mpf,
@@ -112,17 +113,21 @@ def process_payroll_from_db(calc_month, db_path='payroll.db'):
         spec_active = spec_df[(spec_df['start_month'] <= calc_month) & (spec_df['end_month'] >= calc_month)]
         spec_active = spec_active.drop_duplicates(subset=['model'], keep='last')
         sales_df = sales_df.merge(spec_active[['model', 'spec_comm']], on='model', how='left')
-        sales_df = sales_df.merge(emp_df[['Name', 'default_comm']], on='Name', how='left')
+        
+        # 🌟 改變 1：把 monthly_comm 也一起從員工資料表 (emp_df) 裡拿過來
+        sales_df = sales_df.merge(emp_df[['Name', 'default_comm', 'monthly_comm']], on='Name', how='left')
         
         # 先將佣金比例轉成數值，避免 combine_first 造成 dtype warning
-        for col in ['spec_comm', 'prod_comm', 'default_comm']:
+        # 🌟 改變 2：將 monthly_comm 加入數字轉換的陣列中，防止報錯
+        for col in ['spec_comm', 'prod_comm', 'monthly_comm', 'default_comm']:
             if col in sales_df.columns:
                 sales_df[col] = pd.to_numeric(sales_df[col], errors='coerce')
 
-        # 優先級：時段特佣 > 永久產品比例 > 員工預設比例 > 保底 0.03
-        sales_df['applied_rate'] = sales_df['spec_comm'].fillna(sales_df['prod_comm']).fillna(sales_df['default_comm']).fillna(0.03)
-        sales_df['Comm'] = sales_df['quantity'] * sales_df['price'] * sales_df['applied_rate']
+        # 🌟 改變 3：更新佣金優先級公式！
+        # 順序變成：時段特佣 > 產品特佣 > 【本月覆寫佣金】 > 員工預設佣金 > 保底 0.03
+        sales_df['applied_rate'] = sales_df['spec_comm'].fillna(sales_df['prod_comm']).fillna(sales_df['monthly_comm']).fillna(sales_df['default_comm']).fillna(0.03)
         
+        sales_df['Comm'] = sales_df['quantity'] * sales_df['price'] * sales_df['applied_rate']        
         # 先算出每個日期+店鋪的總佣金
         daily_comm = sales_df.groupby(['date', 'Location'])['Comm'].sum().reset_index(name='Total_Comm')
 
