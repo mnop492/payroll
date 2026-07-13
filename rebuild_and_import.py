@@ -17,6 +17,7 @@ def rebuild_database():
     cursor = conn.cursor()
 
     cursor.execute('''CREATE TABLE Employees (id INTEGER PRIMARY KEY AUTOINCREMENT, nick_name TEXT UNIQUE NOT NULL, hourly_rate REAL DEFAULT 0, allowance REAL DEFAULT 0, commission_rate REAL DEFAULT 0.03, require_mpf INTEGER DEFAULT 0, mpf_start_month TEXT)''')
+    cursor.execute('''CREATE TABLE MonthlyRates (id INTEGER PRIMARY KEY AUTOINCREMENT, payroll_month TEXT NOT NULL, nick_name TEXT NOT NULL, hourly_rate REAL, allowance REAL, commission_rate REAL, UNIQUE(payroll_month, nick_name))''')
     cursor.execute('''CREATE TABLE Products (id INTEGER PRIMARY KEY AUTOINCREMENT, model TEXT UNIQUE NOT NULL, product_line TEXT, commission_rate REAL DEFAULT 0.03)''')
     cursor.execute('''CREATE TABLE SpecialCommissions (id INTEGER PRIMARY KEY AUTOINCREMENT, model TEXT NOT NULL, start_month TEXT NOT NULL, end_month TEXT NOT NULL, rate REAL NOT NULL)''')
     cursor.execute('''CREATE TABLE Sales (id INTEGER PRIMARY KEY AUTOINCREMENT, payroll_month TEXT, date TEXT, promoter_name TEXT, location TEXT, model TEXT, quantity INTEGER, price REAL)''')

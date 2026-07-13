@@ -11,7 +11,22 @@ def process_payroll_from_db(calc_month, db_path='payroll.db'):
     # ==========================================
     # 1. 讀取所需資料庫
     # ==========================================
-    emp_df = pd.read_sql_query("SELECT nick_name AS Name, hourly_rate, allowance, commission_rate AS default_comm, require_mpf, mpf_start_month, full_name FROM Employees", conn)
+    emp_df = pd.read_sql_query(
+        """
+        SELECT e.nick_name AS Name,
+               e.hourly_rate AS hourly_rate,
+               mr.hourly_rate AS monthly_hourly_rate,
+               e.allowance,
+               e.commission_rate AS default_comm,
+               e.require_mpf,
+               e.mpf_start_month,
+               e.full_name
+        FROM Employees e
+        LEFT JOIN MonthlyRates mr ON mr.nick_name = e.nick_name AND mr.payroll_month = ?
+        """,
+        conn,
+        params=(calc_month,)
+    )
     
     # ==========================================
     # 2. 讀取考勤與每日明細 (🌟 升級版每日 OT 結算)
@@ -31,11 +46,19 @@ def process_payroll_from_db(calc_month, db_path='payroll.db'):
     """, conn, params=(calc_month,))
 
     if not daily_df.empty:
-        # 🌟 核心 OT 規則：不足半小時不計，每半小時跳一級
+       # 🌟 核心 OT 規則：不足半小時不計，每半小時跳一級 (新增支援負數扣鐘)
         def apply_clean_ot(raw_ot):
-            if pd.isna(raw_ot) or raw_ot < 0.5:
+            if pd.isna(raw_ot):
                 return 0.0
-            # math.floor 向下取整：例如 0.9 / 0.5 = 1.8 -> floor(1.8) = 1 -> 1 * 0.5 = 0.5
+            
+            # ✅ 處理負數 (扣鐘/遲到/早退)：以 0.5 為單位向下進位 (保留原始扣除量)
+            if raw_ot < 0:
+                return (int(raw_ot * 2)) / 2.0
+                
+            # ✅ 處理正數 (加班)：不足 0.5 不計
+            if raw_ot < 0.5:
+                return 0.0
+                
             return math.floor(raw_ot / 0.5) * 0.5
 
         # 逐日清洗 OT 數據
@@ -143,6 +166,10 @@ def process_payroll_from_db(calc_month, db_path='payroll.db'):
     # 關聯員工時薪等基本資料
     final_df = final_df.merge(emp_df, on='Name', how='left')
     
+    # 如果有月度覆寫時薪，優先使用；否則使用員工預設時薪
+    if 'monthly_hourly_rate' in final_df.columns:
+        final_df['hourly_rate'] = final_df['monthly_hourly_rate'].fillna(final_df['hourly_rate'])
+
     # 把空值補 0，防止數學計算報錯
     fill_zero_cols = ['Days', 'Hours', 'OT Hours', 'Calc_Comm', 'hourly_rate', 'allowance', 'expenses', 'adjustment', 'attendance_bonus']
     for col in fill_zero_cols:

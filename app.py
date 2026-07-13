@@ -89,8 +89,25 @@ def log_audit(action, table_name, record_id=None, old_value=None, new_value=None
         logging.exception('Failed to write audit log: %s', e)
 
 
-# ensure table exists at startup
+def ensure_monthly_rates_table():
+    conn = get_db_connection()
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS MonthlyRates (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            payroll_month TEXT NOT NULL,
+            nick_name TEXT NOT NULL,
+            hourly_rate REAL,
+            allowance REAL,
+            commission_rate REAL,
+            UNIQUE(payroll_month, nick_name)
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+# ensure tables exist at startup
 ensure_audit_table()
+ensure_monthly_rates_table()
 
 # 🌟 全新：自動彙總並同步考勤總表的函數
 def sync_attendance_summary(month, nick_name, location):
@@ -188,21 +205,31 @@ def index():
     products = conn.execute("SELECT model FROM Products ORDER BY model").fetchall()
 
     # fetch employees with full names for display
-    employees_rows = conn.execute("SELECT nick_name, full_name FROM Employees ORDER BY nick_name").fetchall()
+    employees_rows = conn.execute("SELECT nick_name, full_name, hourly_rate FROM Employees ORDER BY nick_name").fetchall()
+    
+    monthly_rates_rows = conn.execute("SELECT nick_name, hourly_rate FROM MonthlyRates WHERE payroll_month = ?", (current_month,)).fetchall()
     employees = employees_rows
+    monthly_rate_map = {r['nick_name']: float(r['hourly_rate']) for r in monthly_rates_rows}
 
     # build a quick lookup for full_name by nick_name
     emp_full_map = {r['nick_name']: (r['full_name'] or '') for r in employees_rows}
+    
+    # ✅ 新增：建立預設時薪的字典對照表
+    emp_default_hr_map = {r['nick_name']: float(r['hourly_rate'] or 0) for r in employees_rows}
 
     conn.close()
-    # 記得在 return 裡面補上 employees=employees
+
     # enrich attendances with full_name when available
     for a in attendances:
         a['full_name'] = emp_full_map.get(a.get('nick_name'), '')
+        a['monthly_hourly_rate'] = monthly_rate_map.get(a.get('nick_name'))
+        # ✅ 新增：把預設時薪也塞進考勤資料裡
+        a['default_hourly_rate'] = emp_default_hr_map.get(a.get('nick_name'), 0)
 
     # enrich staff_summary with full_name when available
     for s in staff_summary:
         s['full_name'] = emp_full_map.get(s.get('name'), '')
+        s['monthly_hourly_rate'] = monthly_rate_map.get(s.get('name'))
 
     return render_template('index.html', current_month=current_month, staff_summary=staff_summary, 
                            records=records, attendances=attendances, locations=locations, 
@@ -461,11 +488,58 @@ def perform_validation():
 
 @app.route('/settings')
 def settings():
+    current_month = request.args.get('month', pd.Timestamp.now().strftime('%Y-%m'))
     conn = get_db_connection()
     # 撈取所有員工資料
     employees = conn.execute("SELECT * FROM Employees ORDER BY nick_name").fetchall()
+    monthly_rates = conn.execute("SELECT nick_name, hourly_rate FROM MonthlyRates WHERE payroll_month = ?", (current_month,)).fetchall()
+    monthly_map = {r['nick_name']: r['hourly_rate'] for r in monthly_rates}
     conn.close()
-    return render_template('settings.html', employees=employees)
+    return render_template('settings.html', employees=employees, current_month=current_month, monthly_map=monthly_map)
+
+@app.route('/update_monthly_rate', methods=['POST'])
+def update_monthly_rate():
+    payroll_month = request.form.get('payroll_month') or pd.Timestamp.now().strftime('%Y-%m')
+    nick_name = request.form.get('nick_name')
+    monthly_rate_value = request.form.get('monthly_hourly_rate', '').strip()
+
+    conn = get_db_connection()
+    old = conn.execute('SELECT * FROM MonthlyRates WHERE payroll_month = ? AND nick_name = ?', (payroll_month, nick_name)).fetchone()
+    old_dict = dict(old) if old else None
+
+    if monthly_rate_value == '':
+        if old:
+            conn.execute('DELETE FROM MonthlyRates WHERE payroll_month = ? AND nick_name = ?', (payroll_month, nick_name))
+            conn.commit()
+            try:
+                log_audit('delete', 'MonthlyRates', record_id=f"{payroll_month}:{nick_name}", old_value=old_dict, user=None, ip=request.remote_addr)
+            except Exception:
+                pass
+            flash(f"✅ 已移除 {nick_name} 的 {payroll_month} 月度時薪覆寫，改回預設時薪。", 'success')
+        else:
+            flash(f"⚠️ {nick_name} 在 {payroll_month} 沒有設定可移除。", 'warning')
+    else:
+        hourly_rate = float(monthly_rate_value)
+        if old:
+            conn.execute('''
+                UPDATE MonthlyRates SET hourly_rate = ? WHERE payroll_month = ? AND nick_name = ?
+            ''', (hourly_rate, payroll_month, nick_name))
+            action = 'update'
+        else:
+            conn.execute('''
+                INSERT INTO MonthlyRates (payroll_month, nick_name, hourly_rate) VALUES (?, ?, ?)
+            ''', (payroll_month, nick_name, hourly_rate))
+            action = 'create'
+        conn.commit()
+        new = conn.execute('SELECT * FROM MonthlyRates WHERE payroll_month = ? AND nick_name = ?', (payroll_month, nick_name)).fetchone()
+        try:
+            log_audit(action, 'MonthlyRates', record_id=f"{payroll_month}:{nick_name}", old_value=old_dict, new_value=dict(new) if new else None, user=None, ip=request.remote_addr)
+        except Exception:
+            pass
+        flash(f"✅ 已儲存 {nick_name} 的 {payroll_month} 月度時薪：${hourly_rate:.2f}", 'success')
+
+    conn.close()
+    return redirect(url_for('settings', month=payroll_month))
 
 @app.route('/update_employee', methods=['POST'])
 def update_employee():
@@ -477,6 +551,8 @@ def update_employee():
     allowance = float(request.form.get('allowance', 0))
     commission_rate = float(request.form.get('commission_rate', 0.03))
     mpf_start_month = request.form.get('mpf_start_month')
+    payroll_month = request.form.get('payroll_month') or pd.Timestamp.now().strftime('%Y-%m')
+    monthly_hourly_rate = request.form.get('monthly_hourly_rate', '').strip()
     
     if emp_id:
         conn = get_db_connection()
@@ -484,6 +560,7 @@ def update_employee():
             # capture old
             old = conn.execute('SELECT * FROM Employees WHERE id = ?', (emp_id,)).fetchone()
             old_dict = dict(old) if old else None
+            nick_name = old['nick_name'] if old else None
 
             # 🌟 修正 SQL 語句：加入 full_name = ?
             conn.execute('''
@@ -492,6 +569,18 @@ def update_employee():
                 WHERE id = ?
             ''', (full_name, hourly_rate, allowance, commission_rate, mpf_start_month, emp_id))
             conn.commit()
+
+            if nick_name:
+                if monthly_hourly_rate == '':
+                    conn.execute('DELETE FROM MonthlyRates WHERE payroll_month = ? AND nick_name = ?', (payroll_month, nick_name))
+                else:
+                    monthly_rate_value = float(monthly_hourly_rate)
+                    conn.execute('''
+                        INSERT INTO MonthlyRates (payroll_month, nick_name, hourly_rate)
+                        VALUES (?, ?, ?)
+                        ON CONFLICT(payroll_month, nick_name) DO UPDATE SET hourly_rate = excluded.hourly_rate
+                    ''', (payroll_month, nick_name, monthly_rate_value))
+                conn.commit()
 
             # capture new and audit
             new = conn.execute('SELECT * FROM Employees WHERE id = ?', (emp_id,)).fetchone()
@@ -507,7 +596,7 @@ def update_employee():
         finally:
             conn.close()
             
-    return redirect(url_for('settings'))
+    return redirect(url_for('settings', month=payroll_month)) # ✅ 把 payroll_month 帶回去
 
 @app.route('/save_special_comm', methods=['POST'])
 def save_special_comm():
@@ -979,7 +1068,8 @@ def update_daily_records():
             tdelta = datetime.strptime(out_t, fmt) - datetime.strptime(in_t, fmt)
             actual_h = tdelta.seconds / 3600
             # OT = 實際 - 新的常規工時
-            raw_ot = max(0, actual_h - norm_h)
+            # ✅ 修改後：移除 max，允許負數 OT
+            raw_ot = actual_h - norm_h
         except:
             actual_h, raw_ot = 0, 0
 
@@ -1030,8 +1120,8 @@ def add_daily_attendance():
         tdelta = datetime.strptime(out_t, fmt) - datetime.strptime(in_t, fmt)
         actual_h = tdelta.seconds / 3600
         
-        # 使用動態的 normal_h 來計算 OT
-        raw_ot = max(0, actual_h - normal_h)
+        # ✅ 修改後：移除 max，允許負數 OT
+        raw_ot = actual_h - normal_h
     except:
         actual_h, raw_ot = 0, 0
 
@@ -1085,43 +1175,56 @@ def delete_daily_attendance(id):
 def update_attendance():
     month = request.form.get('calc_month')
     name = request.form.get('nick_name')
-    location = request.form.get('location') # 🌟 現在前端會帶回正確的地點
+    location = request.form.get('location') 
     
-    # 數值防呆
     exp = float(request.form.get('expenses', 0) or 0)
     adj = float(request.form.get('adjustment', 0) or 0)
     bonus = float(request.form.get('attendance_bonus', 0) or 0)
     
+    # ✅ 接收前端傳來的本月專屬時薪
+    monthly_rate_str = request.form.get('monthly_hourly_rate', '').strip()
+    
     conn = get_db_connection()
-    # capture old
+
+    # --- 1. 處理 Attendance 微調表 ---
     old = conn.execute('SELECT * FROM Attendance WHERE payroll_month = ? AND nick_name = ? AND location = ?', (month, name, location)).fetchone()
     old_dict = dict(old) if old else None
 
-    # 🌟 核心：支援新紀錄 (Upsert 邏輯)
-    # 第一步：如果是新加入的人/店鋪，先確保 Attendance 表裡有這行
     conn.execute('''
         INSERT OR IGNORE INTO Attendance (payroll_month, nick_name, location, days_worked, hours, ot_hours)
         VALUES (?, ?, ?, 0, 0, 0)
     ''', (month, name, location))
     
-    # 第二步：精準更新該筆紀錄的微調值
     conn.execute('''
         UPDATE Attendance 
         SET expenses = ?, adjustment = ?, attendance_bonus = ?
         WHERE payroll_month = ? AND nick_name = ? AND location = ?
     ''', (exp, adj, bonus, month, name, location))
+
+    # --- 2. 處理 MonthlyRates 月度時薪表 ---
+    if monthly_rate_str == '':
+        # 若留空，則刪除覆寫紀錄 (恢復預設)
+        conn.execute('DELETE FROM MonthlyRates WHERE payroll_month = ? AND nick_name = ?', (month, name))
+    else:
+        monthly_rate_val = float(monthly_rate_str)
+        existing = conn.execute('SELECT id FROM MonthlyRates WHERE payroll_month = ? AND nick_name = ?', (month, name)).fetchone()
+        if existing:
+            conn.execute('UPDATE MonthlyRates SET hourly_rate = ? WHERE payroll_month = ? AND nick_name = ?', (monthly_rate_val, month, name))
+        else:
+            conn.execute('INSERT INTO MonthlyRates (payroll_month, nick_name, hourly_rate) VALUES (?, ?, ?)', (month, name, monthly_rate_val))
     
     conn.commit()
-    # capture new
+
+    # --- 3. 稽核紀錄 ---
     new = conn.execute('SELECT * FROM Attendance WHERE payroll_month = ? AND nick_name = ? AND location = ?', (month, name, location)).fetchone()
     new_dict = dict(new) if new else None
     try:
-        log_audit('update', 'Attendance', record_id=new_dict.get('id') if new_dict else None, old_value=old_dict, new_value=new_dict, user=None, ip=request.remote_addr)
+        log_audit('update', 'Attendance_and_Rates', record_id=new_dict.get('id') if new_dict else None, old_value=old_dict, new_value=new_dict, user=None, ip=request.remote_addr)
     except Exception:
         pass
     conn.close()
     
-    flash(f"✅ 已儲存 {name} 在 {location} 的月結微調數據", "success")
+    flash(f"✅ 已儲存 {name} 在 {location} 的月結微調與時薪設定", "success")
     return redirect(url_for('index', month=month))
 
 # 🌟 1. 獲取員工單月所有銷售明細
