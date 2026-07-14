@@ -4,7 +4,12 @@ import pandas as pd
 import warnings
 
 # 🌟 靜音設定：忽略 openpyxl 的「資料驗證」無害警告，保持終端機畫面乾淨
-warnings.filterwarnings('ignore', category=UserWarning, module='openpyxl')
+warnings.filterwarnings(
+    'ignore',
+    category=UserWarning,
+    module=r'openpyxl.*',
+    message='Data Validation extension is not supported and will be removed'
+)
 
 DB_NAME = 'payroll.db'
 

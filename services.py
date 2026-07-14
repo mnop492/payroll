@@ -285,7 +285,8 @@ def perform_validation(payroll_month_filter=None):
             ex_df = pd.read_excel(filepath, sheet_name="Total", header=6)
             ex_df.columns = ex_df.columns.astype(str).str.strip()
             ex_df = ex_df.dropna(subset=["Name", "Total"])
-        except Exception:
+        except Exception as exc:
+            logging.exception("Failed to read validation file %s", filepath)
             continue
 
         # Read attendance sheet to get Excel-side hours per person+location

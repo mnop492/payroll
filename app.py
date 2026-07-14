@@ -2,8 +2,19 @@ import logging
 import os
 
 from flask import Flask, redirect, request, session, url_for
+from werkzeug.middleware.proxy_fix import ProxyFix
 
-from app_config import ENABLE_HTTPS, HISTORY_FOLDER, LOG_FOLDER, SECRET_KEY, SSL_CERT_FILE, SSL_KEY_FILE, UPLOAD_FOLDER
+from app_config import (
+    ENABLE_HTTPS,
+    HISTORY_FOLDER,
+    LOG_FOLDER,
+    SECRET_KEY,
+    SESSION_COOKIE_SECURE,
+    SSL_CERT_FILE,
+    SSL_KEY_FILE,
+    TRUST_PROXY_HEADERS,
+    UPLOAD_FOLDER,
+)
 from blueprints.attendance import bp as attendance_bp
 from blueprints.main import bp as main_bp
 from blueprints.sales import bp as sales_bp
@@ -33,10 +44,15 @@ def create_app():
 
     app = Flask(__name__)
     app.secret_key = SECRET_KEY
+
+    # Trust X-Forwarded-* headers when running behind a reverse proxy (NPM/Nginx).
+    if TRUST_PROXY_HEADERS:
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
+
     app.config["SESSION_COOKIE_HTTPONLY"] = True
-    app.config["SESSION_COOKIE_SECURE"] = ENABLE_HTTPS
+    app.config["SESSION_COOKIE_SECURE"] = SESSION_COOKIE_SECURE
     app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
-    app.config["PREFERRED_URL_SCHEME"] = "https" if ENABLE_HTTPS else "http"
+    app.config["PREFERRED_URL_SCHEME"] = "https" if (ENABLE_HTTPS or SESSION_COOKIE_SECURE) else "http"
 
     ensure_core_tables()
     seed_default_admin_user()
@@ -66,5 +82,4 @@ app = create_app()
 if __name__ == "__main__":
     ssl_context = get_ssl_context()
     scheme = "https" if ssl_context else "http"
-    print(f" * Running on {scheme}://127.0.0.1:5001")
-    app.run(host="0.0.0.0", port=5001, debug=True, ssl_context=ssl_context)
+    app.run(host="0.0.0.0", port=5001, debug=False, ssl_context=ssl_context)
