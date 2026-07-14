@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0 fw-bold page-title">👥 使用者管理</h4>
+</div>
+
+<div class="card app-card mb-4">
+  <div class="card-header bg-primary text-white fw-bold">新增使用者</div>
+  <div class="card-body">
+    <form action="/add_user" method="POST" class="row g-2 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label">使用者名稱</label>
+        <input name="username" class="form-control" required>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">初始密碼</label>
+        <input type="password" name="password" class="form-control" required>
+      </div>
+      <div class="col-md-2 form-check mt-4 pt-2">
+        <input class="form-check-input" type="checkbox" id="new_is_admin" name="is_admin">
+        <label class="form-check-label" for="new_is_admin">Admin</label>
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-success w-100">新增</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card app-card">
+  <div class="card-header bg-dark text-white fw-bold">既有使用者</div>
+  <div class="card-body p-0">
+    <div class="table-wrap">
+      <table class="table table-striped align-middle mb-0 data-table">
+        <thead>
+          <tr>
+            <th>使用者</th>
+            <th>Admin</th>
+            <th>啟用</th>
+            <th>建立時間</th>
+            <th>更新時間</th>
+            <th>更新密碼</th>
+            <th>刪除</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <td class="fw-bold">{{ u.username }}</td>
+            <td>
+              <form action="/update_user_role" method="POST" class="d-flex gap-2 align-items-center">
+                <input type="hidden" name="id" value="{{ u.id }}">
+                <input type="checkbox" name="is_admin" {% if u.is_admin %}checked{% endif %}>
+                <button class="btn btn-sm btn-outline-primary">儲存</button>
+              </form>
+            </td>
+            <td>
+              <form action="/update_user_status" method="POST" class="d-flex gap-2 align-items-center">
+                <input type="hidden" name="id" value="{{ u.id }}">
+                <input type="checkbox" name="is_active" {% if u.is_active %}checked{% endif %}>
+                <button class="btn btn-sm btn-outline-secondary">儲存</button>
+              </form>
+            </td>
+            <td class="cell-timestamp">{{ u.created_at or '' }}</td>
+            <td class="cell-timestamp">{{ u.updated_at or '' }}</td>
+            <td>
+              <form action="/update_user_password" method="POST" class="d-flex gap-2">
+                <input type="hidden" name="id" value="{{ u.id }}">
+                <input type="password" name="new_password" class="form-control form-control-sm" placeholder="新密碼" required>
+                <button class="btn btn-sm btn-warning">更新</button>
+              </form>
+            </td>
+            <td>
+              <form action="/delete_user/{{ u.id }}" method="POST" onsubmit="return confirm('確定刪除此使用者？');">
+                <button class="btn btn-sm btn-outline-danger">刪除</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

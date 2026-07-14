@@ -44,13 +44,34 @@ def process_excel_import(file_path, payroll_month, update_emp=True):
                 h_rate = float(pd.to_numeric(row.get('Hourly Rate', row.get('Hourr Rate', 0)), errors='coerce') or 0.0)
                 allowance = float(pd.to_numeric(row.get('Allowance', 0), errors='coerce') or 0.0)
 
+                # 讀取佣金比例：清理 "3%%" 之類的格式錯誤
+                raw_comm = row.get('rate', row.get('Rate', None))
+                comm_rate = 0.03  # 預設值
+                if raw_comm is not None and not pd.isna(raw_comm):
+                    comm_str = str(raw_comm).strip().replace('%', '')
+                    try:
+                        comm_val = float(comm_str)
+                        # 若輸入的是百分比整數 (e.g. 3 代表 3%)，自動轉換
+                        comm_rate = comm_val / 100.0 if comm_val > 1 else comm_val
+                    except ValueError:
+                        comm_rate = 0.03
+
+                # 新員工：建立 Employees 記錄（不覆蓋既有員工的全域預設時薪）
                 cursor.execute('''
                     INSERT INTO Employees (nick_name, hourly_rate, allowance, commission_rate) 
                     VALUES (?, ?, ?, 0.03)
-                    ON CONFLICT(nick_name) DO UPDATE SET 
-                        hourly_rate = excluded.hourly_rate, 
-                        allowance = excluded.allowance
+                    ON CONFLICT(nick_name) DO NOTHING
                 ''', (nick_name, h_rate, allowance))
+
+                # 把本月時薪/津貼/佣金比例寫入 MonthlyRates（月度覆蓋，不影響其他月份）
+                cursor.execute('''
+                    INSERT INTO MonthlyRates (payroll_month, nick_name, hourly_rate, allowance, commission_rate)
+                    VALUES (?, ?, ?, ?, ?)
+                    ON CONFLICT(payroll_month, nick_name) DO UPDATE SET
+                        hourly_rate = excluded.hourly_rate,
+                        allowance = excluded.allowance,
+                        commission_rate = excluded.commission_rate
+                ''', (payroll_month, nick_name, h_rate, allowance, comm_rate))
 
         # ==========================================
         # B & C. 處理考勤明細 (工作表1) 並彙總至 Attendance

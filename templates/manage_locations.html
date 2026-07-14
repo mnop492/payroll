@@ -2,13 +2,13 @@
 {% block content %}
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>📍 標準店鋪管理</h2>
+        <h2 class="page-title">📍 標準店鋪管理</h2>
         <a href="/" class="btn btn-secondary">返回主控台</a>
     </div>
 
     <div class="row">
         <div class="col-md-4">
-            <div class="card shadow-sm border-primary">
+            <div class="card app-card border-primary">
                 <div class="card-header bg-primary text-white fw-bold">➕ 新增標準店鋪</div>
                 <div class="card-body">
                     <form action="/add_location" method="POST">
@@ -32,9 +32,9 @@
         </div>
 
         <div class="col-md-8">
-            <div class="card shadow-sm">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
+            <div class="card app-card">
+                <div class="table-wrap">
+                    <table class="table table-hover align-middle mb-0 data-table">
                         <thead class="table-light">
                             <tr>
                                 <th>區域</th>

@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-6">
-        <div class="card shadow-sm mb-4 border-primary">
+{% set has_month_data = attendances or staff_summary %}
+
+<div class="row g-4 align-items-start">
+    <div class="col-12">
+        <div class="card app-card mb-4 border-primary" id="payroll-workflow-panel">
             <div class="card-header bg-primary text-white">
                 <span class="fs-5">⚙️ 1. 薪資結算主控台</span>
             </div>
@@ -31,78 +33,131 @@
                                 🚀 2. 進行薪資結算 (下一步)
                             </button>
                         </form>
-                        
-                        <button class="btn btn-outline-secondary btn-sm w-100 mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#reuploadForm">
-                            🔄 我想重新上傳 Excel (覆蓋舊檔)
-                        </button>
                     </div>
 
-                    <div class="collapse mt-2" id="reuploadForm">
-                        <form action="/upload_and_import" method="POST" enctype="multipart/form-data" class="p-3 bg-white border border-danger rounded shadow-sm">
-                            <label class="form-label fw-bold text-danger small"><i class="bi bi-exclamation-triangle"></i> 注意：這將會覆蓋本月現有資料</label>
-                            <input type="hidden" name="calc_month" value="{{ current_month }}">
-                            <input class="form-control form-control-sm border-danger mb-2" type="file" name="excel_file" accept=".xlsx, .xls" required>
-                            <button type="submit" class="btn btn-danger btn-sm w-100 fw-bold">
-                                ⚠️ 確認覆蓋並重新匯入
-                            </button>
-                            <div class="form-check form-switch bg-light p-2 rounded border">
-                                <input class="form-check-input ms-0 me-2" type="checkbox" name="update_emp" id="updateEmpCheck">
-                                <label class="form-check-label fw-bold text-primary" for="updateEmpCheck">
-                                    🔄 同步更新員工主檔 (時薪與津貼)
-                                </label>
-                                <div class="form-text mt-1">
-                                    <small>勾選：以 Excel 內的 "Name List" 更新資料庫。<br>取消：僅匯入工時與銷售，保留資料庫現有的薪酬設定。</small>
+                    <div class="mt-4">
+                        <label class="form-label fw-bold text-primary">補充或修正資料方式</label>
+                        <div class="mb-3">
+                            <select id="inputModeSelect" class="form-select border-primary" aria-label="請選擇輸入方式">
+                                <option value="excel" {% if month_input_source != 'web' %}selected{% endif %}>Excel 匯入</option>
+                                <option value="web" {% if month_input_source == 'web' %}selected{% endif %}>網頁輸入</option>
+                            </select>
+                        </div>
+
+                        <div id="excelInputPanel" class="border border-danger rounded p-3 bg-light mb-3">
+                            <div class="fw-bold text-danger mb-2">A. Excel 匯入</div>
+                            <p class="small text-muted mb-3">如需用新的 Excel 覆蓋本月資料，可在這裡重新匯入。</p>
+                            <form action="/upload_and_import" method="POST" enctype="multipart/form-data">
+                                <input type="hidden" name="calc_month" value="{{ current_month }}">
+                                <input class="form-control form-control-sm border-danger mb-2" type="file" name="excel_file" accept=".xlsx, .xls" required>
+                                <button type="submit" class="btn btn-danger btn-sm w-100 fw-bold mb-2">
+                                    ⚠️ 確認覆蓋並重新匯入
+                                </button>
+                                <div class="form-check form-switch bg-white p-2 rounded border">
+                                    <input class="form-check-input ms-0 me-2" type="checkbox" name="update_emp" id="updateEmpCheckLoaded" checked>
+                                    <label class="form-check-label fw-bold text-primary" for="updateEmpCheckLoaded">
+                                        🔄 同步本月時薪與津貼 (MonthlyRates)
+                                    </label>
                                 </div>
+                            </form>
+                            <a href="/validate?month={{ current_month }}" class="btn btn-outline-dark btn-sm w-100 fw-bold mt-2">
+                                🔍 歷史數據自動校對
+                            </a>
+                        </div>
+
+                        <div id="webInputPanel" class="border border-success rounded p-3 bg-light mb-3" style="display: none;">
+                            <div class="fw-bold text-success mb-2">B. 網頁輸入</div>
+                            <p class="small text-muted mb-3">如需直接在系統補資料或修正，請使用以下入口。</p>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-warning text-start" type="button" data-bs-toggle="modal" data-bs-target="#newAttendanceGroupModal">
+                                    新增考勤人員 / 打卡資料
+                                </button>
+                                <button class="btn btn-outline-success text-start" type="button" data-bs-toggle="modal" data-bs-target="#newSalesGroupModal" onclick="clearAttendanceModal()">
+                                    新增銷售據點 / 單據資料
+                                </button>
+                                <a class="btn btn-outline-primary text-start" href="/settings?month={{ current_month }}">設定本月時薪 / 佣金覆寫</a>
                             </div>
-                        </form>
+                        </div>
                     </div>
 
                 {% else %}
 
-                    <form action="/upload_and_import" method="POST" enctype="multipart/form-data">
-                        <input type="hidden" name="calc_month" value="{{ current_month }}">
-                        
-                        <div class="mb-3">
-                            <label class="form-label fw-bold text-success">2. 選擇 Excel 檔案</label>
+                    <label class="form-label fw-bold text-primary">2. 選擇輸入方式</label>
+                    <div class="mb-3">
+                        <select id="inputModeSelect" class="form-select border-primary" aria-label="請選擇輸入方式">
+                            <option value="excel" {% if month_input_source != 'web' %}selected{% endif %}>Excel 匯入</option>
+                            <option value="web" {% if month_input_source == 'web' %}selected{% endif %}>網頁輸入</option>
+                        </select>
+                    </div>
+
+                    <div id="excelInputPanel" class="border border-success rounded p-3 bg-light mb-3">
+                        <div class="fw-bold text-success mb-2">A. Excel 匯入</div>
+                        <p class="small text-muted mb-3">適合仍以 Excel 為主的月份作業。匯入後再回到系統內覆核與修正。</p>
+                        <form action="/upload_and_import" method="POST" enctype="multipart/form-data">
+                            <input type="hidden" name="calc_month" value="{{ current_month }}">
                             <input class="form-control border-success mb-2" type="file" name="excel_file" accept=".xlsx, .xls" required>
-                            
-                            <div class="form-check form-switch bg-light p-2 rounded border">
-                                <input class="form-check-input ms-0 me-2" type="checkbox" name="update_emp" id="updateEmpCheck">
+                            <div class="form-check form-switch bg-white p-2 rounded border mb-2">
+                                <input class="form-check-input ms-0 me-2" type="checkbox" name="update_emp" id="updateEmpCheck" checked>
                                 <label class="form-check-label fw-bold text-primary" for="updateEmpCheck">
-                                    🔄 同步更新員工主檔 (時薪與津貼)
+                                    🔄 同步本月時薪與津貼 (MonthlyRates)
                                 </label>
                                 <div class="form-text mt-1">
-                                    <small>勾選：以 Excel 內的 "Name List" 更新資料庫。<br>取消：僅匯入工時與銷售，保留資料庫現有的薪酬設定。</small>
+                                    <small>勾選：以 Excel "Name List" 更新<strong>本月</strong>時薪與津貼（不影響其他月份及員工預設值）。</small>
                                 </div>
                             </div>
-                        </div>
+                            <button type="submit" class="btn btn-success w-100 py-2 fw-bold shadow-sm">
+                                📤 匯入 {{ current_month }} 資料
+                            </button>
+                        </form>
+                        <a href="/validate?month={{ current_month }}" class="btn btn-outline-dark w-100 fw-bold shadow-sm mt-2">
+                            🔍 歷史數據自動校對
+                        </a>
+                    </div>
 
-                        <button type="submit" class="btn btn-success w-100 py-2 fw-bold shadow-sm mb-3">
-                            📤 匯入 {{ current_month }} 資料
-                        </button>
-                    </form>
-                    
-                    <hr>
-                    
+                    <div id="webInputPanel" class="border border-primary rounded p-3 bg-light mb-3" style="display: none;">
+                        <div class="fw-bold text-primary mb-2">B. 網頁輸入</div>
+                        <p class="small text-muted mb-3">適合直接在系統建立本月資料，不必先準備 Excel。</p>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-warning text-start" type="button" data-bs-toggle="modal" data-bs-target="#newAttendanceGroupModal">
+                                新增考勤人員 / 打卡資料
+                            </button>
+                            <button class="btn btn-outline-success text-start" type="button" data-bs-toggle="modal" data-bs-target="#newSalesGroupModal" onclick="clearAttendanceModal()">
+                                新增銷售據點 / 單據資料
+                            </button>
+                            <a class="btn btn-outline-primary text-start" href="/settings?month={{ current_month }}">設定本月時薪 / 佣金覆寫</a>
+                            <a class="btn btn-outline-secondary text-start" href="/manage_locations">維護標準店鋪與人事主檔</a>
+                        </div>
+                    </div>
+
                     <button class="btn btn-secondary w-100 py-2 fw-bold shadow-sm mb-3" disabled>
-                        🚀 3. 開始結算 (請先上傳資料)
+                        🚀 3. 開始結算 (請先建立或匯入資料)
                     </button>
 
                 {% endif %}
-
-                <a href="/validate?month={{ current_month }}" class="btn btn-outline-dark w-100 fw-bold shadow-sm mt-1">
-                    🔍 歷史數據自動校對
-                </a>
             </div>
         </div>
-
-        
     </div>
-
-    
 </div>
 
-<div class="card shadow-sm border-warning mb-4">
+{% if attendances or staff_summary %}
+<div class="quick-action-bar">
+    <div class="quick-action-card">
+        <div class="quick-action-meta">
+            <div class="small text-muted fw-semibold">⚡ 快速重算流程</div>
+            <div class="fw-bold">已完成修正後，可直接校對或重算 {{ current_month }} 薪資</div>
+        </div>
+        <div class="quick-action-buttons">
+            <a href="/settings?month={{ current_month }}" class="btn btn-outline-secondary">檢查本月覆寫</a>
+            <form action="/calculate_payroll" method="POST" class="m-0">
+                <input type="hidden" name="calc_month" value="{{ current_month }}">
+                <button type="submit" class="btn btn-success fw-bold">立即重新計算薪資</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="card app-card border-warning mb-4" id="attendance-overview">
     <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
         <h5 class="mb-0 fw-bold">📋 2. 考勤總覽 {{ current_month }}</h5>
         <button class="btn btn-sm btn-dark shadow-sm" data-bs-toggle="modal" data-bs-target="#newAttendanceGroupModal">
@@ -110,8 +165,8 @@
         </button>
     </div>
     <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover text-center align-middle mb-0">
+        <div class="table-wrap">
+            <table class="table table-hover text-center align-middle mb-0 data-table">
                 <thead class="table-light">
                     <tr>
                         <th style="width: 70px;">ID</th> <th>推廣員</th> <th>全名</th>
@@ -170,7 +225,7 @@
     </div>
 </div>
 
-<div class="card shadow-sm border-success mb-4">
+<div class="card app-card border-success mb-4" id="sales-overview">
     <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
         <h5 class="mb-0 fw-bold">📊 3. 銷售管理中心 {{ current_month }}</h5>
         <button class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#newSalesGroupModal" onclick="clearAttendanceModal()">
@@ -178,8 +233,8 @@
         </button>
     </div>
     <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover text-center align-middle mb-0">
+        <div class="table-wrap">
+            <table class="table table-hover text-center align-middle mb-0 data-table">
                 <thead class="table-light">
                     <tr>
                         <th style="width: 70px;">ID</th> <th>推廣員</th> <th>全名</th>
@@ -505,459 +560,31 @@
     </div>
 </div>
 
+<script id="index-page-data" type="application/json">{{ index_page_data | tojson }}</script>
+<script src="{{ url_for('static', filename='index.js') }}"></script>
 <script>
-// 🌟 新增：將後端的產品型號清單轉換為 JavaScript 陣列，供行內編輯使用
-const availableProducts = [
-    {% for p in products %}
-    "{{ p.model }}",
-    {% endfor %}
-];
+    (function() {
+        const modeSelect = document.getElementById('inputModeSelect');
+        const excelPanel = document.getElementById('excelInputPanel');
+        const webPanel = document.getElementById('webInputPanel');
 
-// 🌟 更新 1：接收時薪參數並填入表單
-// ✅ 參數最後多加了一個 default_hr
-function editAttendance(name, loc, days, hours, ot, exp, adj, bonus, monthly_hr, default_hr) {
-    document.getElementById('att_name_display').innerText = name;
-    document.getElementById('att_name_hidden').value = name;
-    document.getElementById('att_loc_hidden').value = loc;
-    
-    if(document.getElementById('att_loc_display')) {
-        document.getElementById('att_loc_display').innerText = loc;
-    }
+        if (!modeSelect || !excelPanel || !webPanel) {
+            return;
+        }
 
-    const newLocInput = document.getElementById('new_loc');
-    if(newLocInput) newLocInput.value = loc;
-
-    const monthStr = "{{ current_month }}";
-    if (monthStr) {
-        const [year, month] = monthStr.split('-');
-        const lastDay = new Date(year, month, 0).getDate();
-        const dateInput = document.getElementById('new_date');
-        
-        dateInput.min = `${monthStr}-01`;
-        dateInput.max = `${monthStr}-${lastDay}`;
-        dateInput.value = `${monthStr}-01`; 
-    }
-
-    document.getElementById('att_exp').value = exp || 0;
-    document.getElementById('att_adj').value = adj || 0;
-    document.getElementById('att_bonus').value = bonus || 0;
-    
-    // ✅ 更新時薪輸入框與提示文字
-    const hrInput = document.getElementById('att_monthly_hr');
-    hrInput.value = (monthly_hr !== null && monthly_hr !== undefined) ? monthly_hr : '';
-    hrInput.placeholder = `預設 $${default_hr}`;
-    
-    const hrHint = document.getElementById('att_hr_hint');
-    if (hrHint) {
-        hrHint.innerHTML = `<i class="bi bi-info-circle"></i> 該員工預設：$${default_hr}`;
-    }
-
-    document.getElementById('daily_records_body').innerHTML = '<tr><td colspan="9" class="text-center">載入中...</td></tr>';
-    refreshDailyTable(name, loc); 
-    new bootstrap.Modal(document.getElementById('attendanceModal')).show();
-}
-
-// ✅ 新增這個函數，當選擇推廣員時觸發
-function updateInitAttDefaultHr() {
-    const select = document.getElementById('init_att_promoter');
-    const selectedOption = select.options[select.selectedIndex];
-    const defaultHr = selectedOption.getAttribute('data-hr');
-    
-    const hintEl = document.getElementById('init_att_hr_hint');
-    const inputEl = document.getElementById('init_att_monthly_hr');
-    
-    if (defaultHr) {
-        hintEl.innerHTML = `<i class="bi bi-info-circle"></i> 該員工預設時薪為 <strong>$${defaultHr}</strong>`;
-        inputEl.placeholder = `預設 $${defaultHr}`;
-    } else {
-        hintEl.innerHTML = `<i class="bi bi-info-circle"></i> 請先選擇推廣員以檢視預設時薪`;
-        inputEl.placeholder = `若留空則使用系統預設時薪`;
-    }
-}
-
-// 🌟 更新 2：將新增視窗填寫的時薪傳遞給編輯視窗
-function startNewAttendanceGroup() {
-    const select = document.getElementById('init_att_promoter');
-    const promoter = select.value;
-    const location = document.getElementById('init_att_loc').value;
-    const monthly_hr = document.getElementById('init_att_monthly_hr').value;
-    
-    if(!promoter || !location) {
-        alert("請完整選擇推廣員與店鋪！");
-        return;
-    }
-    
-    // ✅ 抓取剛剛選到的預設時薪
-    const selectedOption = select.options[select.selectedIndex];
-    const defaultHr = selectedOption ? parseFloat(selectedOption.getAttribute('data-hr')) : 0;
-    
-    bootstrap.Modal.getInstance(document.getElementById('newAttendanceGroupModal')).hide();
-    
-    const hr_val = monthly_hr ? parseFloat(monthly_hr) : null;
-    
-    // ✅ 將 defaultHr 傳給編輯視窗
-    editAttendance(promoter, location, 0, 0, 0, 0, 0, 0, hr_val, defaultHr);
-}
-
-// 🌟 體驗優化：當考勤明細 Modal 關閉時，自動重整頁面，讓最新的微調與總數顯示出來
-document.addEventListener("DOMContentLoaded", function() {
-    var attModalEl = document.getElementById('attendanceModal');
-    if(attModalEl) {
-        attModalEl.addEventListener('hidden.bs.modal', function () {
-            window.location.reload();
-        });
-    }
-});
-
-
-// 2. 核心函數：抓取數據並「動態生成帶有 Delete 按鈕的表格」
-function refreshDailyTable(name, location) {
-    const month = "{{ current_month }}";
-    fetch(`/api/daily_attendance/${month}/${encodeURIComponent(name)}/${encodeURIComponent(location)}`)
-        .then(response => response.json())
-        .then(data => {
-            const tbody = document.getElementById('daily_records_body');
-            tbody.innerHTML = ''; 
-
-            if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" class="text-muted py-3">此地點尚無打卡明細。</td></tr>'; // 🌟 colspan 改為 9
-                return;
-            }
-
-            // 🌟 這裡傳入 index 參數 (從 0 開始)
-            data.forEach((record, index) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="align-middle text-muted small">${index + 1}</td> <td class="fw-bold align-middle">${record.work_date}</td>
-                    <td class="align-middle"><span class="badge bg-secondary">${record.location}</span></td>
-                    <td>
-                        <input type="hidden" name="record_id[]" value="${record.id}">
-                        <input type="time" name="in_time[]" class="form-control form-control-sm" value="${record.in_time}">
-                    </td>
-                    <td>
-                        <input type="time" name="out_time[]" class="form-control form-control-sm" value="${record.out_time}">
-                    </td>
-                    
-                    <td>
-                        <input type="number" step="0.5" name="normal_hours[]" 
-                            class="form-control form-control-sm" 
-                            value="${parseFloat(record.normal_hours || 8.0).toFixed(1)}">
-                    </td>
-                    
-                    <td class="fw-bold align-middle">${parseFloat(record.actual_hours).toFixed(2)}</td>
-                    <td class="text-danger align-middle">${parseFloat(record.ot_hours).toFixed(2)}</td>
-                    <td class="align-middle">
-                        <button type="button" class="btn btn-sm btn-outline-danger" 
-                                onclick="deleteRecord(${record.id}, '${name}', '${location}')">🗑️</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        });
-}
-
-// 3. 刪除單筆紀錄函數
-function deleteRecord(id, name) {
-    if(confirm('確定要永久刪除這筆單日考勤嗎？此動作無法復原。')) {
-        fetch(`/delete_daily_attendance/${id}`, { method: 'POST' })
-            .then(response => response.json())
-            .then(result => {
-                if(result.status === 'success') {
-                    refreshDailyTable(name); // 刪除成功後，無縫刷新表格
-                }
-            });
-    }
-}
-
-
-// 4. 手動新增紀錄函數 (從 tfoot 抓取資料)
-function addNewRecordFromUI() {
-    const name = document.getElementById('att_name_display').innerText;
-    const location = document.getElementById('att_loc_display').innerText;
-    
-    const dateInput = document.getElementById('new_date').value;
-    const inInput = document.getElementById('new_in').value;
-    const outInput = document.getElementById('new_out').value;
-    const normalInput = document.getElementById('new_normal').value; // 🌟 抓取常規工時
-
-    if(!dateInput || !inInput || !outInput) {
-        alert("請完整填寫日期與時間！");
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append('payroll_month', "{{ current_month }}");
-    formData.append('nick_name', name);
-    formData.append('location', location);
-    formData.append('work_date', dateInput);
-    formData.append('in_time', inInput);
-    formData.append('out_time', outInput);
-    formData.append('normal_hours', normalInput || 8.0); // 🌟 傳送常規工時給後端
-
-    fetch('/add_daily_attendance', { method: 'POST', body: formData })
-        .then(response => response.json())
-        .then(result => {
-            if(result.status === 'success') {
-                refreshDailyTable(name, location);
-                // 新增後只清空時間，保留日期讓使用者方便連續輸入隔天
-                document.getElementById('new_in').value = '12:00';
-                document.getElementById('new_out').value = '20:00';
-                document.getElementById('new_normal').value = '8.0';
-            }
-        });
-}
-
-// ==========================================
-// 🛒 銷售紀錄動態編輯邏輯 (按人 + 按地點)
-// ==========================================
-
-// 1. 打開銷售 Modal 並載入數據
-// 🌟 1. 更新 openSalesModal，接收佣金參數並更新 UI
-function openSalesModal(name, location, monthlyComm, defaultComm) {
-    document.getElementById('sales_name_display').innerText = name;
-    document.getElementById('sales_loc_display').innerText = location;
-    
-    const locSelect = document.getElementById('new_sales_loc');
-    if(locSelect) { locSelect.value = location; locSelect.disabled = true; }
-
-    // ✅ 填入佣金設定與提示文字
-    const commInput = document.getElementById('sales_monthly_comm_input');
-    commInput.value = (monthlyComm !== null && monthlyComm !== undefined) ? monthlyComm : '';
-    commInput.placeholder = `預設 ${defaultComm}`;
-    
-    const hintEl = document.getElementById('sales_comm_hint');
-    if (hintEl) {
-        hintEl.innerHTML = `<i class="bi bi-info-circle"></i> 該員工預設：${(defaultComm * 100).toFixed(0)}%`;
-    }
-
-    /* ... 下方的日期與撈取資料的邏輯保持不變 ... */
-    document.getElementById('sales_records_body').innerHTML = '<tr><td colspan="7" class="py-4 text-center"><div class="spinner-border text-success" role="status"></div><br>正在撈取該店銷售紀錄...</td></tr>';
-    new bootstrap.Modal(document.getElementById('salesModal')).show();
-    refreshSalesTable(name, location);
-}
-
-// 🌟 2. 獨立儲存佣金的 API 呼叫函數
-function saveSalesComm() {
-    const name = document.getElementById('sales_name_display').innerText;
-    const commValue = document.getElementById('sales_monthly_comm_input').value;
-    const month = "{{ current_month }}";
-
-    const formData = new FormData();
-    formData.append('month', month);
-    formData.append('promoter', name);
-    formData.append('monthly_comm', commValue);
-
-    fetch('/update_monthly_comm_api', { method: 'POST', body: formData })
-        .then(response => response.json())
-        .then(result => {
-            if(result.status === 'success') {
-                alert("✅ 月度佣金設定已儲存！關閉視窗後將重新整理。");
-            }
-        });
-}
-
-function updateInitSalesDefaultComm() {
-    const select = document.getElementById('init_sales_promoter');
-    const selectedOption = select.options[select.selectedIndex];
-    const defaultComm = selectedOption.getAttribute('data-comm');
-    
-    const hintEl = document.getElementById('init_sales_comm_hint');
-    const inputEl = document.getElementById('init_sales_monthly_comm');
-    
-    if (defaultComm) {
-        const pct = (parseFloat(defaultComm) * 100).toFixed(0);
-        hintEl.innerHTML = `<i class="bi bi-info-circle"></i> 該員工預設佣金為 <strong>${pct}%</strong>`;
-        inputEl.placeholder = `預設 ${defaultComm}`;
-    } else {
-        hintEl.innerHTML = `<i class="bi bi-info-circle"></i> 請先選擇推廣員，小數表示 (例: 3% 輸入 0.03)`;
-        inputEl.placeholder = `若留空則使用預設`;
-    }
-}
-
-// 核心：動態渲染表格 (修正日期 Pre-fill，且產品型號維持「可輸入或選擇」)
-function refreshSalesTable(name, location) {
-    const month = "{{ current_month }}";
-    
-    fetch(`/api/sales_records/${month}/${encodeURIComponent(name)}/${encodeURIComponent(location)}`)
-        .then(response => response.json())
-        .then(data => {
-            const tbody = document.getElementById('sales_records_body');
-            tbody.innerHTML = ''; 
-
-            if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="text-muted py-3">此地點尚無銷售紀錄。</td></tr>'; // 🌟 colspan 改為 7
-                return;
-            }
-
-            const month = "{{ current_month }}";
-            let minDate = '';
-            let maxDate = '';
-            if (month) {
-                const [year, monthNum] = month.split('-');
-                const lastDay = new Date(year, monthNum, 0).getDate();
-                minDate = `${month}-01`;
-                maxDate = `${month}-${String(lastDay).padStart(2, '0')}`;
-            }
-
-            // 🌟 這裡引入 index 參數來生成遞增序號
-            data.forEach((record, index) => {
-                let safeDate = '';
-                if (record.date) {
-                    safeDate = String(record.date).replace(/\//g, '-').substring(0, 10);
-                }
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="align-middle text-muted small">${index + 1}</td> <td class="align-middle">
-                        <input type="date" class="form-control form-control-sm edit-sales-date" value="${safeDate}" min="${minDate}" max="${maxDate}">
-                    </td>
-                    <td class="align-middle"><span class="badge bg-secondary">${record.location}</span></td>
-                    <td class="align-middle">
-                        <input list="productModels" type="text" class="form-control form-control-sm edit-sales-model" value="${record.model || ''}" placeholder="輸入或選擇型號">
-                    </td>
-                    <td class="align-middle">
-                        <input type="number" min="1" class="form-control form-control-sm edit-sales-qty" value="${record.quantity || 1}">
-                    </td>
-                    <td class="align-middle">
-                        <input type="number" step="0.1" class="form-control form-control-sm edit-sales-price" value="${parseFloat(record.price || 0).toFixed(2)}">
-                    </td>
-                    <td class="align-middle">
-                        <div class="d-flex gap-1">
-                            <button type="button" class="btn btn-sm btn-outline-primary w-50" onclick="saveSalesRecord(${record.id})">
-                                💾 修改
-                            </button>
-                            <button type="button" class="btn btn-sm btn-outline-danger w-50" onclick="deleteSalesRecord(${record.id}, '${name}', '${location}')">
-                                🗑️ 刪除
-                            </button>
-                        </div>
-                    </td>
-                `;
-                tr.setAttribute('data-sales-id', record.id);
-                tbody.appendChild(tr);
-            });
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            document.getElementById('sales_records_body').innerHTML = '<tr><td colspan="7" class="text-danger py-3">⚠️ 讀取失敗。</td></tr>';
-        });
-}
-
-// 3. 刪除銷售紀錄
-function deleteSalesRecord(id, name, location) {
-    if(confirm('確定要永久刪除這筆銷售紀錄嗎？')) {
-        fetch(`/delete_sales_record/${id}`, { method: 'POST' })
-            .then(response => response.json())
-            .then(result => {
-                if(result.status === 'success') refreshSalesTable(name, location);
-            });
-    }
-}
-
-function saveSalesRecord(id) {
-    const row = document.querySelector(`tr[data-sales-id="${id}"]`);
-    if (!row) return;
-
-    const dateValue = row.querySelector('.edit-sales-date').value;
-    const modelValue = row.querySelector('.edit-sales-model').value.trim();
-    const quantityValue = row.querySelector('.edit-sales-qty').value;
-    const priceValue = row.querySelector('.edit-sales-price').value;
-    const name = document.getElementById('sales_name_display').innerText;
-    const location = document.getElementById('sales_loc_display').innerText;
-
-    if (!modelValue || !priceValue) {
-        alert('請完整填寫「型號」與「單價」！');
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append('id', id);
-    formData.append('date', dateValue);
-    formData.append('model', modelValue);
-    formData.append('quantity', quantityValue);
-    formData.append('price', priceValue);
-    formData.append('promoter_name', name);
-    formData.append('location', location);
-
-    fetch('/update_sales_record', { method: 'POST', body: formData })
-        .then(response => response.json())
-        .then(result => {
-            if (result.status === 'success') {
-                refreshSalesTable(name, location);
+        function updateMode() {
+            const mode = modeSelect.value;
+            if (mode === 'web') {
+                excelPanel.style.display = 'none';
+                webPanel.style.display = '';
             } else {
-                alert(result.message || '更新失敗');
+                excelPanel.style.display = '';
+                webPanel.style.display = 'none';
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('更新發生錯誤，請稍後再試');
-        });
-}
+        }
 
-// 4. 手動新增銷售紀錄 (自動帶入被鎖定的地點)
-function addNewSalesRecordFromUI() {
-    const name = document.getElementById('sales_name_display').innerText;
-    const location = document.getElementById('sales_loc_display').innerText; // 取得當前鎖定的地點
-    const dateInput = document.getElementById('new_sales_date').value;
-    const modelInput = document.getElementById('new_sales_model').value;
-    const qtyInput = document.getElementById('new_sales_qty').value;
-    const priceInput = document.getElementById('new_sales_price').value;
-
-    if(!modelInput || !priceInput) {
-        alert("請完整填寫「型號」與「單價」！");
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append('payroll_month', "{{ current_month }}");
-    formData.append('promoter_name', name);
-    formData.append('date', dateInput);
-    formData.append('location', location); // 使用鎖定的地點
-    formData.append('model', modelInput);
-    formData.append('quantity', qtyInput);
-    formData.append('price', priceInput);
-
-    fetch('/add_sales_record', { method: 'POST', body: formData })
-        .then(response => response.json())
-        .then(result => {
-            if(result.status === 'success') {
-                document.getElementById('new_sales_model').value = '';
-                document.getElementById('new_sales_qty').value = '1';
-                document.getElementById('new_sales_price').value = '';
-                refreshSalesTable(name, location); 
-            }
-        });
-}
-
-// 🌟 4. 修改 startNewSalesGroup，將佣金帶入編輯視窗
-function startNewSalesGroup() {
-    const select = document.getElementById('init_sales_promoter');
-    const promoter = select.value;
-    const location = document.getElementById('init_sales_loc').value;
-    const monthly_comm = document.getElementById('init_sales_monthly_comm').value; // ✅ 抓取佣金
-    
-    if(!promoter || !location) {
-        alert("請完整選擇推廣員與店鋪！");
-        return;
-    }
-    
-    const selectedOption = select.options[select.selectedIndex];
-    const defaultComm = selectedOption ? parseFloat(selectedOption.getAttribute('data-comm')) : 0.03;
-    const comm_val = monthly_comm ? parseFloat(monthly_comm) : null;
-    
-    bootstrap.Modal.getInstance(document.getElementById('newSalesGroupModal')).hide();
-    
-    // ✅ 傳入金錢參數
-    openSalesModal(promoter, location, comm_val, defaultComm);
-}
-
-// 🌟 體驗優化：當銷售明細 Modal 關閉時，自動重整頁面，讓最新的彙總數據顯示出來
-document.addEventListener("DOMContentLoaded", function() {
-    var salesModalEl = document.getElementById('salesModal');
-    if(salesModalEl) {
-        salesModalEl.addEventListener('hidden.bs.modal', function () {
-            window.location.reload();
-        });
-    }
-});
+        modeSelect.addEventListener('change', updateMode);
+        updateMode();
+    })();
 </script>
 {% endblock %}

@@ -52,14 +52,14 @@ def process_payroll_from_db(calc_month, db_path='payroll.db'):
             if pd.isna(raw_ot):
                 return 0.0
             
-            # ✅ 處理負數 (扣鐘/遲到/早退)：以 0.5 為單位向下進位 (保留原始扣除量)
-            if raw_ot < 0:
-                return (int(raw_ot * 2)) / 2.0
-                
-            # ✅ 處理正數 (加班)：不足 0.5 不計
-            if raw_ot < 0.5:
+            # ✅ 小於半小時（含接近 0 的負浮點誤差）一律視為 0
+            if -0.5 < raw_ot < 0.5:
                 return 0.0
-                
+
+            # ✅ 處理負數 (扣鐘/遲到/早退)：以 0.5 為單位向下進位 (保留原始扣除量)
+            if raw_ot <= -0.5:
+                return math.floor(raw_ot * 2) / 2.0
+
             return math.floor(raw_ot / 0.5) * 0.5
 
         # 逐日清洗 OT 數據

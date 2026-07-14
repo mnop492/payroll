@@ -5741,3 +5741,627 @@
 2026-07-13 20:44:02,286 - INFO -  * Restarting with stat
 2026-07-13 20:44:05,826 - WARNING -  * Debugger is active!
 2026-07-13 20:44:05,848 - INFO -  * Debugger PIN: 142-162-729
+2026-07-14 13:57:42,044 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://10.142.32.13:5001
+2026-07-14 13:57:42,045 - INFO - [33mPress CTRL+C to quit[0m
+2026-07-14 13:57:42,047 - INFO -  * Restarting with stat
+2026-07-14 13:57:43,706 - WARNING -  * Debugger is active!
+2026-07-14 13:57:43,712 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 13:59:17,294 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\app.py', reloading
+2026-07-14 13:59:17,375 - INFO -  * Restarting with stat
+2026-07-14 13:59:18,951 - WARNING -  * Debugger is active!
+2026-07-14 13:59:18,959 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 14:02:32,086 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\app.py', reloading
+2026-07-14 14:02:32,166 - INFO -  * Restarting with stat
+2026-07-14 14:02:33,717 - WARNING -  * Debugger is active!
+2026-07-14 14:02:33,725 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 14:03:18,755 - INFO - 127.0.0.1 - - [14/Jul/2026 14:03:18] "GET / HTTP/1.1" 200 -
+2026-07-14 14:03:19,710 - INFO - 127.0.0.1 - - [14/Jul/2026 14:03:19] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-07-14 14:06:28,089 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\importer.py', reloading
+2026-07-14 14:06:28,171 - INFO -  * Restarting with stat
+2026-07-14 14:06:29,689 - WARNING -  * Debugger is active!
+2026-07-14 14:06:29,698 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 14:07:36,880 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\importer.py', reloading
+2026-07-14 14:07:36,977 - INFO -  * Restarting with stat
+2026-07-14 14:07:38,620 - WARNING -  * Debugger is active!
+2026-07-14 14:07:38,629 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 14:20:39,298 - INFO - 127.0.0.1 - - [14/Jul/2026 14:20:39] "GET / HTTP/1.1" 200 -
+2026-07-14 14:24:31,642 - INFO -  * Detected change in 'C:\\Users\\horayr\\AppData\\Roaming\\Python\\Python313\\site-packages\\openpyxl\\_constants.py', reloading
+2026-07-14 14:24:31,724 - INFO -  * Restarting with stat
+2026-07-14 14:24:33,220 - WARNING -  * Debugger is active!
+2026-07-14 14:24:33,228 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 14:25:10,057 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\importer.py', reloading
+2026-07-14 14:25:10,131 - INFO -  * Restarting with stat
+2026-07-14 14:25:11,613 - WARNING -  * Debugger is active!
+2026-07-14 14:25:11,621 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 14:30:26,778 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\importer.py', reloading
+2026-07-14 14:30:26,859 - INFO -  * Restarting with stat
+2026-07-14 14:30:28,408 - WARNING -  * Debugger is active!
+2026-07-14 14:30:28,416 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 14:30:49,279 - INFO - 127.0.0.1 - - [14/Jul/2026 14:30:49] "GET /manage_products HTTP/1.1" 200 -
+2026-07-14 14:30:59,056 - INFO - 127.0.0.1 - - [14/Jul/2026 14:30:59] "GET / HTTP/1.1" 200 -
+2026-07-14 14:31:03,451 - INFO - 127.0.0.1 - - [14/Jul/2026 14:31:03] "GET /?month=2026-01 HTTP/1.1" 200 -
+2026-07-14 14:32:31,033 - INFO - 127.0.0.1 - - [14/Jul/2026 14:32:31] "GET /api/sales_records/2026-01/Apple/TW%20Aeon HTTP/1.1" 200 -
+2026-07-14 14:33:03,916 - INFO - 127.0.0.1 - - [14/Jul/2026 14:33:03] "GET /?month=2026-01 HTTP/1.1" 200 -
+2026-07-14 14:33:07,593 - INFO - 127.0.0.1 - - [14/Jul/2026 14:33:07] "GET /api/sales_records/2026-01/Apple/TW%20Aeon HTTP/1.1" 200 -
+2026-07-14 14:33:15,459 - INFO - 127.0.0.1 - - [14/Jul/2026 14:33:15] "GET /?month=2026-01 HTTP/1.1" 200 -
+2026-07-14 14:33:23,642 - INFO - 127.0.0.1 - - [14/Jul/2026 14:33:23] "GET /api/daily_attendance/2026-01/Apple/CWB%20Logon HTTP/1.1" 200 -
+2026-07-14 14:33:28,597 - INFO - 127.0.0.1 - - [14/Jul/2026 14:33:28] "GET /?month=2026-01 HTTP/1.1" 200 -
+2026-07-14 14:33:33,790 - INFO - 127.0.0.1 - - [14/Jul/2026 14:33:33] "GET /api/sales_records/2026-01/Apple/TW%20Aeon HTTP/1.1" 200 -
+2026-07-14 14:35:50,928 - INFO - 127.0.0.1 - - [14/Jul/2026 14:35:50] "GET /?month=2026-01 HTTP/1.1" 200 -
+2026-07-14 14:35:51,952 - INFO - 127.0.0.1 - - [14/Jul/2026 14:35:51] "GET /api/sales_records/2026-01/Apple/TW%20Aeon HTTP/1.1" 200 -
+2026-07-14 14:35:58,253 - INFO - 127.0.0.1 - - [14/Jul/2026 14:35:58] "GET /?month=2026-01 HTTP/1.1" 200 -
+2026-07-14 14:46:16,053 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\app.py', reloading
+2026-07-14 14:46:16,153 - INFO -  * Restarting with stat
+2026-07-14 14:46:17,885 - WARNING -  * Debugger is active!
+2026-07-14 14:46:17,892 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 14:46:29,869 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\app.py', reloading
+2026-07-14 14:46:29,962 - INFO -  * Restarting with stat
+2026-07-14 14:48:16,554 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://10.142.32.13:5001
+2026-07-14 14:48:16,554 - INFO - [33mPress CTRL+C to quit[0m
+2026-07-14 14:48:16,556 - INFO -  * Restarting with stat
+2026-07-14 14:48:18,059 - WARNING -  * Debugger is active!
+2026-07-14 14:48:18,066 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 14:48:31,174 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\app.py', reloading
+2026-07-14 14:48:31,261 - INFO -  * Restarting with stat
+2026-07-14 14:48:32,780 - WARNING -  * Debugger is active!
+2026-07-14 14:48:32,786 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 14:48:34,973 - INFO - 127.0.0.1 - - [14/Jul/2026 14:48:34] "GET /?month=2026-01 HTTP/1.1" 200 -
+2026-07-14 14:48:35,079 - INFO - 127.0.0.1 - - [14/Jul/2026 14:48:35] "GET /static/index.js HTTP/1.1" 200 -
+2026-07-14 14:48:38,975 - INFO - 127.0.0.1 - - [14/Jul/2026 14:48:38] "GET /api/sales_records/2026-01/Apple/TW%20Aeon HTTP/1.1" 200 -
+2026-07-14 14:48:40,783 - INFO - 127.0.0.1 - - [14/Jul/2026 14:48:40] "GET /?month=2026-01 HTTP/1.1" 200 -
+2026-07-14 14:48:40,796 - INFO - 127.0.0.1 - - [14/Jul/2026 14:48:40] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 14:55:21,844 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\services.py', reloading
+2026-07-14 14:55:21,923 - INFO -  * Restarting with stat
+2026-07-14 14:55:23,555 - WARNING -  * Debugger is active!
+2026-07-14 14:55:23,563 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 14:55:38,170 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\app.py', reloading
+2026-07-14 14:55:38,256 - INFO -  * Restarting with stat
+2026-07-14 14:55:39,978 - WARNING -  * Debugger is active!
+2026-07-14 14:55:39,985 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 14:55:49,117 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\app.py', reloading
+2026-07-14 14:55:49,197 - INFO -  * Restarting with stat
+2026-07-14 14:55:50,762 - WARNING -  * Debugger is active!
+2026-07-14 14:55:50,770 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 14:59:25,072 - INFO - 127.0.0.1 - - [14/Jul/2026 14:59:25] "[32mGET / HTTP/1.1[0m" 302 -
+2026-07-14 14:59:25,090 - INFO - 127.0.0.1 - - [14/Jul/2026 14:59:25] "GET /login?next=/? HTTP/1.1" 200 -
+2026-07-14 15:01:49,330 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\app.py', reloading
+2026-07-14 15:01:49,413 - INFO -  * Restarting with stat
+2026-07-14 15:01:51,089 - WARNING -  * Debugger is active!
+2026-07-14 15:01:51,098 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 15:04:47,564 - INFO - 127.0.0.1 - - [14/Jul/2026 15:04:47] "[32mGET /?month=2026-01 HTTP/1.1[0m" 302 -
+2026-07-14 15:04:47,578 - INFO - 127.0.0.1 - - [14/Jul/2026 15:04:47] "GET /login?next=/?month%3D2026-01 HTTP/1.1" 200 -
+2026-07-14 15:04:58,690 - INFO - 127.0.0.1 - - [14/Jul/2026 15:04:58] "POST /login?next=/?month%3D2026-01 HTTP/1.1" 200 -
+2026-07-14 15:06:28,449 - INFO - 127.0.0.1 - - [14/Jul/2026 15:06:28] "POST /login?next=/?month%3D2026-01 HTTP/1.1" 200 -
+2026-07-14 15:06:57,571 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\services.py', reloading
+2026-07-14 15:06:57,650 - INFO -  * Restarting with stat
+2026-07-14 15:06:59,199 - WARNING -  * Debugger is active!
+2026-07-14 15:06:59,207 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 15:07:07,085 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\services.py', reloading
+2026-07-14 15:07:07,165 - INFO -  * Restarting with stat
+2026-07-14 15:07:08,683 - WARNING -  * Debugger is active!
+2026-07-14 15:07:08,691 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 15:07:38,775 - INFO - 127.0.0.1 - - [14/Jul/2026 15:07:38] "[32mGET / HTTP/1.1[0m" 302 -
+2026-07-14 15:07:38,791 - INFO - 127.0.0.1 - - [14/Jul/2026 15:07:38] "GET /login?next=/? HTTP/1.1" 200 -
+2026-07-14 15:07:46,648 - INFO - 127.0.0.1 - - [14/Jul/2026 15:07:46] "POST /login?next=/? HTTP/1.1" 200 -
+2026-07-14 15:07:54,405 - INFO - 127.0.0.1 - - [14/Jul/2026 15:07:54] "POST /login?next=/? HTTP/1.1" 200 -
+2026-07-14 15:09:44,318 - INFO - 127.0.0.1 - - [14/Jul/2026 15:09:44] "[32mPOST /login?next=/? HTTP/1.1[0m" 302 -
+2026-07-14 15:09:44,350 - INFO - 127.0.0.1 - - [14/Jul/2026 15:09:44] "GET / HTTP/1.1" 200 -
+2026-07-14 15:09:44,430 - INFO - 127.0.0.1 - - [14/Jul/2026 15:09:44] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:11:42,471 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\services.py', reloading
+2026-07-14 15:11:42,561 - INFO -  * Restarting with stat
+2026-07-14 15:11:44,104 - WARNING -  * Debugger is active!
+2026-07-14 15:11:44,111 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 15:12:14,551 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\blueprints\\settings.py', reloading
+2026-07-14 15:12:14,636 - INFO -  * Restarting with stat
+2026-07-14 15:12:16,153 - WARNING -  * Debugger is active!
+2026-07-14 15:12:16,161 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 15:12:58,324 - INFO - 127.0.0.1 - - [14/Jul/2026 15:12:58] "GET / HTTP/1.1" 200 -
+2026-07-14 15:12:58,403 - INFO - 127.0.0.1 - - [14/Jul/2026 15:12:58] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:13:08,991 - INFO - 127.0.0.1 - - [14/Jul/2026 15:13:08] "GET / HTTP/1.1" 200 -
+2026-07-14 15:13:09,002 - INFO - 127.0.0.1 - - [14/Jul/2026 15:13:09] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:13:12,842 - INFO - 127.0.0.1 - - [14/Jul/2026 15:13:12] "GET /manage_users HTTP/1.1" 200 -
+2026-07-14 15:13:30,113 - INFO - 127.0.0.1 - - [14/Jul/2026 15:13:30] "GET /manage_users HTTP/1.1" 200 -
+2026-07-14 15:14:01,557 - INFO - 127.0.0.1 - - [14/Jul/2026 15:14:01] "[32mPOST /add_user HTTP/1.1[0m" 302 -
+2026-07-14 15:14:01,565 - INFO - 127.0.0.1 - - [14/Jul/2026 15:14:01] "GET /manage_users HTTP/1.1" 200 -
+2026-07-14 15:14:07,412 - INFO - 127.0.0.1 - - [14/Jul/2026 15:14:07] "[32mGET /logout HTTP/1.1[0m" 302 -
+2026-07-14 15:14:07,416 - INFO - 127.0.0.1 - - [14/Jul/2026 15:14:07] "[32mGET / HTTP/1.1[0m" 302 -
+2026-07-14 15:14:07,424 - INFO - 127.0.0.1 - - [14/Jul/2026 15:14:07] "GET /login?next=/? HTTP/1.1" 200 -
+2026-07-14 15:14:12,081 - INFO - 127.0.0.1 - - [14/Jul/2026 15:14:12] "[32mPOST /login?next=/? HTTP/1.1[0m" 302 -
+2026-07-14 15:14:12,098 - INFO - 127.0.0.1 - - [14/Jul/2026 15:14:12] "GET / HTTP/1.1" 200 -
+2026-07-14 15:14:12,116 - INFO - 127.0.0.1 - - [14/Jul/2026 15:14:12] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:14:17,599 - INFO - 127.0.0.1 - - [14/Jul/2026 15:14:17] "[32mGET /logout HTTP/1.1[0m" 302 -
+2026-07-14 15:14:17,603 - INFO - 127.0.0.1 - - [14/Jul/2026 15:14:17] "[32mGET / HTTP/1.1[0m" 302 -
+2026-07-14 15:14:17,609 - INFO - 127.0.0.1 - - [14/Jul/2026 15:14:17] "GET /login?next=/? HTTP/1.1" 200 -
+2026-07-14 15:14:59,373 - INFO - 127.0.0.1 - - [14/Jul/2026 15:14:59] "GET /login?next=/? HTTP/1.1" 200 -
+2026-07-14 15:15:00,532 - INFO - 127.0.0.1 - - [14/Jul/2026 15:15:00] "GET /login?next=/? HTTP/1.1" 200 -
+2026-07-14 15:15:06,497 - INFO - 127.0.0.1 - - [14/Jul/2026 15:15:06] "GET /login?next=/? HTTP/1.1" 200 -
+2026-07-14 15:15:10,909 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\blueprints\\main.py', reloading
+2026-07-14 15:15:10,998 - INFO -  * Restarting with stat
+2026-07-14 15:15:12,577 - WARNING -  * Debugger is active!
+2026-07-14 15:15:12,584 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 15:15:15,447 - INFO - 127.0.0.1 - - [14/Jul/2026 15:15:15] "GET /login?next=/? HTTP/1.1" 200 -
+2026-07-14 15:15:24,164 - INFO - 127.0.0.1 - - [14/Jul/2026 15:15:24] "[32mPOST /login?next=/? HTTP/1.1[0m" 302 -
+2026-07-14 15:15:24,196 - INFO - 127.0.0.1 - - [14/Jul/2026 15:15:24] "GET / HTTP/1.1" 200 -
+2026-07-14 15:15:24,279 - INFO - 127.0.0.1 - - [14/Jul/2026 15:15:24] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:16:18,786 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\services.py', reloading
+2026-07-14 15:16:18,860 - INFO -  * Restarting with stat
+2026-07-14 15:16:20,373 - WARNING -  * Debugger is active!
+2026-07-14 15:16:20,380 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 15:17:37,721 - INFO - 127.0.0.1 - - [14/Jul/2026 15:17:37] "GET /manage_users HTTP/1.1" 200 -
+2026-07-14 15:17:52,411 - INFO - 127.0.0.1 - - [14/Jul/2026 15:17:52] "[32mPOST /add_user HTTP/1.1[0m" 302 -
+2026-07-14 15:17:52,419 - INFO - 127.0.0.1 - - [14/Jul/2026 15:17:52] "GET /manage_users HTTP/1.1" 200 -
+2026-07-14 15:17:58,553 - INFO - 127.0.0.1 - - [14/Jul/2026 15:17:58] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-14 15:22:43,527 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\repository.py', reloading
+2026-07-14 15:22:43,616 - INFO -  * Restarting with stat
+2026-07-14 15:22:45,188 - WARNING -  * Debugger is active!
+2026-07-14 15:22:45,200 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 15:23:04,251 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\services.py', reloading
+2026-07-14 15:23:04,340 - INFO -  * Restarting with stat
+2026-07-14 15:23:05,961 - WARNING -  * Debugger is active!
+2026-07-14 15:23:05,971 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 15:23:12,041 - INFO - 127.0.0.1 - - [14/Jul/2026 15:23:12] "GET / HTTP/1.1" 200 -
+2026-07-14 15:23:12,121 - INFO - 127.0.0.1 - - [14/Jul/2026 15:23:12] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:23:14,653 - INFO - 127.0.0.1 - - [14/Jul/2026 15:23:14] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-14 15:23:17,097 - INFO - 127.0.0.1 - - [14/Jul/2026 15:23:17] "GET / HTTP/1.1" 200 -
+2026-07-14 15:23:17,106 - INFO - 127.0.0.1 - - [14/Jul/2026 15:23:17] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:23:18,431 - INFO - 127.0.0.1 - - [14/Jul/2026 15:23:18] "GET / HTTP/1.1" 200 -
+2026-07-14 15:23:18,442 - INFO - 127.0.0.1 - - [14/Jul/2026 15:23:18] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:23:19,508 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\blueprints\\main.py', reloading
+2026-07-14 15:23:19,588 - INFO -  * Restarting with stat
+2026-07-14 15:23:21,131 - WARNING -  * Debugger is active!
+2026-07-14 15:23:21,139 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 15:23:21,592 - INFO - 127.0.0.1 - - [14/Jul/2026 15:23:21] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-14 15:23:24,132 - INFO - 127.0.0.1 - - [14/Jul/2026 15:23:24] "GET / HTTP/1.1" 200 -
+2026-07-14 15:23:24,205 - INFO - 127.0.0.1 - - [14/Jul/2026 15:23:24] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:23:35,910 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\blueprints\\settings.py', reloading
+2026-07-14 15:23:35,988 - INFO -  * Restarting with stat
+2026-07-14 15:23:37,480 - WARNING -  * Debugger is active!
+2026-07-14 15:23:37,489 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 15:24:26,206 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\services.py', reloading
+2026-07-14 15:24:26,293 - INFO -  * Restarting with stat
+2026-07-14 15:24:27,853 - WARNING -  * Debugger is active!
+2026-07-14 15:24:27,862 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 15:24:38,643 - INFO - 127.0.0.1 - - [14/Jul/2026 15:24:38] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-14 15:24:52,734 - INFO - 127.0.0.1 - - [14/Jul/2026 15:24:52] "GET /audit_logs?table=Users&action=&user=&q= HTTP/1.1" 200 -
+2026-07-14 15:27:01,059 - INFO - 127.0.0.1 - - [14/Jul/2026 15:27:01] "GET /audit_logs?table=Users&action=&user=&q= HTTP/1.1" 200 -
+2026-07-14 15:27:14,574 - INFO - 127.0.0.1 - - [14/Jul/2026 15:27:14] "GET /audit_logs?table=Attendance_and_Rates&action=&user=&q= HTTP/1.1" 200 -
+2026-07-14 15:29:30,355 - INFO - 127.0.0.1 - - [14/Jul/2026 15:29:30] "GET /audit_logs?table=Attendance_and_Rates&action=&user=&q= HTTP/1.1" 200 -
+2026-07-14 15:32:08,820 - INFO - 127.0.0.1 - - [14/Jul/2026 15:32:08] "GET /audit_logs?table=Attendance_and_Rates&action=&user=&q= HTTP/1.1" 200 -
+2026-07-14 15:32:18,670 - INFO - 127.0.0.1 - - [14/Jul/2026 15:32:18] "GET /audit_logs?table=&action=&user=&q= HTTP/1.1" 200 -
+2026-07-14 15:33:47,670 - INFO - 127.0.0.1 - - [14/Jul/2026 15:33:47] "GET / HTTP/1.1" 200 -
+2026-07-14 15:33:47,755 - INFO - 127.0.0.1 - - [14/Jul/2026 15:33:47] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:33:58,841 - INFO - 127.0.0.1 - - [14/Jul/2026 15:33:58] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-14 15:36:09,560 - INFO - 127.0.0.1 - - [14/Jul/2026 15:36:09] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-14 15:36:31,130 - INFO - 127.0.0.1 - - [14/Jul/2026 15:36:31] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-14 15:37:19,399 - INFO - 127.0.0.1 - - [14/Jul/2026 15:37:19] "GET / HTTP/1.1" 200 -
+2026-07-14 15:37:19,409 - INFO - 127.0.0.1 - - [14/Jul/2026 15:37:19] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:48:43,577 - INFO - 127.0.0.1 - - [14/Jul/2026 15:48:43] "GET /manage_users HTTP/1.1" 200 -
+2026-07-14 15:48:43,585 - INFO - 127.0.0.1 - - [14/Jul/2026 15:48:43] "GET /static/app.css HTTP/1.1" 200 -
+2026-07-14 15:48:46,511 - INFO - 127.0.0.1 - - [14/Jul/2026 15:48:46] "GET /manage_backups HTTP/1.1" 200 -
+2026-07-14 15:48:46,519 - INFO - 127.0.0.1 - - [14/Jul/2026 15:48:46] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:48:48,946 - INFO - 127.0.0.1 - - [14/Jul/2026 15:48:48] "GET /manage_products HTTP/1.1" 200 -
+2026-07-14 15:48:48,957 - INFO - 127.0.0.1 - - [14/Jul/2026 15:48:48] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:48:51,973 - INFO - 127.0.0.1 - - [14/Jul/2026 15:48:51] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-14 15:48:53,811 - INFO - 127.0.0.1 - - [14/Jul/2026 15:48:53] "GET / HTTP/1.1" 200 -
+2026-07-14 15:48:53,822 - INFO - 127.0.0.1 - - [14/Jul/2026 15:48:53] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:48:53,822 - INFO - 127.0.0.1 - - [14/Jul/2026 15:48:53] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:48:55,923 - INFO - 127.0.0.1 - - [14/Jul/2026 15:48:55] "GET /manage_products HTTP/1.1" 200 -
+2026-07-14 15:48:55,935 - INFO - 127.0.0.1 - - [14/Jul/2026 15:48:55] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:49:01,421 - INFO - 127.0.0.1 - - [14/Jul/2026 15:49:01] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-14 15:49:04,587 - INFO - 127.0.0.1 - - [14/Jul/2026 15:49:04] "GET / HTTP/1.1" 200 -
+2026-07-14 15:49:04,598 - INFO - 127.0.0.1 - - [14/Jul/2026 15:49:04] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:49:04,599 - INFO - 127.0.0.1 - - [14/Jul/2026 15:49:04] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:49:07,470 - INFO - 127.0.0.1 - - [14/Jul/2026 15:49:07] "GET / HTTP/1.1" 200 -
+2026-07-14 15:49:07,481 - INFO - 127.0.0.1 - - [14/Jul/2026 15:49:07] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:49:07,482 - INFO - 127.0.0.1 - - [14/Jul/2026 15:49:07] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:49:09,544 - INFO - 127.0.0.1 - - [14/Jul/2026 15:49:09] "GET / HTTP/1.1" 200 -
+2026-07-14 15:49:09,556 - INFO - 127.0.0.1 - - [14/Jul/2026 15:49:09] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:49:09,557 - INFO - 127.0.0.1 - - [14/Jul/2026 15:49:09] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:49:12,655 - INFO - 127.0.0.1 - - [14/Jul/2026 15:49:12] "GET /manage_locations HTTP/1.1" 200 -
+2026-07-14 15:49:12,663 - INFO - 127.0.0.1 - - [14/Jul/2026 15:49:12] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:49:25,387 - INFO - 127.0.0.1 - - [14/Jul/2026 15:49:25] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-14 15:49:28,039 - INFO - 127.0.0.1 - - [14/Jul/2026 15:49:28] "GET / HTTP/1.1" 200 -
+2026-07-14 15:49:28,050 - INFO - 127.0.0.1 - - [14/Jul/2026 15:49:28] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:49:28,052 - INFO - 127.0.0.1 - - [14/Jul/2026 15:49:28] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:49:31,759 - INFO - 127.0.0.1 - - [14/Jul/2026 15:49:31] "GET / HTTP/1.1" 200 -
+2026-07-14 15:49:31,771 - INFO - 127.0.0.1 - - [14/Jul/2026 15:49:31] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:49:31,772 - INFO - 127.0.0.1 - - [14/Jul/2026 15:49:31] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:49:54,613 - INFO - 127.0.0.1 - - [14/Jul/2026 15:49:54] "GET /manage_products HTTP/1.1" 200 -
+2026-07-14 15:49:54,626 - INFO - 127.0.0.1 - - [14/Jul/2026 15:49:54] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:49:56,642 - INFO - 127.0.0.1 - - [14/Jul/2026 15:49:56] "GET /settings HTTP/1.1" 200 -
+2026-07-14 15:49:56,650 - INFO - 127.0.0.1 - - [14/Jul/2026 15:49:56] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:49:59,465 - INFO - 127.0.0.1 - - [14/Jul/2026 15:49:59] "GET /manage_users HTTP/1.1" 200 -
+2026-07-14 15:49:59,474 - INFO - 127.0.0.1 - - [14/Jul/2026 15:49:59] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:50:02,740 - INFO - 127.0.0.1 - - [14/Jul/2026 15:50:02] "GET /manage_backups HTTP/1.1" 200 -
+2026-07-14 15:50:02,748 - INFO - 127.0.0.1 - - [14/Jul/2026 15:50:02] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:50:24,424 - INFO - 127.0.0.1 - - [14/Jul/2026 15:50:24] "GET / HTTP/1.1" 200 -
+2026-07-14 15:50:24,435 - INFO - 127.0.0.1 - - [14/Jul/2026 15:50:24] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:50:24,436 - INFO - 127.0.0.1 - - [14/Jul/2026 15:50:24] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:50:32,608 - INFO - 127.0.0.1 - - [14/Jul/2026 15:50:32] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 15:50:32,618 - INFO - 127.0.0.1 - - [14/Jul/2026 15:50:32] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:50:32,619 - INFO - 127.0.0.1 - - [14/Jul/2026 15:50:32] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:50:34,481 - INFO - 127.0.0.1 - - [14/Jul/2026 15:50:34] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-14 15:50:34,491 - INFO - 127.0.0.1 - - [14/Jul/2026 15:50:34] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:50:38,333 - INFO - 127.0.0.1 - - [14/Jul/2026 15:50:38] "GET /view_payslip/0/2026-02 HTTP/1.1" 200 -
+2026-07-14 15:50:38,358 - INFO - 127.0.0.1 - - [14/Jul/2026 15:50:38] "GET /static/logo.png HTTP/1.1" 200 -
+2026-07-14 15:50:46,336 - INFO - 127.0.0.1 - - [14/Jul/2026 15:50:46] "GET / HTTP/1.1" 200 -
+2026-07-14 15:50:46,346 - INFO - 127.0.0.1 - - [14/Jul/2026 15:50:46] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:50:46,347 - INFO - 127.0.0.1 - - [14/Jul/2026 15:50:46] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:51:37,019 - INFO - 127.0.0.1 - - [14/Jul/2026 15:51:37] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-14 15:51:42,730 - INFO - 127.0.0.1 - - [14/Jul/2026 15:51:42] "GET / HTTP/1.1" 200 -
+2026-07-14 15:51:42,741 - INFO - 127.0.0.1 - - [14/Jul/2026 15:51:42] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:51:42,741 - INFO - 127.0.0.1 - - [14/Jul/2026 15:51:42] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:52:26,345 - INFO - 127.0.0.1 - - [14/Jul/2026 15:52:26] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-14 15:52:26,355 - INFO - 127.0.0.1 - - [14/Jul/2026 15:52:26] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:52:28,222 - INFO - 127.0.0.1 - - [14/Jul/2026 15:52:28] "GET / HTTP/1.1" 200 -
+2026-07-14 15:52:28,232 - INFO - 127.0.0.1 - - [14/Jul/2026 15:52:28] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:52:28,233 - INFO - 127.0.0.1 - - [14/Jul/2026 15:52:28] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:53:35,983 - INFO - 127.0.0.1 - - [14/Jul/2026 15:53:35] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-14 15:53:35,994 - INFO - 127.0.0.1 - - [14/Jul/2026 15:53:35] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:55:19,541 - INFO - 127.0.0.1 - - [14/Jul/2026 15:55:19] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-14 15:55:19,552 - INFO - 127.0.0.1 - - [14/Jul/2026 15:55:19] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:55:34,666 - INFO - 127.0.0.1 - - [14/Jul/2026 15:55:34] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-14 15:55:34,675 - INFO - 127.0.0.1 - - [14/Jul/2026 15:55:34] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:55:35,480 - INFO - 127.0.0.1 - - [14/Jul/2026 15:55:35] "GET / HTTP/1.1" 200 -
+2026-07-14 15:55:35,489 - INFO - 127.0.0.1 - - [14/Jul/2026 15:55:35] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:55:35,490 - INFO - 127.0.0.1 - - [14/Jul/2026 15:55:35] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:55:38,401 - INFO - 127.0.0.1 - - [14/Jul/2026 15:55:38] "GET / HTTP/1.1" 200 -
+2026-07-14 15:55:38,412 - INFO - 127.0.0.1 - - [14/Jul/2026 15:55:38] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:55:38,413 - INFO - 127.0.0.1 - - [14/Jul/2026 15:55:38] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:55:38,995 - INFO - 127.0.0.1 - - [14/Jul/2026 15:55:38] "GET / HTTP/1.1" 200 -
+2026-07-14 15:55:39,006 - INFO - 127.0.0.1 - - [14/Jul/2026 15:55:39] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:55:39,007 - INFO - 127.0.0.1 - - [14/Jul/2026 15:55:39] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:55:40,856 - INFO - 127.0.0.1 - - [14/Jul/2026 15:55:40] "GET / HTTP/1.1" 200 -
+2026-07-14 15:55:40,867 - INFO - 127.0.0.1 - - [14/Jul/2026 15:55:40] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:55:40,868 - INFO - 127.0.0.1 - - [14/Jul/2026 15:55:40] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:55:48,749 - INFO - 127.0.0.1 - - [14/Jul/2026 15:55:48] "GET / HTTP/1.1" 200 -
+2026-07-14 15:55:48,760 - INFO - 127.0.0.1 - - [14/Jul/2026 15:55:48] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:55:48,761 - INFO - 127.0.0.1 - - [14/Jul/2026 15:55:48] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:55:49,355 - INFO - 127.0.0.1 - - [14/Jul/2026 15:55:49] "GET / HTTP/1.1" 200 -
+2026-07-14 15:55:49,366 - INFO - 127.0.0.1 - - [14/Jul/2026 15:55:49] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:55:49,367 - INFO - 127.0.0.1 - - [14/Jul/2026 15:55:49] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:55:49,612 - INFO - 127.0.0.1 - - [14/Jul/2026 15:55:49] "GET / HTTP/1.1" 200 -
+2026-07-14 15:55:49,623 - INFO - 127.0.0.1 - - [14/Jul/2026 15:55:49] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:55:49,625 - INFO - 127.0.0.1 - - [14/Jul/2026 15:55:49] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 15:58:42,476 - INFO - 127.0.0.1 - - [14/Jul/2026 15:58:42] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 15:58:42,489 - INFO - 127.0.0.1 - - [14/Jul/2026 15:58:42] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2026-07-14 15:59:26,544 - INFO - 127.0.0.1 - - [14/Jul/2026 15:59:26] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-14 15:59:26,553 - INFO - 127.0.0.1 - - [14/Jul/2026 15:59:26] "GET /static/app.css HTTP/1.1" 200 -
+2026-07-14 16:00:07,283 - INFO - 127.0.0.1 - - [14/Jul/2026 16:00:07] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:00:07,349 - INFO - 127.0.0.1 - - [14/Jul/2026 16:00:07] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2026-07-14 16:00:28,532 - INFO - 127.0.0.1 - - [14/Jul/2026 16:00:28] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-14 16:00:28,543 - INFO - 127.0.0.1 - - [14/Jul/2026 16:00:28] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:00:29,217 - INFO - 127.0.0.1 - - [14/Jul/2026 16:00:29] "GET / HTTP/1.1" 200 -
+2026-07-14 16:00:29,227 - INFO - 127.0.0.1 - - [14/Jul/2026 16:00:29] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:00:29,228 - INFO - 127.0.0.1 - - [14/Jul/2026 16:00:29] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:00:55,526 - INFO - 127.0.0.1 - - [14/Jul/2026 16:00:55] "GET / HTTP/1.1" 200 -
+2026-07-14 16:00:55,537 - INFO - 127.0.0.1 - - [14/Jul/2026 16:00:55] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:00:55,538 - INFO - 127.0.0.1 - - [14/Jul/2026 16:00:55] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:01:05,159 - INFO - 127.0.0.1 - - [14/Jul/2026 16:01:05] "GET / HTTP/1.1" 200 -
+2026-07-14 16:01:05,170 - INFO - 127.0.0.1 - - [14/Jul/2026 16:01:05] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:01:05,171 - INFO - 127.0.0.1 - - [14/Jul/2026 16:01:05] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:01:18,136 - INFO - 127.0.0.1 - - [14/Jul/2026 16:01:18] "GET /?month=2026-01 HTTP/1.1" 200 -
+2026-07-14 16:01:18,145 - INFO - 127.0.0.1 - - [14/Jul/2026 16:01:18] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:01:18,145 - INFO - 127.0.0.1 - - [14/Jul/2026 16:01:18] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:03:16,803 - INFO - 127.0.0.1 - - [14/Jul/2026 16:03:16] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-14 16:03:16,885 - INFO - 127.0.0.1 - - [14/Jul/2026 16:03:16] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:03:23,657 - INFO - 127.0.0.1 - - [14/Jul/2026 16:03:23] "GET / HTTP/1.1" 200 -
+2026-07-14 16:03:23,749 - INFO - 127.0.0.1 - - [14/Jul/2026 16:03:23] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:03:23,754 - INFO - 127.0.0.1 - - [14/Jul/2026 16:03:23] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:03:30,722 - INFO - 127.0.0.1 - - [14/Jul/2026 16:03:30] "GET / HTTP/1.1" 200 -
+2026-07-14 16:03:30,733 - INFO - 127.0.0.1 - - [14/Jul/2026 16:03:30] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:03:30,734 - INFO - 127.0.0.1 - - [14/Jul/2026 16:03:30] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:03:35,389 - INFO - 127.0.0.1 - - [14/Jul/2026 16:03:35] "[32mGET /logout HTTP/1.1[0m" 302 -
+2026-07-14 16:03:35,394 - INFO - 127.0.0.1 - - [14/Jul/2026 16:03:35] "[32mGET / HTTP/1.1[0m" 302 -
+2026-07-14 16:03:35,456 - INFO - 127.0.0.1 - - [14/Jul/2026 16:03:35] "GET /login?next=/? HTTP/1.1" 200 -
+2026-07-14 16:03:35,679 - INFO - 127.0.0.1 - - [14/Jul/2026 16:03:35] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:03:44,510 - INFO - 127.0.0.1 - - [14/Jul/2026 16:03:44] "[32mPOST /login?next=/? HTTP/1.1[0m" 302 -
+2026-07-14 16:03:44,526 - INFO - 127.0.0.1 - - [14/Jul/2026 16:03:44] "GET / HTTP/1.1" 200 -
+2026-07-14 16:03:44,540 - INFO - 127.0.0.1 - - [14/Jul/2026 16:03:44] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:03:44,541 - INFO - 127.0.0.1 - - [14/Jul/2026 16:03:44] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:04:04,144 - INFO - 127.0.0.1 - - [14/Jul/2026 16:04:04] "GET /?month= HTTP/1.1" 200 -
+2026-07-14 16:04:04,153 - INFO - 127.0.0.1 - - [14/Jul/2026 16:04:04] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:04:04,158 - INFO - 127.0.0.1 - - [14/Jul/2026 16:04:04] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:04:16,646 - INFO - 127.0.0.1 - - [14/Jul/2026 16:04:16] "GET /?month=2026-07 HTTP/1.1" 200 -
+2026-07-14 16:04:16,655 - INFO - 127.0.0.1 - - [14/Jul/2026 16:04:16] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:04:16,656 - INFO - 127.0.0.1 - - [14/Jul/2026 16:04:16] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:27:01,188 - INFO - 127.0.0.1 - - [14/Jul/2026 16:27:01] "GET /?month=2026-07 HTTP/1.1" 200 -
+2026-07-14 16:27:01,201 - INFO - 127.0.0.1 - - [14/Jul/2026 16:27:01] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:27:01,202 - INFO - 127.0.0.1 - - [14/Jul/2026 16:27:01] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:27:37,306 - INFO - 127.0.0.1 - - [14/Jul/2026 16:27:37] "GET /?month=2026-01 HTTP/1.1" 200 -
+2026-07-14 16:27:37,318 - INFO - 127.0.0.1 - - [14/Jul/2026 16:27:37] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:27:37,319 - INFO - 127.0.0.1 - - [14/Jul/2026 16:27:37] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:27:49,912 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\services.py', reloading
+2026-07-14 16:27:50,010 - INFO -  * Restarting with stat
+2026-07-14 16:27:51,584 - WARNING -  * Debugger is active!
+2026-07-14 16:27:51,592 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 16:27:57,927 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\blueprints\\main.py', reloading
+2026-07-14 16:27:58,009 - INFO -  * Restarting with stat
+2026-07-14 16:27:59,518 - WARNING -  * Debugger is active!
+2026-07-14 16:27:59,525 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 16:28:01,800 - INFO - 127.0.0.1 - - [14/Jul/2026 16:28:01] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-14 16:28:01,810 - INFO - 127.0.0.1 - - [14/Jul/2026 16:28:01] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:28:05,822 - INFO - 127.0.0.1 - - [14/Jul/2026 16:28:05] "GET / HTTP/1.1" 200 -
+2026-07-14 16:28:05,834 - INFO - 127.0.0.1 - - [14/Jul/2026 16:28:05] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:28:05,835 - INFO - 127.0.0.1 - - [14/Jul/2026 16:28:05] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:28:10,323 - INFO - 127.0.0.1 - - [14/Jul/2026 16:28:10] "GET /?month=2026-01 HTTP/1.1" 200 -
+2026-07-14 16:28:10,333 - INFO - 127.0.0.1 - - [14/Jul/2026 16:28:10] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:28:10,334 - INFO - 127.0.0.1 - - [14/Jul/2026 16:28:10] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:28:22,262 - INFO - 127.0.0.1 - - [14/Jul/2026 16:28:22] "GET /validate?month=2026-01 HTTP/1.1" 200 -
+2026-07-14 16:28:22,270 - INFO - 127.0.0.1 - - [14/Jul/2026 16:28:22] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:28:36,006 - INFO - 127.0.0.1 - - [14/Jul/2026 16:28:36] "GET /validate?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 16:28:36,014 - INFO - 127.0.0.1 - - [14/Jul/2026 16:28:36] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:28:52,167 - INFO - 127.0.0.1 - - [14/Jul/2026 16:28:52] "GET /validate?month=2025-10 HTTP/1.1" 200 -
+2026-07-14 16:28:52,175 - INFO - 127.0.0.1 - - [14/Jul/2026 16:28:52] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:30:31,399 - INFO - 127.0.0.1 - - [14/Jul/2026 16:30:31] "GET / HTTP/1.1" 200 -
+2026-07-14 16:30:31,414 - INFO - 127.0.0.1 - - [14/Jul/2026 16:30:31] "GET /static/app.css HTTP/1.1" 200 -
+2026-07-14 16:30:31,415 - INFO - 127.0.0.1 - - [14/Jul/2026 16:30:31] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:30:40,263 - INFO - 127.0.0.1 - - [14/Jul/2026 16:30:40] "GET /?month=2026-01 HTTP/1.1" 200 -
+2026-07-14 16:30:40,275 - INFO - 127.0.0.1 - - [14/Jul/2026 16:30:40] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:30:40,276 - INFO - 127.0.0.1 - - [14/Jul/2026 16:30:40] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:31:07,661 - INFO - 127.0.0.1 - - [14/Jul/2026 16:31:07] "GET /?month=2026-01 HTTP/1.1" 200 -
+2026-07-14 16:31:07,674 - INFO - 127.0.0.1 - - [14/Jul/2026 16:31:07] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:31:07,675 - INFO - 127.0.0.1 - - [14/Jul/2026 16:31:07] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:33:09,882 - INFO - 127.0.0.1 - - [14/Jul/2026 16:33:09] "GET /?month=2026-01 HTTP/1.1" 200 -
+2026-07-14 16:33:09,895 - INFO - 127.0.0.1 - - [14/Jul/2026 16:33:09] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:33:09,896 - INFO - 127.0.0.1 - - [14/Jul/2026 16:33:09] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:33:56,333 - INFO - 127.0.0.1 - - [14/Jul/2026 16:33:56] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 16:33:56,343 - INFO - 127.0.0.1 - - [14/Jul/2026 16:33:56] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:33:56,344 - INFO - 127.0.0.1 - - [14/Jul/2026 16:33:56] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:34:02,352 - INFO - 127.0.0.1 - - [14/Jul/2026 16:34:02] "GET /validate?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 16:34:02,361 - INFO - 127.0.0.1 - - [14/Jul/2026 16:34:02] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:34:59,909 - INFO - 127.0.0.1 - - [14/Jul/2026 16:34:59] "GET /?month=2026-07 HTTP/1.1" 200 -
+2026-07-14 16:34:59,921 - INFO - 127.0.0.1 - - [14/Jul/2026 16:34:59] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:34:59,922 - INFO - 127.0.0.1 - - [14/Jul/2026 16:34:59] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:35:03,371 - INFO - 127.0.0.1 - - [14/Jul/2026 16:35:03] "GET /?month=2026-01 HTTP/1.1" 200 -
+2026-07-14 16:35:03,383 - INFO - 127.0.0.1 - - [14/Jul/2026 16:35:03] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:35:03,383 - INFO - 127.0.0.1 - - [14/Jul/2026 16:35:03] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:35:12,286 - INFO - 127.0.0.1 - - [14/Jul/2026 16:35:12] "GET /?month=2026-07 HTTP/1.1" 200 -
+2026-07-14 16:35:12,296 - INFO - 127.0.0.1 - - [14/Jul/2026 16:35:12] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:35:12,297 - INFO - 127.0.0.1 - - [14/Jul/2026 16:35:12] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:36:38,652 - INFO - 127.0.0.1 - - [14/Jul/2026 16:36:38] "GET /?month=2026-07 HTTP/1.1" 200 -
+2026-07-14 16:36:38,665 - INFO - 127.0.0.1 - - [14/Jul/2026 16:36:38] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:36:38,666 - INFO - 127.0.0.1 - - [14/Jul/2026 16:36:38] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:37:12,086 - INFO - 127.0.0.1 - - [14/Jul/2026 16:37:12] "GET /?month=2026-01 HTTP/1.1" 200 -
+2026-07-14 16:37:12,097 - INFO - 127.0.0.1 - - [14/Jul/2026 16:37:12] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:37:12,098 - INFO - 127.0.0.1 - - [14/Jul/2026 16:37:12] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:37:16,504 - INFO - 127.0.0.1 - - [14/Jul/2026 16:37:16] "GET /?month=2026-07 HTTP/1.1" 200 -
+2026-07-14 16:37:16,515 - INFO - 127.0.0.1 - - [14/Jul/2026 16:37:16] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:37:16,516 - INFO - 127.0.0.1 - - [14/Jul/2026 16:37:16] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:41:53,501 - INFO - 127.0.0.1 - - [14/Jul/2026 16:41:53] "GET /?month=2026-07 HTTP/1.1" 200 -
+2026-07-14 16:41:53,515 - INFO - 127.0.0.1 - - [14/Jul/2026 16:41:53] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:41:53,516 - INFO - 127.0.0.1 - - [14/Jul/2026 16:41:53] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:45:20,945 - INFO - 127.0.0.1 - - [14/Jul/2026 16:45:20] "GET /?month=2026-07 HTTP/1.1" 200 -
+2026-07-14 16:45:20,959 - INFO - 127.0.0.1 - - [14/Jul/2026 16:45:20] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:45:20,960 - INFO - 127.0.0.1 - - [14/Jul/2026 16:45:20] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:47:08,788 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\blueprints\\main.py', reloading
+2026-07-14 16:47:08,900 - INFO -  * Restarting with stat
+2026-07-14 16:47:10,538 - WARNING -  * Debugger is active!
+2026-07-14 16:47:10,547 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 16:47:11,040 - INFO - 127.0.0.1 - - [14/Jul/2026 16:47:11] "GET /?month=2026-07 HTTP/1.1" 200 -
+2026-07-14 16:47:11,179 - INFO - 127.0.0.1 - - [14/Jul/2026 16:47:11] "GET /static/app.css HTTP/1.1" 200 -
+2026-07-14 16:47:11,181 - INFO - 127.0.0.1 - - [14/Jul/2026 16:47:11] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:47:30,755 - INFO - 127.0.0.1 - - [14/Jul/2026 16:47:30] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 16:47:30,766 - INFO - 127.0.0.1 - - [14/Jul/2026 16:47:30] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:47:30,766 - INFO - 127.0.0.1 - - [14/Jul/2026 16:47:30] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:47:41,602 - INFO - 127.0.0.1 - - [14/Jul/2026 16:47:41] "GET /?month=2026-06 HTTP/1.1" 200 -
+2026-07-14 16:47:41,611 - INFO - 127.0.0.1 - - [14/Jul/2026 16:47:41] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:47:41,611 - INFO - 127.0.0.1 - - [14/Jul/2026 16:47:41] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:47:46,517 - INFO - 127.0.0.1 - - [14/Jul/2026 16:47:46] "GET /?month=2026-08 HTTP/1.1" 200 -
+2026-07-14 16:47:46,525 - INFO - 127.0.0.1 - - [14/Jul/2026 16:47:46] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:47:46,526 - INFO - 127.0.0.1 - - [14/Jul/2026 16:47:46] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:47:54,593 - INFO - 127.0.0.1 - - [14/Jul/2026 16:47:54] "GET /?month=2026-03 HTTP/1.1" 200 -
+2026-07-14 16:47:54,603 - INFO - 127.0.0.1 - - [14/Jul/2026 16:47:54] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:47:54,604 - INFO - 127.0.0.1 - - [14/Jul/2026 16:47:54] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:48:11,916 - INFO - 127.0.0.1 - - [14/Jul/2026 16:48:11] "GET /?month=2026-07 HTTP/1.1" 200 -
+2026-07-14 16:48:11,927 - INFO - 127.0.0.1 - - [14/Jul/2026 16:48:11] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:48:11,928 - INFO - 127.0.0.1 - - [14/Jul/2026 16:48:11] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:48:40,089 - INFO - 127.0.0.1 - - [14/Jul/2026 16:48:40] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 16:48:40,099 - INFO - 127.0.0.1 - - [14/Jul/2026 16:48:40] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:48:40,100 - INFO - 127.0.0.1 - - [14/Jul/2026 16:48:40] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:50:08,037 - INFO - 127.0.0.1 - - [14/Jul/2026 16:50:08] "GET /?month=2026-07 HTTP/1.1" 200 -
+2026-07-14 16:50:08,048 - INFO - 127.0.0.1 - - [14/Jul/2026 16:50:08] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:50:08,048 - INFO - 127.0.0.1 - - [14/Jul/2026 16:50:08] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:51:55,690 - INFO - 127.0.0.1 - - [14/Jul/2026 16:51:55] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 16:51:55,701 - INFO - 127.0.0.1 - - [14/Jul/2026 16:51:55] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:51:55,702 - INFO - 127.0.0.1 - - [14/Jul/2026 16:51:55] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:55:02,712 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\repository.py', reloading
+2026-07-14 16:55:02,793 - INFO -  * Restarting with stat
+2026-07-14 16:55:04,373 - WARNING -  * Debugger is active!
+2026-07-14 16:55:04,379 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 16:55:12,214 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\blueprints\\main.py', reloading
+2026-07-14 16:55:12,302 - INFO -  * Restarting with stat
+2026-07-14 16:55:13,877 - WARNING -  * Debugger is active!
+2026-07-14 16:55:13,885 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 16:55:19,051 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:19] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 16:55:19,189 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:19] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:55:19,191 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:19] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:55:21,175 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:21] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 16:55:21,187 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:21] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:55:21,188 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:21] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:55:24,389 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\blueprints\\attendance.py', reloading
+2026-07-14 16:55:24,466 - INFO -  * Restarting with stat
+2026-07-14 16:55:25,994 - WARNING -  * Debugger is active!
+2026-07-14 16:55:26,002 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 16:55:27,947 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:27] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 16:55:28,075 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:28] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:55:28,077 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:28] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:55:28,956 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:28] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 16:55:28,971 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:28] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:55:28,971 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:28] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:55:29,692 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:29] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 16:55:29,704 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:29] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:55:29,705 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:29] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:55:30,447 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:30] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 16:55:30,459 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:30] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:55:30,460 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:30] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:55:31,235 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:31] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 16:55:31,248 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:31] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:55:31,248 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:31] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:55:32,562 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\blueprints\\sales.py', reloading
+2026-07-14 16:55:32,644 - INFO -  * Restarting with stat
+2026-07-14 16:55:34,143 - WARNING -  * Debugger is active!
+2026-07-14 16:55:34,151 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 16:55:42,681 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:42] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 16:55:42,810 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:42] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:55:42,813 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:42] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:55:43,608 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:43] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 16:55:43,621 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:43] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:55:43,622 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:43] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:55:54,861 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:54] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 16:55:54,874 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:54] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:55:54,875 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:54] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:55:55,561 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:55] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 16:55:55,574 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:55] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:55:55,575 - INFO - 127.0.0.1 - - [14/Jul/2026 16:55:55] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 16:56:04,814 - INFO - 127.0.0.1 - - [14/Jul/2026 16:56:04] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 16:56:04,827 - INFO - 127.0.0.1 - - [14/Jul/2026 16:56:04] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 16:56:04,828 - INFO - 127.0.0.1 - - [14/Jul/2026 16:56:04] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 17:00:22,965 - INFO - 127.0.0.1 - - [14/Jul/2026 17:00:22] "GET /validate?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 17:00:22,975 - INFO - 127.0.0.1 - - [14/Jul/2026 17:00:22] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:01:19,493 - INFO - 127.0.0.1 - - [14/Jul/2026 17:01:19] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 17:01:19,507 - INFO - 127.0.0.1 - - [14/Jul/2026 17:01:19] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:01:19,507 - INFO - 127.0.0.1 - - [14/Jul/2026 17:01:19] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 17:01:55,780 - INFO - 127.0.0.1 - - [14/Jul/2026 17:01:55] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 17:01:55,793 - INFO - 127.0.0.1 - - [14/Jul/2026 17:01:55] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:01:55,793 - INFO - 127.0.0.1 - - [14/Jul/2026 17:01:55] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 17:02:08,602 - INFO - 127.0.0.1 - - [14/Jul/2026 17:02:08] "GET /validate?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 17:02:08,611 - INFO - 127.0.0.1 - - [14/Jul/2026 17:02:08] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:02:18,034 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\blueprints\\sales.py', reloading
+2026-07-14 17:02:18,160 - INFO -  * Restarting with stat
+2026-07-14 17:02:19,829 - WARNING -  * Debugger is active!
+2026-07-14 17:02:19,837 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 17:04:57,114 - INFO - 127.0.0.1 - - [14/Jul/2026 17:04:57] "GET /validate?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 17:04:57,126 - INFO - 127.0.0.1 - - [14/Jul/2026 17:04:57] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:05:06,005 - INFO - 127.0.0.1 - - [14/Jul/2026 17:05:06] "GET /validate?month=2026-03 HTTP/1.1" 200 -
+2026-07-14 17:05:06,014 - INFO - 127.0.0.1 - - [14/Jul/2026 17:05:06] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:05:08,927 - INFO - 127.0.0.1 - - [14/Jul/2026 17:05:08] "GET /validate?month=2026-01 HTTP/1.1" 200 -
+2026-07-14 17:05:08,937 - INFO - 127.0.0.1 - - [14/Jul/2026 17:05:08] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:08:24,254 - INFO - 127.0.0.1 - - [14/Jul/2026 17:08:24] "GET /manage_locations HTTP/1.1" 200 -
+2026-07-14 17:08:24,263 - INFO - 127.0.0.1 - - [14/Jul/2026 17:08:24] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:08:52,414 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\services.py', reloading
+2026-07-14 17:08:52,512 - INFO -  * Restarting with stat
+2026-07-14 17:08:54,174 - WARNING -  * Debugger is active!
+2026-07-14 17:08:54,182 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 17:09:08,443 - INFO - 127.0.0.1 - - [14/Jul/2026 17:09:08] "[35m[1mPOST /update_location HTTP/1.1[0m" 500 -
+2026-07-14 17:09:12,130 - INFO - 127.0.0.1 - - [14/Jul/2026 17:09:12] "[35m[1mPOST /update_location HTTP/1.1[0m" 500 -
+2026-07-14 17:09:12,256 - INFO - 127.0.0.1 - - [14/Jul/2026 17:09:12] "GET /update_location?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2026-07-14 17:09:12,266 - INFO - 127.0.0.1 - - [14/Jul/2026 17:09:12] "GET /update_location?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2026-07-14 17:09:12,300 - INFO - 127.0.0.1 - - [14/Jul/2026 17:09:12] "GET /update_location?__debugger__=yes&cmd=resource&f=console.png&s=fFaumjzI61RCy6yuuOdV HTTP/1.1" 200 -
+2026-07-14 17:09:12,310 - INFO - 127.0.0.1 - - [14/Jul/2026 17:09:12] "GET /update_location?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2026-07-14 17:10:12,271 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\blueprints\\main.py', reloading
+2026-07-14 17:10:12,355 - INFO -  * Restarting with stat
+2026-07-14 17:10:13,924 - WARNING -  * Debugger is active!
+2026-07-14 17:10:13,932 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 17:10:43,416 - INFO - 127.0.0.1 - - [14/Jul/2026 17:10:43] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-14 17:10:43,490 - INFO - 127.0.0.1 - - [14/Jul/2026 17:10:43] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:10:46,603 - INFO - 127.0.0.1 - - [14/Jul/2026 17:10:46] "GET / HTTP/1.1" 200 -
+2026-07-14 17:10:46,613 - INFO - 127.0.0.1 - - [14/Jul/2026 17:10:46] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:10:46,614 - INFO - 127.0.0.1 - - [14/Jul/2026 17:10:46] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 17:10:49,102 - INFO - 127.0.0.1 - - [14/Jul/2026 17:10:49] "[35m[1mGET /validate?month=2026-07 HTTP/1.1[0m" 500 -
+2026-07-14 17:10:49,110 - INFO - 127.0.0.1 - - [14/Jul/2026 17:10:49] "GET /validate?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2026-07-14 17:10:49,111 - INFO - 127.0.0.1 - - [14/Jul/2026 17:10:49] "GET /validate?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2026-07-14 17:10:49,118 - INFO - 127.0.0.1 - - [14/Jul/2026 17:10:49] "GET /validate?__debugger__=yes&cmd=resource&f=console.png&s=BOBfpYiiluiQSHgCzDJN HTTP/1.1" 200 -
+2026-07-14 17:10:49,135 - INFO - 127.0.0.1 - - [14/Jul/2026 17:10:49] "GET /validate?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2026-07-14 17:11:47,744 - INFO - 127.0.0.1 - - [14/Jul/2026 17:11:47] "GET /validate?month=2026-07 HTTP/1.1" 200 -
+2026-07-14 17:11:47,755 - INFO - 127.0.0.1 - - [14/Jul/2026 17:11:47] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:12:17,357 - INFO - 127.0.0.1 - - [14/Jul/2026 17:12:17] "GET /?month=2026-01 HTTP/1.1" 200 -
+2026-07-14 17:12:17,368 - INFO - 127.0.0.1 - - [14/Jul/2026 17:12:17] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:12:17,369 - INFO - 127.0.0.1 - - [14/Jul/2026 17:12:17] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 17:12:22,068 - INFO - 127.0.0.1 - - [14/Jul/2026 17:12:22] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 17:12:22,079 - INFO - 127.0.0.1 - - [14/Jul/2026 17:12:22] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:12:22,080 - INFO - 127.0.0.1 - - [14/Jul/2026 17:12:22] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 17:12:25,280 - INFO - 127.0.0.1 - - [14/Jul/2026 17:12:25] "GET /?month=2026-07 HTTP/1.1" 200 -
+2026-07-14 17:12:25,290 - INFO - 127.0.0.1 - - [14/Jul/2026 17:12:25] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:12:25,291 - INFO - 127.0.0.1 - - [14/Jul/2026 17:12:25] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 17:12:28,361 - INFO - 127.0.0.1 - - [14/Jul/2026 17:12:28] "GET /validate?month=2026-07 HTTP/1.1" 200 -
+2026-07-14 17:12:28,369 - INFO - 127.0.0.1 - - [14/Jul/2026 17:12:28] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:12:32,970 - INFO - 127.0.0.1 - - [14/Jul/2026 17:12:32] "GET /validate?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 17:12:32,980 - INFO - 127.0.0.1 - - [14/Jul/2026 17:12:32] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:16:05,141 - INFO - 127.0.0.1 - - [14/Jul/2026 17:16:05] "GET /validate?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 17:16:05,154 - INFO - 127.0.0.1 - - [14/Jul/2026 17:16:05] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:19:15,369 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\services.py', reloading
+2026-07-14 17:19:15,470 - INFO -  * Restarting with stat
+2026-07-14 17:22:19,559 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://10.142.32.13:5001
+2026-07-14 17:22:19,559 - INFO - [33mPress CTRL+C to quit[0m
+2026-07-14 17:22:19,562 - INFO -  * Restarting with stat
+2026-07-14 17:22:21,030 - WARNING -  * Debugger is active!
+2026-07-14 17:22:21,039 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 17:22:22,232 - INFO - 127.0.0.1 - - [14/Jul/2026 17:22:22] "GET /validate?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 17:22:22,267 - INFO - 127.0.0.1 - - [14/Jul/2026 17:22:22] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:22:54,305 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\blueprints\\main.py', reloading
+2026-07-14 17:22:54,404 - INFO -  * Restarting with stat
+2026-07-14 17:22:55,972 - WARNING -  * Debugger is active!
+2026-07-14 17:22:55,980 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 17:25:35,716 - INFO - 127.0.0.1 - - [14/Jul/2026 17:25:35] "GET /validate?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 17:25:35,730 - INFO - 127.0.0.1 - - [14/Jul/2026 17:25:35] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:32:55,871 - INFO - 127.0.0.1 - - [14/Jul/2026 17:32:55] "GET /validate?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 17:32:55,883 - INFO - 127.0.0.1 - - [14/Jul/2026 17:32:55] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:36:40,202 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\services.py', reloading
+2026-07-14 17:36:40,297 - INFO -  * Restarting with stat
+2026-07-14 17:36:41,879 - WARNING -  * Debugger is active!
+2026-07-14 17:36:41,887 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 17:37:01,037 - INFO - 127.0.0.1 - - [14/Jul/2026 17:37:01] "GET /validate?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 17:37:01,049 - INFO - 127.0.0.1 - - [14/Jul/2026 17:37:01] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:38:13,622 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\services.py', reloading
+2026-07-14 17:38:13,718 - INFO -  * Restarting with stat
+2026-07-14 17:38:15,263 - WARNING -  * Debugger is active!
+2026-07-14 17:38:15,270 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 17:38:20,278 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\payroll_engine.py', reloading
+2026-07-14 17:38:20,358 - INFO -  * Restarting with stat
+2026-07-14 17:38:21,922 - WARNING -  * Debugger is active!
+2026-07-14 17:38:21,929 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 17:38:24,639 - INFO - 127.0.0.1 - - [14/Jul/2026 17:38:24] "GET /validate?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 17:38:24,650 - INFO - 127.0.0.1 - - [14/Jul/2026 17:38:24] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:40:24,449 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\payroll_engine.py', reloading
+2026-07-14 17:40:24,542 - INFO -  * Restarting with stat
+2026-07-14 17:40:26,069 - WARNING -  * Debugger is active!
+2026-07-14 17:40:26,076 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 17:40:27,805 - INFO - 127.0.0.1 - - [14/Jul/2026 17:40:27] "GET /validate?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 17:40:27,818 - INFO - 127.0.0.1 - - [14/Jul/2026 17:40:27] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:40:32,586 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\services.py', reloading
+2026-07-14 17:40:32,681 - INFO -  * Restarting with stat
+2026-07-14 17:40:34,204 - WARNING -  * Debugger is active!
+2026-07-14 17:40:34,217 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 17:40:38,665 - INFO - 127.0.0.1 - - [14/Jul/2026 17:40:38] "GET /validate?month=2026-02 HTTP/1.1" 200 -
+2026-07-14 17:40:38,678 - INFO - 127.0.0.1 - - [14/Jul/2026 17:40:38] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:41:04,389 - INFO - 127.0.0.1 - - [14/Jul/2026 17:41:04] "GET /validate?month=2026-01 HTTP/1.1" 200 -
+2026-07-14 17:41:04,400 - INFO - 127.0.0.1 - - [14/Jul/2026 17:41:04] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:41:30,983 - INFO - 127.0.0.1 - - [14/Jul/2026 17:41:30] "GET /validate?month=2026-07 HTTP/1.1" 200 -
+2026-07-14 17:41:30,993 - INFO - 127.0.0.1 - - [14/Jul/2026 17:41:30] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:41:42,288 - INFO - 127.0.0.1 - - [14/Jul/2026 17:41:42] "GET /validate?month=2026-03 HTTP/1.1" 200 -
+2026-07-14 17:41:42,298 - INFO - 127.0.0.1 - - [14/Jul/2026 17:41:42] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:42:09,391 - INFO - 127.0.0.1 - - [14/Jul/2026 17:42:09] "GET /manage_backups HTTP/1.1" 200 -
+2026-07-14 17:42:09,400 - INFO - 127.0.0.1 - - [14/Jul/2026 17:42:09] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:42:16,353 - ERROR - Failed to write audit log: database is locked
+Traceback (most recent call last):
+  File "c:\Users\horayr\Workspace\payroll-main\services.py", line 226, in log_audit
+    conn.commit()
+    ~~~~~~~~~~~^^
+sqlite3.OperationalError: database is locked
+2026-07-14 17:42:16,356 - INFO - 127.0.0.1 - - [14/Jul/2026 17:42:16] "[32mPOST /create_backup HTTP/1.1[0m" 302 -
+2026-07-14 17:42:16,361 - INFO - 127.0.0.1 - - [14/Jul/2026 17:42:16] "GET /manage_backups HTTP/1.1" 200 -
+2026-07-14 17:42:16,377 - INFO - 127.0.0.1 - - [14/Jul/2026 17:42:16] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:43:58,844 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll-main\\blueprints\\settings.py', reloading
+2026-07-14 17:43:58,949 - INFO -  * Restarting with stat
+2026-07-14 17:44:00,586 - WARNING -  * Debugger is active!
+2026-07-14 17:44:00,594 - INFO -  * Debugger PIN: 843-420-450
+2026-07-14 17:44:15,431 - INFO - 127.0.0.1 - - [14/Jul/2026 17:44:15] "GET /manage_backups HTTP/1.1" 200 -
+2026-07-14 17:44:15,515 - INFO - 127.0.0.1 - - [14/Jul/2026 17:44:15] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:44:42,482 - INFO - 127.0.0.1 - - [14/Jul/2026 17:44:42] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-14 17:44:42,492 - INFO - 127.0.0.1 - - [14/Jul/2026 17:44:42] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:45:14,430 - INFO - 127.0.0.1 - - [14/Jul/2026 17:45:14] "GET / HTTP/1.1" 200 -
+2026-07-14 17:45:14,441 - INFO - 127.0.0.1 - - [14/Jul/2026 17:45:14] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:45:14,442 - INFO - 127.0.0.1 - - [14/Jul/2026 17:45:14] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-14 17:45:33,955 - INFO - 127.0.0.1 - - [14/Jul/2026 17:45:33] "GET /?month=2026-03 HTTP/1.1" 200 -
+2026-07-14 17:45:33,966 - INFO - 127.0.0.1 - - [14/Jul/2026 17:45:33] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-14 17:45:33,967 - INFO - 127.0.0.1 - - [14/Jul/2026 17:45:33] "[36mGET /static/index.js HTTP/1.1[0m" 304 -

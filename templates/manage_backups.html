@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0 fw-bold page-title">💾 資料庫備份與還原</h4>
+</div>
+
+<div class="card app-card mb-4">
+  <div class="card-header bg-primary text-white fw-bold">建立備份</div>
+  <div class="card-body">
+    <form action="/create_backup" method="POST" class="d-flex gap-2">
+      <button class="btn btn-success">立即建立備份</button>
+    </form>
+    <div class="form-text mt-2">每次還原前系統會自動建立一份 pre-restore 快照。</div>
+  </div>
+</div>
+
+<div class="card app-card">
+  <div class="card-header bg-dark text-white fw-bold">可用備份檔</div>
+  <div class="card-body p-0">
+    <div class="table-wrap">
+      <table class="table table-striped align-middle mb-0 data-table">
+        <thead>
+          <tr>
+            <th>檔名</th>
+            <th>大小 (MB)</th>
+            <th>最後修改</th>
+            <th>還原</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for f in files %}
+          <tr>
+            <td class="small">{{ f.name }}</td>
+            <td>{{ '%.2f'|format(f.size_mb) }}</td>
+            <td>{{ f.mtime }}</td>
+            <td>
+              <form action="/restore_backup" method="POST" onsubmit="return confirm('確定要還原此備份？系統會先自動建立還原前快照。');">
+                <input type="hidden" name="filename" value="{{ f.name }}">
+                <button class="btn btn-sm btn-warning">還原</button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="4" class="text-muted text-center py-3">尚無備份檔。</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

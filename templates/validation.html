@@ -1,69 +1,243 @@
 {% extends 'base.html' %}
+{% block content_container_class %}container-fluid px-3{% endblock %}
 {% block content %}
-<div class="container-fluid mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>🔍 深度校對報告 (Excel vs 系統)</h2>
-        <div>
-            <a href="/download_validation" class="btn btn-success fw-bold">📥 下載此比對結果 (Excel)</a>
-            <a href="/" class="btn btn-secondary ms-2">返回主控台</a>
+<div class="mt-3">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h2 class="page-title">🔍 深度校對報告 (Excel vs 系統)</h2>
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="/download_validation?month={{ current_month }}" class="btn btn-success fw-bold">📥 下載此比對結果 (Excel)</a>
+            <a href="/" class="btn btn-secondary">返回主控台</a>
         </div>
     </div>
 
-    <div class="card shadow-sm">
+    {# Month filter #}
+    <div class="card app-card mb-4">
+        <div class="card-body py-3">
+            <form id="validationFilterForm" class="row g-3 align-items-end" method="GET" action="/validate">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">校對月份</label>
+                    <input type="month" name="month" class="form-control" value="{{ current_month }}"
+                           onchange="document.getElementById('validationFilterForm').submit()">
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {# Summary cards #}
+    <div class="row g-3 mb-3">
+        <div class="col-6 col-md-3">
+            <div class="card app-card h-100">
+                <div class="card-body text-center py-3">
+                    <div class="text-muted small">總筆數</div>
+                    <div class="h4 mb-0">{{ summary.total }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card app-card h-100 border-success">
+                <div class="card-body text-center py-3">
+                    <div class="text-muted small">匹配</div>
+                    <div class="h4 mb-0 text-success">{{ summary.matched }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card app-card h-100 border-danger">
+                <div class="card-body text-center py-3">
+                    <div class="text-muted small">不匹配</div>
+                    <div class="h4 mb-0 text-danger">{{ summary.mismatched }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card app-card h-100 border-warning">
+                <div class="card-body text-center py-3">
+                    <div class="text-muted small">系統找不到</div>
+                    <div class="h4 mb-0 text-warning">{{ summary.missing }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# View controls #}
+    <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+        <div class="form-check form-switch mb-0">
+            <input class="form-check-input" type="checkbox" id="showMismatchOnly">
+            <label class="form-check-label fw-semibold" for="showMismatchOnly">只顯示有差異的行</label>
+        </div>
+        <div class="form-check form-switch mb-0">
+            <input class="form-check-input" type="checkbox" id="showDetailCols">
+            <label class="form-check-label fw-semibold" for="showDetailCols">顯示系統明細欄位</label>
+        </div>
+    </div>
+
+    {# Main table #}
+    <div class="card app-card">
         <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-sm table-hover table-bordered mb-0 align-middle text-center">
-                    <thead class="table-dark" style="font-size: 0.85rem;">
+            <div class="table-wrap">
+                <table id="valTable" class="table table-sm table-hover table-bordered mb-0 align-middle text-center" style="font-size: 0.95rem;">
+                    <thead>
                         <tr>
-                            <th rowspan="2">月份</th>
-                            <th rowspan="2">員工</th>
-                            <th rowspan="2">地點</th>
-                            <th colspan="2">底薪 (Basic)</th>
-                            <th colspan="2">佣金 (Comm)</th>
-                            <th colspan="2">津貼 (Allow)</th>
-                            <th colspan="2">MPF</th>
-                            <th colspan="2" class="table-primary text-dark">實發 (Net)</th>
-                            <th rowspan="2">差異</th>
-                            <th rowspan="2">狀態</th>
+                            <th rowspan="2" class="align-middle">員工</th>
+                            <th rowspan="2" class="align-middle">地點</th>
+                            {# Financial columns #}
+                            <th colspan="2" class="table-light">底薪</th>
+                            <th colspan="2" class="table-light">佣金</th>
+                            <th colspan="2" class="table-light">津貼</th>
+                            <th colspan="2" class="table-light">MPF</th>
+                            <th colspan="2" class="table-primary">實發</th>
+                            {# Result columns #}
+                            <th rowspan="2" class="align-middle">差異欄位</th>
+                            <th rowspan="2" class="align-middle">根因提示</th>
+                            <th rowspan="2" class="align-middle">差異 ($)</th>
+                            <th rowspan="2" class="align-middle">狀態</th>
+                            {# System detail columns (toggleable) #}
+                            <th colspan="3" class="detail-col table-info">工時明細 (Excel/系統)</th>
+                            <th colspan="3" class="detail-col table-info">微調明細</th>
+                            <th colspan="2" class="detail-col table-info">銷售明細</th>
+                            <th colspan="2" class="detail-col table-info">時薪設定</th>
+                            <th colspan="2" class="detail-col table-info">佣金率設定</th>
                         </tr>
-                        <tr class="table-secondary text-dark">
-                            <th>Ex</th><th>Sys</th>
-                            <th>Ex</th><th>Sys</th>
-                            <th>Ex</th><th>Sys</th>
-                            <th>Ex</th><th>Sys</th>
-                            <th>Ex</th><th>Sys</th>
+                        <tr class="table-secondary">
+                            {# Financial sub-headers #}
+                            <th>Ex</th><th>系</th>
+                            <th>Ex</th><th>系</th>
+                            <th>Ex</th><th>系</th>
+                            <th>Ex</th><th>系</th>
+                            <th>Ex</th><th>系</th>
+                            {# Detail sub-headers #}
+                            <th class="detail-col">Ex日/系日</th>
+                            <th class="detail-col">Ex工時/系工時</th>
+                            <th class="detail-col">Ex OT/系 OT</th>
+                            <th class="detail-col">報銷</th>
+                            <th class="detail-col">微調</th>
+                            <th class="detail-col">出勤獎</th>
+                            <th class="detail-col">筆數</th>
+                            <th class="detail-col">銷售額</th>
+                            <th class="detail-col">時薪</th>
+                            <th class="detail-col">覆寫?</th>
+                            <th class="detail-col">佣金%</th>
+                            <th class="detail-col">覆寫?</th>
                         </tr>
                     </thead>
-                    <tbody style="font-size: 0.9rem;">
+                    <tbody>
                         {% for item in results %}
-                        <tr id="val-{{ loop.index }}" data-row-id="{{ item.name }}|{{ item.month }}|{{ item.location }}" data-type="validation" class="{{ 'table-danger' if '❌' in item.status or '❓' in item.status else '' }}">
-                            <td>{{ item.month }}</td>
+                        <tr class="val-row {{ 'row-mismatch table-danger' if '❌' in item.status or '❓' in item.status else 'row-match' }}">
                             <td class="fw-bold">{{ item.name }}</td>
                             <td><small>{{ item.location }}</small></td>
-                            
+
+                            {# Financial: basic #}
                             <td>{{ item.ex_basic }}</td>
                             <td class="{{ 'text-danger fw-bold' if item.ex_basic != item.sys_basic else 'text-muted' }}">{{ item.sys_basic }}</td>
-                            
+                            {# Financial: comm #}
                             <td>{{ item.ex_comm }}</td>
                             <td class="{{ 'text-danger fw-bold' if item.ex_comm != item.sys_comm else 'text-muted' }}">{{ item.sys_comm }}</td>
-                            
+                            {# Financial: allowance #}
                             <td>{{ item.ex_allow }}</td>
                             <td class="{{ 'text-danger fw-bold' if item.ex_allow != item.sys_allow else 'text-muted' }}">{{ item.sys_allow }}</td>
-                            
+                            {# Financial: MPF #}
                             <td>{{ item.ex_mpf }}</td>
                             <td class="{{ 'text-danger fw-bold' if item.ex_mpf != item.sys_mpf else 'text-muted' }}">{{ item.sys_mpf }}</td>
-                            
-                            <td class="table-primary">{{ item.ex_net }}</td>
-                            <td class="table-primary fw-bold">{{ item.sys_net }}</td>
-                            
-                            <td class="fw-bold">{{ item.diff }}</td>
+                            {# Financial: net #}
+                            <td class="table-primary fw-bold">{{ item.ex_net }}</td>
+                            <td class="table-primary fw-bold {{ 'text-danger' if '❌' in item.status else '' }}">{{ item.sys_net }}</td>
+
+                            {# Mismatch badges #}
+                            <td class="text-start">
+                                {% if item.mismatch_fields %}
+                                    {% for field in item.mismatch_fields %}
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle me-1">{{ field }}</span>
+                                    {% endfor %}
+                                {% elif '❓' in item.status %}
+                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle">系統無資料</span>
+                                {% else %}
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle">一致</span>
+                                {% endif %}
+                            </td>
+
+                            {# Root cause hints #}
+                            <td class="text-start">
+                                {% if item.root_cause %}
+                                    {% for hint in item.root_cause %}
+                                        <span class="badge bg-warning-subtle text-dark border border-warning-subtle me-1">{{ hint }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+
+                            {# Diff #}
+                            <td class="fw-bold {{ 'text-danger' if item.diff|float < -1 else ('text-success' if item.diff|float > 1 else 'text-muted') }}">
+                                {{ item.diff }}
+                            </td>
+                            {# Status #}
                             <td>{{ item.status }}</td>
+
+                            {# Work hours: Excel vs System #}
+                            <td class="detail-col {{ 'text-danger fw-bold' if item.ex_days != item.sys_days else 'text-muted' }}">{{ item.ex_days }} / {{ item.sys_days }}</td>
+                            <td class="detail-col {{ 'text-danger fw-bold' if item.ex_hours != item.sys_hours else 'text-muted' }}">{{ item.ex_hours }} / {{ item.sys_hours }}</td>
+                            <td class="detail-col {{ 'text-danger fw-bold' if item.ex_ot != item.sys_ot else 'text-muted' }}">{{ item.ex_ot }} / {{ item.sys_ot }}</td>
+                            <td class="detail-col text-muted">{{ item.sys_expenses }}</td>
+                            <td class="detail-col text-muted">{{ item.sys_adjustment }}</td>
+                            <td class="detail-col text-muted">{{ item.sys_bonus }}</td>
+                            <td class="detail-col text-muted">{{ item.sys_sales_entries }}</td>
+                            <td class="detail-col text-muted">${{ item.sys_sales_amount }}</td>
+                            <td class="detail-col">
+                                <span class="{% if item.hr_overridden %}text-primary fw-bold{% else %}text-muted{% endif %}">
+                                    ${{ item.effective_hr }}{% if item.hr_overridden %} *{% endif %}
+                                </span>
+                            </td>
+                            <td class="detail-col">
+                                {% if item.hr_overridden %}
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle">覆寫</span>
+                                {% else %}
+                                    <span class="text-muted small">預設</span>
+                                {% endif %}
+                            </td>
+                            <td class="detail-col">
+                                <span class="{% if item.comm_overridden %}text-primary fw-bold{% else %}text-muted{% endif %}">
+                                    {{ item.effective_comm_pct }}%{% if item.comm_overridden %} *{% endif %}
+                                </span>
+                            </td>
+                            <td class="detail-col">
+                                {% if item.comm_overridden %}
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle">覆寫</span>
+                                {% else %}
+                                    <span class="text-muted small">預設</span>
+                                {% endif %}
+                            </td>
                         </tr>
+                        {% else %}
+                        <tr><td colspan="29" class="py-4 text-muted text-center fst-italic">本月無校對資料（請先匯入 Excel）</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-</div>
+
+<script>
+(function() {
+    // Toggle: show mismatch rows only
+    const mismatchToggle = document.getElementById('showMismatchOnly');
+    mismatchToggle.addEventListener('change', function() {
+        document.querySelectorAll('#valTable tbody .row-match').forEach(function(row) {
+            row.style.display = mismatchToggle.checked ? 'none' : '';
+        });
+    });
+
+    // Toggle: show/hide detail columns
+    const detailToggle = document.getElementById('showDetailCols');
+    detailToggle.addEventListener('change', function() {
+        document.querySelectorAll('.detail-col').forEach(function(el) {
+            el.style.display = detailToggle.checked ? '' : 'none';
+        });
+    });
+
+    // Hide detail cols by default
+    document.querySelectorAll('.detail-col').forEach(function(el) {
+        el.style.display = 'none';
+    });
+})();
+</script>
 {% endblock %}

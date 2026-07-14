@@ -1,0 +1,160 @@
+:root {
+  --app-text-main: #1f2937;
+  --app-text-muted: #6b7280;
+  --app-border: #e5e7eb;
+  --app-surface: #ffffff;
+  --app-surface-soft: #f8fafc;
+  --app-shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
+}
+
+body {
+  color: var(--app-text-main);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.page-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.page-title {
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.btn {
+  border-radius: 0.5rem;
+  font-weight: 600;
+}
+
+.btn-primary,
+.btn-success,
+.btn-danger,
+.btn-warning,
+.btn-info {
+  box-shadow: var(--app-shadow-sm);
+}
+
+.quick-action-bar {
+  position: sticky;
+  bottom: 1rem;
+  z-index: 1020;
+  margin-top: 1rem;
+}
+
+.quick-action-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--app-border);
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(10px);
+}
+
+.quick-action-meta {
+  min-width: 0;
+}
+
+.quick-action-buttons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.app-card {
+  border: 1px solid var(--app-border);
+  border-radius: 0.6rem;
+  background: var(--app-surface);
+  box-shadow: var(--app-shadow-sm);
+}
+
+.app-card .card-header {
+  font-weight: 700;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.data-table thead th {
+  background: var(--app-surface-soft);
+  font-weight: 700;
+}
+
+.cell-timestamp {
+  color: var(--app-text-muted);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+@media all and (min-width: 992px) {
+  .dropdown-hover:hover .dropdown-menu {
+    display: block;
+    margin-top: 0;
+  }
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+  color: #0d6efd;
+  font-weight: 700;
+}
+
+@media (max-width: 991.98px) {
+  .page-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .page-title {
+    font-size: 1.35rem;
+  }
+
+  .btn-group {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .quick-action-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .quick-action-buttons {
+    width: 100%;
+  }
+
+  .quick-action-buttons .btn,
+  .quick-action-buttons form {
+    width: 100%;
+  }
+
+  .table-wrap .data-table {
+    min-width: 760px;
+  }
+
+  .table-wrap .data-table th,
+  .table-wrap .data-table td {
+    white-space: nowrap;
+    font-size: 0.88rem;
+  }
+}

@@ -1,10 +1,6 @@
-<!doctype html>
-<html lang="zh-TW">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>系統稽核紀錄面板 (Audit Logs)</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+{% extends 'base.html' %}
+
+{% block head_extra %}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <style>
         body { 
@@ -13,8 +9,8 @@
         }
         /* 美化 JSON 顯示區塊，模擬程式碼編輯器 */
         .json-block { 
-            max-height: 160px; 
-            overflow-y: auto; 
+            max-height: none;
+            overflow: visible;
             font-size: 0.825rem; 
             background: #1e1e1e; 
             color: #d4d4d4; 
@@ -23,6 +19,8 @@
             border: 1px solid #2d2d2d; 
             margin-bottom: 0;
             text-align: left;
+            white-space: pre-wrap;
+            word-break: break-word;
             font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
         }
         .json-block.empty { 
@@ -33,8 +31,8 @@
         }
         /* 表格固定標頭與高度限制 */
         .table-responsive { 
-            max-height: 720px; 
-            overflow-y: auto; 
+            max-height: none;
+            overflow: visible;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.02);
         }
         .sticky-thead th { 
@@ -52,13 +50,69 @@
         .highlight-tr td {
             background-color: #fff3cd !important;
         }
+        .diff-summary {
+            display: block;
+            margin-top: 6px;
+            font-size: 0.78rem;
+            color: #495057;
+            text-align: left;
+            line-height: 1.3;
+        }
+        .diff-chip {
+            display: inline-block;
+            margin: 2px 4px 2px 0;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            border: 1px solid transparent;
+        }
+        .chip-added { background: #e6fcf5; color: #087f5b; border-color: #96f2d7; }
+        .chip-removed { background: #fff5f5; color: #c92a2a; border-color: #ffc9c9; }
+        .chip-updated { background: #fff9db; color: #e67700; border-color: #ffe066; }
+        .timestamp-cell {
+            color: #1f2937;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            white-space: nowrap;
+        }
+        .audit-mobile-list {
+            display: grid;
+            gap: 12px;
+        }
+        .audit-mobile-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+            padding: 12px;
+        }
+        .audit-mobile-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 0.86rem;
+        }
+        .audit-mobile-meta .label {
+            color: #6b7280;
+            font-size: 0.78rem;
+            display: block;
+        }
+        @media (max-width: 991.98px) {
+            #highlightChangesBtn {
+                display: none;
+            }
+        }
     </style>
-</head>
-<body class="py-4">
-<div class="container-fluid px-4">
+{% endblock %}
+
+{% block content_container_class %}container-fluid px-4{% endblock %}
+
+{% block content %}
+<div class="pt-3">
     
     <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
-        <h3 class="fw-bold text-dark mb-0">
+        <h3 class="fw-bold text-dark mb-0 page-title">
             <i class="bi bi-shield-shaded text-primary me-2"></i>系統稽核紀錄 (Audit Logs)
         </h3>
         <a class="btn btn-outline-secondary fw-bold shadow-sm btn-sm" href="/">
@@ -66,7 +120,7 @@
         </a>
     </div>
 
-    <div class="card shadow-sm mb-4 border-0">
+    <div class="card app-card mb-4 border-0">
         <div class="card-header bg-white py-3 fw-bold text-secondary">
             <i class="bi bi-funnel text-muted me-1"></i> 進階資料篩選與工具
         </div>
@@ -102,15 +156,15 @@
                         <input class="form-control border-start-0 border-secondary-subtle" name="q" placeholder="全文搜尋紀錄..." value="{{ q or '' }}">
                     </div>
                 </div>
-                <div class="col-md-3 d-flex gap-1">
-                    <button class="btn btn-primary flex-grow-1 fw-bold shadow-sm">
-                        <i class="bi bi-filter"></i> 執行篩選
-                    </button>
+                <div class="col-md-3 d-flex justify-content-end gap-1">
                     <button type="button" class="btn btn-warning fw-bold shadow-sm text-dark" id="highlightChangesBtn" title="一鍵比對新舊值差異並標記顏色">
                         <i class="bi bi-eye"></i> 對比變更
                     </button>
                 </div>
             </form>
+            <div class="small text-muted mt-2">
+                <i class="bi bi-lightning-charge"></i> 篩選已改為自動套用（選單變更或搜尋停頓時自動更新）
+            </div>
 
             <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top border-light-subtle">
                 <div class="text-muted small">
@@ -128,15 +182,15 @@
         </div>
     </div>
 
-    <div class="card shadow-sm border-0">
+    <div class="card app-card border-0">
         <div class="card-body p-0">
-            <div class="table-responsive rounded-top">
-                <table class="table table-sm table-hover align-middle mb-0 text-center" id="auditTable">
+            <div class="table-responsive rounded-top d-none d-lg-block">
+                <table class="table table-sm table-hover align-middle mb-0 text-center data-table" id="auditTable">
                     <thead class="sticky-thead">
                         <tr>
                             <th style="width: 45px;"><input type="checkbox" id="selectAll" class="form-check-input border-secondary"></th>
                             <th style="width: 70px;">ID</th>
-                            <th style="width: 170px;">時間戳記 (UTC)</th>
+                            <th style="width: 190px;">時間戳記 (HKT)</th>
                             <th style="width: 120px;">操作用戶</th>
                             <th style="width: 90px;">動作</th>
                             <th style="width: 140px;">目標資料表</th>
@@ -151,7 +205,7 @@
                         <tr data-entry-id="{{ e.id }}" data-table="{{ e.table_name }}" data-record-id="{{ e.record_id }}">
                             <td><input type="checkbox" class="rowCheckbox form-check-input border-secondary" data-entry-id="{{ e.id }}"></td>
                             <td class="text-muted small fw-bold">#{{ e.id }}</td>
-                            <td class="small text-secondary">{{ e.timestamp }}</td>
+                            <td class="small timestamp-cell audit-timestamp" data-utc="{{ e.timestamp }}">{{ e.timestamp }}</td>
                             <td>
                                 {% if e.user %}
                                     <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1"><i class="bi bi-person-fill"></i> {{ e.user }}</span>
@@ -192,6 +246,59 @@
                     </tbody>
                 </table>
             </div>
+
+            <div class="d-lg-none p-2 audit-mobile-list" id="auditMobileList">
+                {% for e in entries %}
+                <div class="audit-mobile-card" data-entry-id="{{ e.id }}">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="fw-bold">#{{ e.id }}</div>
+                        <input type="checkbox" class="rowCheckbox form-check-input border-secondary" data-entry-id="{{ e.id }}">
+                    </div>
+                    <div class="audit-mobile-meta mb-2">
+                        <div>
+                            <span class="label">時間</span>
+                            <div class="timestamp-cell audit-timestamp" data-utc="{{ e.timestamp }}">{{ e.timestamp }}</div>
+                        </div>
+                        <div>
+                            <span class="label">操作用戶</span>
+                            <div>{{ e.user or 'Anonymous' }}</div>
+                        </div>
+                        <div>
+                            <span class="label">動作</span>
+                            <div>{{ e.action }}</div>
+                        </div>
+                        <div>
+                            <span class="label">目標資料表</span>
+                            <div>{{ e.table_name }}</div>
+                        </div>
+                        <div>
+                            <span class="label">紀錄 ID</span>
+                            <div>{{ e.record_id if e.record_id and e.record_id != 'None' else '-' }}</div>
+                        </div>
+                        <div>
+                            <span class="label">IP</span>
+                            <div class="font-monospace">{{ e.ip or '-' }}</div>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="small text-muted mb-1">修改前舊值</div>
+                        {% if e.old_value_pretty and e.old_value_pretty != 'null' %}
+                        <pre class="json-block mb-0">{{ e.old_value_pretty }}</pre>
+                        {% else %}
+                        <pre class="json-block empty mb-0"><em>(無歷史資料)</em></pre>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <div class="small text-muted mb-1">修改後新值</div>
+                        {% if e.new_value_pretty and e.new_value_pretty != 'null' %}
+                        <pre class="json-block mb-0">{{ e.new_value_pretty }}</pre>
+                        {% else %}
+                        <pre class="json-block empty mb-0"><em>(無變更資料)</em></pre>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 
@@ -221,10 +328,42 @@
       </ul>
     </nav>
 </div>
+{% endblock %}
 
+{% block scripts_extra %}
 <script>
     (function(){
         const form = document.getElementById('filterForm');
+        const tableSelect = form.querySelector('select[name="table"]');
+        const actionSelect = form.querySelector('select[name="action"]');
+        const userSelect = form.querySelector('select[name="user"]');
+        const queryInput = form.querySelector('input[name="q"]');
+
+        let filterTimer = null;
+
+        function submitFilter(){
+            form.submit();
+        }
+
+        function debounceSubmit(){
+            if (filterTimer) clearTimeout(filterTimer);
+            filterTimer = setTimeout(submitFilter, 500);
+        }
+
+        [tableSelect, actionSelect, userSelect].forEach(el => {
+            if (!el) return;
+            el.addEventListener('change', submitFilter);
+        });
+
+        if (queryInput){
+            queryInput.addEventListener('input', debounceSubmit);
+            queryInput.addEventListener('keydown', function(e){
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    submitFilter();
+                }
+            });
+        }
         
         // 1. 條件匯出全部功能
         const exportBtn = document.getElementById('exportAllBtn');
@@ -242,26 +381,201 @@
 
         // 3. 勾選特定資料項匯出功能
         document.getElementById('exportSelectedBtn').addEventListener('click', function(){
-            const ids = Array.from(document.querySelectorAll('.rowCheckbox:checked')).map(cb => cb.getAttribute('data-entry-id'));
+            const ids = Array.from(new Set(
+                Array.from(document.querySelectorAll('.rowCheckbox:checked')).map(cb => cb.getAttribute('data-entry-id'))
+            ));
             if(ids.length === 0){ alert('請先勾選要匯出的日誌項目！'); return; }
             const params = new URLSearchParams(new FormData(form));
             params.set('ids', ids.join(','));
             window.location = '/audit_logs/export?' + params.toString();
         });
 
-        // 4. 新舊變更智能對比高亮（切換為更具質感的 Class 注入控制）
-        document.getElementById('highlightChangesBtn').addEventListener('click', function(){
+        function parseUtcDate(raw) {
+            const value = (raw || '').trim();
+            if (!value) return null;
+
+            // Accepts forms like "2026-07-12T19:59:49.178410" and treats them as UTC if zone is missing.
+            let iso = value.replace(' ', 'T');
+            if (!/[zZ]$|[+-]\d{2}:?\d{2}$/.test(iso)) {
+                iso += 'Z';
+            }
+
+            const dt = new Date(iso);
+            return Number.isNaN(dt.getTime()) ? null : dt;
+        }
+
+        function formatToHkt(raw) {
+            const dt = parseUtcDate(raw);
+            if (!dt) return raw;
+
+            const parts = new Intl.DateTimeFormat('zh-HK', {
+                timeZone: 'Asia/Hong_Kong',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            }).formatToParts(dt);
+
+            const map = Object.fromEntries(parts.map(p => [p.type, p.value]));
+            return `${map.year}-${map.month}-${map.day} ${map.hour}:${map.minute}:${map.second}`;
+        }
+
+        document.querySelectorAll('.audit-timestamp').forEach(cell => {
+            const utcRaw = cell.getAttribute('data-utc') || cell.textContent;
+            cell.textContent = formatToHkt(utcRaw);
+        });
+
+        function isObject(value) {
+            return Object.prototype.toString.call(value) === '[object Object]';
+        }
+
+        function normalize(value) {
+            if (Array.isArray(value)) {
+                return value.map(normalize);
+            }
+            if (isObject(value)) {
+                return Object.keys(value)
+                    .sort()
+                    .reduce((acc, key) => {
+                        acc[key] = normalize(value[key]);
+                        return acc;
+                    }, {});
+            }
+            return value;
+        }
+
+        function deepEqual(a, b) {
+            return JSON.stringify(normalize(a)) === JSON.stringify(normalize(b));
+        }
+
+        function diffJson(oldObj, newObj, basePath = '') {
+            const diffs = [];
+            const oldIsObj = isObject(oldObj);
+            const newIsObj = isObject(newObj);
+
+            if (Array.isArray(oldObj) || Array.isArray(newObj)) {
+                if (!deepEqual(oldObj, newObj)) {
+                    diffs.push({ type: 'updated', path: basePath || '(root)' });
+                }
+                return diffs;
+            }
+
+            if (!oldIsObj || !newIsObj) {
+                if (!deepEqual(oldObj, newObj)) {
+                    diffs.push({ type: 'updated', path: basePath || '(root)' });
+                }
+                return diffs;
+            }
+
+            const keys = new Set([...Object.keys(oldObj), ...Object.keys(newObj)]);
+            for (const key of keys) {
+                const nextPath = basePath ? `${basePath}.${key}` : key;
+                const hasOld = Object.prototype.hasOwnProperty.call(oldObj, key);
+                const hasNew = Object.prototype.hasOwnProperty.call(newObj, key);
+
+                if (!hasOld && hasNew) {
+                    diffs.push({ type: 'added', path: nextPath });
+                    continue;
+                }
+                if (hasOld && !hasNew) {
+                    diffs.push({ type: 'removed', path: nextPath });
+                    continue;
+                }
+
+                const ov = oldObj[key];
+                const nv = newObj[key];
+                const bothObj = isObject(ov) && isObject(nv);
+                const bothArray = Array.isArray(ov) && Array.isArray(nv);
+
+                if (bothObj) {
+                    diffs.push(...diffJson(ov, nv, nextPath));
+                } else if (bothArray) {
+                    if (!deepEqual(ov, nv)) {
+                        diffs.push({ type: 'updated', path: nextPath });
+                    }
+                } else if (!deepEqual(ov, nv)) {
+                    diffs.push({ type: 'updated', path: nextPath });
+                }
+            }
+            return diffs;
+        }
+
+        function toSummaryHtml(diffs) {
+            const added = diffs.filter(d => d.type === 'added').length;
+            const removed = diffs.filter(d => d.type === 'removed').length;
+            const updated = diffs.filter(d => d.type === 'updated').length;
+            const preview = diffs.slice(0, 5).map(d => d.path).join('、');
+
+            return `
+                <span class="diff-chip chip-updated">修改 ${updated}</span>
+                <span class="diff-chip chip-added">新增 ${added}</span>
+                <span class="diff-chip chip-removed">刪除 ${removed}</span>
+                <div class="small text-muted mt-1">欄位：${preview || '(無)'}</div>
+            `;
+        }
+
+        function parseJsonFromBlock(text) {
+            const trimmed = (text || '').trim();
+            if (!trimmed || trimmed === '(無歷史資料)' || trimmed === '(無變更資料)') {
+                return null;
+            }
+            try {
+                return JSON.parse(trimmed);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        let compareEnabled = false;
+
+        // 4. 新舊變更深度比對高亮（JSON deep diff）
+        const compareBtn = document.getElementById('highlightChangesBtn');
+        compareBtn.addEventListener('click', function(){
+            compareEnabled = !compareEnabled;
+            compareBtn.innerHTML = compareEnabled
+                ? '<i class="bi bi-eye-slash"></i> 取消對比'
+                : '<i class="bi bi-eye"></i> 對比變更';
+
             document.querySelectorAll('#auditTable tbody tr').forEach(tr => {
                 const oldPre = tr.querySelector('.oldValue');
                 const newPre = tr.querySelector('.newValue');
                 if(!oldPre || !newPre) return;
-                
-                const oldText = oldPre.innerText.trim();
-                const newText = newPre.innerText.trim();
-                
-                // 比對資料字串是否相符，不符則注入高亮效果
-                if(oldText !== newText){
-                    tr.classList.toggle('highlight-tr');
+
+                let summary = tr.querySelector('.diff-summary');
+                if (!summary) {
+                    summary = document.createElement('div');
+                    summary.className = 'diff-summary';
+                    newPre.insertAdjacentElement('afterend', summary);
+                }
+
+                if (!compareEnabled) {
+                    tr.classList.remove('highlight-tr');
+                    summary.innerHTML = '';
+                    return;
+                }
+
+                const oldJson = parseJsonFromBlock(oldPre.innerText);
+                const newJson = parseJsonFromBlock(newPre.innerText);
+
+                let hasDiff = false;
+                if (oldJson !== null && newJson !== null) {
+                    const diffs = diffJson(oldJson, newJson);
+                    hasDiff = diffs.length > 0;
+                    summary.innerHTML = hasDiff ? toSummaryHtml(diffs) : '<span class="text-muted">無欄位差異</span>';
+                } else {
+                    const oldText = oldPre.innerText.trim();
+                    const newText = newPre.innerText.trim();
+                    hasDiff = oldText !== newText;
+                    summary.innerHTML = hasDiff
+                        ? '<span class="text-muted">非 JSON 內容：以文字差異判定</span>'
+                        : '<span class="text-muted">無文字差異</span>';
+                }
+
+                if (hasDiff) {
+                    tr.classList.add('highlight-tr');
                 } else {
                     tr.classList.remove('highlight-tr');
                 }
@@ -269,7 +583,4 @@
         });
     })();
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+{% endblock %}

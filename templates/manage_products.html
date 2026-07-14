@@ -2,7 +2,7 @@
 {% block content %}
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>📦 產品與佣金綜合管理</h2>
+        <h2 class="page-title">📦 產品與佣金綜合管理</h2>
         <div>
             <button class="btn btn-info fw-bold shadow-sm text-white me-2" data-bs-toggle="modal" data-bs-target="#manualSpecialModal">
                 ➕ 手動新增特佣 (非目錄產品)
@@ -13,14 +13,14 @@
 
     <div class="row">
         <div class="col-12 mb-4">
-            <div class="card shadow-sm border-info">
+            <div class="card app-card border-info">
                 <div class="card-header bg-info text-white fw-bold fs-5 d-flex justify-content-between align-items-center">
                     <span>📅 目前生效中的特佣規則 (時段限定)</span>
                     <small class="bg-white text-info px-2 py-1 rounded fs-6">優先級：特佣規則 > 永久比例</small>
                 </div>
                 <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover text-center align-middle mb-0">
+                    <div class="table-wrap">
+                        <table class="table table-hover text-center align-middle mb-0 data-table">
                             <thead class="table-light">
                                 <tr>
                                     <th>產品型號 (Model)</th>
@@ -56,7 +56,7 @@
         </div>
 
         <div class="col-12 mb-5">
-            <div class="card shadow-sm border-dark">
+            <div class="card app-card border-dark">
                 <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                     <span class="fw-bold fs-5">📦 產品主目錄 (永久比例管理)</span>
                     <div class="input-group" style="width: 380px;">
@@ -66,8 +66,8 @@
                     </div>
                 </div>
                 <div class="card-body p-0">
-                    <div class="table-responsive" style="max-height: 800px; overflow-y: auto;">
-                        <table class="table table-hover align-middle text-center mb-0" id="productTable">
+                    <div class="table-wrap" style="max-height: 800px; overflow-y: auto;">
+                        <table class="table table-hover align-middle text-center mb-0 data-table" id="productTable">
                             <thead class="table-light position-sticky top-0 shadow-sm" style="z-index: 1;">
                                 <tr>
                                     <th style="width: 60px; vertical-align: middle;">
