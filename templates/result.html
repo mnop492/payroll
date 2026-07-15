@@ -5,13 +5,13 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="page-title fw-bold text-dark">📊 {{ calc_month }} 薪資計算結果</h2>
-            <p class="text-muted">以下為系統根據資料庫數據自動結算的結果，請進行校對。</p>
+            <p class="text-muted">品牌：<strong>{{ current_brand_name }}</strong>。以下為系統根據資料庫數據自動結算的結果，請進行校對。</p>
         </div>
         <div class="btn-group">
-            <a href="/download/{{ excel_file }}" class="btn btn-outline-success px-4">
+            <a href="{{ url_for('main.download_payroll', month=calc_month, brand=current_brand) }}" class="btn btn-outline-success px-4">
                 📥 Excel 總表下載
             </a>
-            <a href="/print_all/{{ calc_month }}" target="_blank" class="btn btn-primary px-4 shadow-sm">
+            <a href="{{ url_for('main.print_all_payslips', calc_month=calc_month, brand=current_brand) }}" target="_blank" class="btn btn-primary px-4 shadow-sm">
                 🖨️ 一鍵列印所有糧單
             </a>
         </div>
@@ -27,7 +27,7 @@
             </div>
         </div>
         <div class="col-md-9 text-end align-self-center">
-            <a href="/" class="btn btn-link text-decoration-none text-secondary">← 返回主控台</a>
+            <a href="{{ url_for('main.index', month=calc_month, brand=current_brand) }}" class="btn btn-link text-decoration-none text-secondary">← 返回主控台</a>
         </div>
     </div>
 
@@ -90,7 +90,7 @@
                             </td>
                             
                             <td>
-                                <a href="/view_payslip/{{ loop.index0 }}/{{ calc_month }}" 
+                                          <a href="{{ url_for('main.view_payslip', idx=loop.index0, month=calc_month, brand=current_brand) }}" 
                                    target="_blank" 
                                    class="btn btn-sm btn-outline-primary">
                                     📄 查看糧單

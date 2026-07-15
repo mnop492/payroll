@@ -5,8 +5,8 @@
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <h2 class="page-title">🔍 深度校對報告 (Excel vs 系統)</h2>
         <div class="d-flex gap-2 flex-wrap">
-            <a href="/download_validation?month={{ current_month }}" class="btn btn-success fw-bold">📥 下載此比對結果 (Excel)</a>
-            <a href="/" class="btn btn-secondary">返回主控台</a>
+            <a href="/download_validation?month={{ current_month }}&brand={{ current_brand }}" class="btn btn-success fw-bold">📥 下載此比對結果 (Excel)</a>
+            <a href="/?month={{ current_month }}&brand={{ current_brand }}" class="btn btn-secondary">返回主控台</a>
         </div>
     </div>
 
@@ -14,6 +14,7 @@
     <div class="card app-card mb-4">
         <div class="card-body py-3">
             <form id="validationFilterForm" class="row g-3 align-items-end" method="GET" action="/validate">
+                <input type="hidden" name="brand" value="{{ current_brand }}">
                 <div class="col-md-3">
                     <label class="form-label fw-bold">校對月份</label>
                     <input type="month" name="month" class="form-control" value="{{ current_month }}"

@@ -15,6 +15,33 @@
   </div>
 </div>
 
+<div class="card app-card mb-4">
+  <div class="card-header bg-dark text-white fw-bold">每晚自動備份</div>
+  <div class="card-body">
+    <form action="/update_auto_backup" method="POST" class="row g-3 align-items-end">
+      <div class="col-md-3">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="autoBackupEnabled" name="enabled" {% if auto_backup.enabled %}checked{% endif %}>
+          <label class="form-check-label" for="autoBackupEnabled">啟用每晚自動備份</label>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">執行時間</label>
+        <input type="time" class="form-control" name="backup_time" value="{{ auto_backup.backup_time or '02:00' }}" required>
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-primary w-100">儲存設定</button>
+      </div>
+      <div class="col-md-4">
+        <div class="small text-muted">
+          上次自動備份：{{ auto_backup.last_run_date if auto_backup.last_run_date else '尚未執行' }}
+        </div>
+      </div>
+    </form>
+    <div class="form-text mt-2">系統會在指定時間後執行當日第一次自動備份，檔名格式為 <code>payroll_auto_backup_YYYYMMDD_HHMMSS.db</code>。</div>
+  </div>
+</div>
+
 <div class="card app-card">
   <div class="card-header bg-dark text-white fw-bold">可用備份檔</div>
   <div class="card-body p-0">

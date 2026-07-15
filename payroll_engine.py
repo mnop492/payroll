@@ -2,7 +2,7 @@ import sqlite3
 import pandas as pd
 import math  # 🌟 新增：用於精準計算 OT 進位
 
-def process_payroll_from_db(calc_month, db_path='payroll.db'):
+def process_payroll_from_db(calc_month, brand_code='century_field', db_path='payroll.db'):
     """
     安全升級版計糧大腦：支援五大彈性微調，並保證不漏算任何員工
     """
@@ -23,10 +23,11 @@ def process_payroll_from_db(calc_month, db_path='payroll.db'):
                e.mpf_start_month,
                e.full_name
         FROM Employees e
-        LEFT JOIN MonthlyRates mr ON mr.nick_name = e.nick_name AND mr.payroll_month = ?
+        LEFT JOIN MonthlyRates mr ON mr.nick_name = e.nick_name AND mr.payroll_month = ? AND mr.brand_code = ?
+        WHERE e.brand_code = ?
         """,
         conn,
-        params=(calc_month,)
+        params=(calc_month, brand_code, brand_code)
     )
     
     # ==========================================
@@ -36,15 +37,15 @@ def process_payroll_from_db(calc_month, db_path='payroll.db'):
     daily_df = pd.read_sql_query("""
         SELECT nick_name AS Name, location AS Location, work_date, actual_hours, normal_hours, ot_hours AS raw_ot
         FROM DailyAttendance 
-        WHERE payroll_month = ?
-    """, conn, params=(calc_month,))
+        WHERE brand_code = ? AND payroll_month = ?
+    """, conn, params=(brand_code, calc_month))
 
     # B. 讀取原本 Attendance 表中的「五大金剛微調」與「津貼」
     adj_df = pd.read_sql_query("""
         SELECT nick_name AS Name, location AS Location, 
                expenses, adjustment, attendance_bonus, basic_pay_override, allowance_override 
-        FROM Attendance WHERE payroll_month = ?
-    """, conn, params=(calc_month,))
+        FROM Attendance WHERE brand_code = ? AND payroll_month = ?
+    """, conn, params=(brand_code, calc_month))
 
     if not daily_df.empty:
        # 🌟 核心 OT 規則：不足半小時不計，每半小時跳一級 (新增支援負數扣鐘)
@@ -90,9 +91,17 @@ def process_payroll_from_db(calc_month, db_path='payroll.db'):
             att_df['OT Hours'] = 0
 
     # 讀取銷售與特佣規則
-    sales_df = pd.read_sql_query("SELECT promoter_name AS Name, location AS Location, date, model, quantity, price FROM Sales WHERE payroll_month = ?", conn, params=(calc_month,))
-    prod_df = pd.read_sql_query("SELECT model, commission_rate AS prod_comm FROM Products", conn)
-    spec_df = pd.read_sql_query("SELECT model, start_month, end_month, rate AS spec_comm FROM SpecialCommissions", conn)
+    sales_df = pd.read_sql_query("SELECT promoter_name AS Name, location AS Location, date, model, quantity, price FROM Sales WHERE brand_code = ? AND payroll_month = ?", conn, params=(brand_code, calc_month))
+    prod_df = pd.read_sql_query(
+        "SELECT model, commission_rate AS prod_comm FROM Products WHERE brand_code = ?",
+        conn,
+        params=(brand_code,),
+    )
+    spec_df = pd.read_sql_query(
+        "SELECT model, start_month, end_month, rate AS spec_comm FROM SpecialCommissions WHERE brand_code = ?",
+        conn,
+        params=(brand_code,),
+    )
 
     # 正規化 sales_df 欄位：date 格式化為 YYYY-MM-DD；quantity, price 轉為數值
     if not sales_df.empty:

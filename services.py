@@ -12,12 +12,14 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from app_config import (
     ADMIN_USERS,
     AUDIT_ADMIN_PASSWORD,
+    DEFAULT_BRAND_CODE,
     DEFAULT_ADMIN_USERNAME,
     HISTORY_FOLDER,
     LOGIN_LOCK_MINUTES,
     MAX_LOGIN_ATTEMPTS,
+    SUPPORTED_BRANDS,
 )
-from repository import get_db_connection
+from repository import get_available_brands, get_db_connection, get_user_allowed_brands
 from payroll_engine import process_payroll_from_db
 
 
@@ -181,6 +183,29 @@ def get_request_ip():
     return request.remote_addr or "unknown"
 
 
+def get_current_user_available_brands():
+    username = session.get("user")
+    is_admin = bool(session.get("is_admin"))
+    if not username:
+        return get_available_brands()
+    if is_admin:
+        return get_available_brands()
+    return get_user_allowed_brands(username)
+
+
+def resolve_brand_for_current_user(raw_brand):
+    candidate = (raw_brand or DEFAULT_BRAND_CODE).strip().lower()
+    allowed = get_current_user_available_brands()
+    allowed_codes = {row["brand_code"] for row in allowed}
+    if candidate in allowed_codes:
+        return candidate
+    if DEFAULT_BRAND_CODE in allowed_codes:
+        return DEFAULT_BRAND_CODE
+    if allowed:
+        return allowed[0]["brand_code"]
+    return DEFAULT_BRAND_CODE
+
+
 def _redact_sensitive(data):
     if data is None:
         return None
@@ -229,20 +254,31 @@ def log_audit(action, table_name, record_id=None, old_value=None, new_value=None
         logging.exception("Failed to write audit log: %s", exc)
 
 
-def perform_validation(payroll_month_filter=None):
+def perform_validation(payroll_month_filter=None, brand_code="century_field"):
     validation_results = []
     if not os.path.exists(HISTORY_FOLDER):
         return []
 
+    brand_code = (brand_code or DEFAULT_BRAND_CODE).strip().lower()
+    brand_name = (SUPPORTED_BRANDS.get(brand_code, "") or "").lower()
+
+    def _filename_matches_brand(filename):
+        if brand_code == DEFAULT_BRAND_CODE:
+            # Default brand keeps compatibility with historical files.
+            return True
+        return bool(brand_name) and (brand_name in filename.lower())
+
     for filename in sorted(os.listdir(HISTORY_FOLDER)):
         if not filename.endswith(".xlsx") or filename.startswith("~"):
+            continue
+        if not _filename_matches_brand(filename):
             continue
 
         month_str = filename[:6]
         payroll_month = f"{month_str[:4]}-{month_str[4:]}"
         if payroll_month_filter and payroll_month != payroll_month_filter:
             continue
-        sys_records = process_payroll_from_db(payroll_month)
+        sys_records = process_payroll_from_db(payroll_month, brand_code=brand_code)
         if not sys_records:
             continue
 
@@ -251,8 +287,8 @@ def perform_validation(payroll_month_filter=None):
         att_rows = conn.execute(
             """SELECT nick_name, location, days_worked, hours, ot_hours,
                       expenses, adjustment, attendance_bonus
-               FROM Attendance WHERE payroll_month = ?""",
-            (payroll_month,),
+               FROM Attendance WHERE brand_code = ? AND payroll_month = ?""",
+                (brand_code, payroll_month),
         ).fetchall()
         att_map = {(r["nick_name"], r["location"]): dict(r) for r in att_rows}
 
@@ -260,9 +296,9 @@ def perform_validation(payroll_month_filter=None):
             """SELECT promoter_name, location,
                       COUNT(*) AS entries,
                       SUM(quantity * price) AS amount
-               FROM Sales WHERE payroll_month = ?
+               FROM Sales WHERE brand_code = ? AND payroll_month = ?
                GROUP BY promoter_name, location""",
-            (payroll_month,),
+                (brand_code, payroll_month),
         ).fetchall()
         sales_map = {(r["promoter_name"], r["location"]): dict(r) for r in sales_rows}
 
@@ -274,8 +310,9 @@ def perform_validation(payroll_month_filter=None):
                       mr.commission_rate AS monthly_comm
                FROM Employees e
                LEFT JOIN MonthlyRates mr
-                      ON mr.nick_name = e.nick_name AND mr.payroll_month = ?""",
-            (payroll_month,),
+                      ON mr.nick_name = e.nick_name AND mr.payroll_month = ? AND mr.brand_code = ?
+               WHERE e.brand_code = ?""",
+            (payroll_month, brand_code, brand_code),
         ).fetchall()
         emp_map = {r["nick_name"]: dict(r) for r in emp_rows}
         conn.close()

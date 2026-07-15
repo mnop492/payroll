@@ -2,12 +2,12 @@
 {% block content %}
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="page-title">📦 產品與佣金綜合管理</h2>
+        <h2 class="page-title">📦 產品與佣金綜合管理 <span class="badge rounded-pill bg-dark ms-2">{{ current_brand_name }}</span></h2>
         <div>
             <button class="btn btn-info fw-bold shadow-sm text-white me-2" data-bs-toggle="modal" data-bs-target="#manualSpecialModal">
                 ➕ 手動新增特佣 (非目錄產品)
             </button>
-            <a href="/" class="btn btn-secondary">返回主控台</a>
+            <a href="/?brand={{ current_brand }}" class="btn btn-secondary">返回主控台</a>
         </div>
     </div>
 
@@ -38,7 +38,7 @@
                                     <td><span class="badge bg-light text-dark border px-3 py-2">{{ rule.end_month }}</span></td>
                                     <td class="fw-bold text-danger fs-5">{{ "%.1f"|format(rule.rate * 100) }}%</td>
                                     <td>
-                                        <a href="/delete_special_comm/{{ rule.id }}" class="btn btn-sm btn-outline-danger px-3" onclick="return confirm('確定要刪除這筆特佣規則嗎？')">
+                                        <a href="/delete_special_comm/{{ rule.id }}?brand={{ current_brand }}" class="btn btn-sm btn-outline-danger px-3" onclick="return confirm('確定要刪除這筆特佣規則嗎？')">
                                             🗑️ 刪除規則
                                         </a>
                                     </td>
@@ -130,6 +130,7 @@
             </div>
             <form action="/update_product_config" method="POST">
                 <div class="modal-body">
+                    <input type="hidden" name="brand" value="{{ current_brand }}">
                     <div class="mb-3">
                         <label class="form-label fw-bold">產品型號</label>
                         <input type="text" class="form-control bg-light text-dark fw-bold" name="model" id="modalModel" readonly>
@@ -175,8 +176,9 @@
                 <h5 class="modal-title fw-bold">➕ 手動新增時段特佣</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form action="/save_special_comm_manual" method="POST">
+            <form action="/save_special_comm" method="POST">
                 <div class="modal-body">
+                    <input type="hidden" name="brand" value="{{ current_brand }}">
                     <div class="alert alert-secondary py-2 small">
                         此功能用於設定<strong>不在產品目錄中</strong>的型號特佣。
                     </div>
@@ -254,6 +256,7 @@ function submitBulkUpdate() {
     if (confirm(`確定修改 ${c.length} 項產品？`)) {
         let f = document.createElement('form');
         f.action = '/bulk_update_products'; f.method = 'POST';
+        let bI = document.createElement('input'); bI.type='hidden'; bI.name='brand'; bI.value={{ current_brand|tojson }}; f.appendChild(bI);
         let rI = document.createElement('input'); rI.type='hidden'; rI.name='new_rate'; rI.value=r; f.appendChild(rI);
         c.forEach(cb => {
             let i = document.createElement('input'); i.type='hidden'; i.name='product_ids'; i.value=cb.value; f.appendChild(i);

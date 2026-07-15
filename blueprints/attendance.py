@@ -1,32 +1,48 @@
 from datetime import datetime
+from urllib.parse import parse_qs, urlparse
 
 import pandas as pd
 from flask import Blueprint, flash, jsonify, redirect, request, url_for
 
+from app_config import DEFAULT_BRAND_CODE
 from repository import fetch_daily_attendance, get_db_connection, set_month_input_source, sync_attendance_summary
-from services import log_audit
+from services import log_audit, resolve_brand_for_current_user
 
 bp = Blueprint("attendance", __name__)
 
 
+def _resolve_brand_code():
+    candidate = (request.form.get("brand") or request.args.get("brand") or "").strip().lower()
+    if candidate:
+        return resolve_brand_for_current_user(candidate)
+    ref = request.referrer or ""
+    if ref:
+        qs = parse_qs(urlparse(ref).query)
+        ref_brand = (qs.get("brand", [""])[0] or "").strip().lower()
+        if ref_brand:
+            return resolve_brand_for_current_user(ref_brand)
+    return resolve_brand_for_current_user(DEFAULT_BRAND_CODE)
+
+
 @bp.route("/delete_attendance/<int:id>", methods=["POST"])
 def delete_attendance(id):
+    brand_code = _resolve_brand_code()
     conn = get_db_connection()
     target = conn.execute(
-        "SELECT payroll_month, nick_name, location FROM Attendance WHERE id = ?",
-        (id,),
+        "SELECT brand_code, payroll_month, nick_name, location FROM Attendance WHERE id = ? AND brand_code = ?",
+        (id, brand_code),
     ).fetchone()
     if target:
         month = target["payroll_month"]
         name = target["nick_name"]
         location = target["location"]
         conn.execute(
-            "DELETE FROM DailyAttendance WHERE payroll_month = ? AND nick_name = ? AND location = ?",
-            (month, name, location),
+            "DELETE FROM DailyAttendance WHERE brand_code = ? AND payroll_month = ? AND nick_name = ? AND location = ?",
+            (brand_code, month, name, location),
         )
         conn.execute("DELETE FROM Attendance WHERE id = ?", (id,))
         conn.commit()
-        set_month_input_source(month, "web")
+        set_month_input_source(month, "web", brand_code=brand_code)
         flash(f"✅ 已徹底刪除 {name} 在 {location} 的考勤總表及所有每日明細", "success")
     else:
         flash("❌ 找不到該筆紀錄", "danger")
@@ -36,6 +52,7 @@ def delete_attendance(id):
 
 @bp.route("/insert_attendance", methods=["POST"])
 def insert_attendance():
+    brand_code = _resolve_brand_code()
     payroll_month = request.form.get("payroll_month")
     nick_name = request.form.get("nick_name").strip()
     location = request.form.get("location").strip()
@@ -47,27 +64,29 @@ def insert_attendance():
     conn = get_db_connection()
     conn.execute(
         """
-        INSERT INTO Attendance (payroll_month, nick_name, location, days_worked, hours, ot_hours, expenses)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-        ON CONFLICT(payroll_month, nick_name, location) DO UPDATE SET
+        INSERT INTO Attendance (brand_code, payroll_month, nick_name, location, days_worked, hours, ot_hours, expenses)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(brand_code, payroll_month, nick_name, location) DO UPDATE SET
         days_worked = excluded.days_worked, hours = excluded.hours, ot_hours = excluded.ot_hours, expenses = excluded.expenses
         """,
-        (payroll_month, nick_name, location, days, hours, ot_hours, expenses),
+        (brand_code, payroll_month, nick_name, location, days, hours, ot_hours, expenses),
     )
     conn.commit()
     conn.close()
-    set_month_input_source(payroll_month, "web")
+    set_month_input_source(payroll_month, "web", brand_code=brand_code)
     flash("考勤紀錄新增成功", "success")
-    return redirect(url_for("main.index"))
+    return redirect(url_for("main.index", month=payroll_month, brand=brand_code))
 
 
 @bp.route("/api/daily_attendance/<month>/<nick_name>/<path:location>")
 def get_daily_attendance(month, nick_name, location):
-    return jsonify(fetch_daily_attendance(month, nick_name, location))
+    brand_code = _resolve_brand_code()
+    return jsonify(fetch_daily_attendance(month, nick_name, location, brand_code=brand_code))
 
 
 @bp.route("/update_daily_records", methods=["POST"])
 def update_daily_records():
+    brand_code = _resolve_brand_code()
     calc_month = request.form.get("calc_month")
     record_ids = request.form.getlist("record_id[]")
     in_times = request.form.getlist("in_time[]")
@@ -77,7 +96,7 @@ def update_daily_records():
     conn = get_db_connection()
     old_rows = {}
     for record_id in record_ids:
-        row = conn.execute("SELECT * FROM DailyAttendance WHERE id = ?", (record_id,)).fetchone()
+        row = conn.execute("SELECT * FROM DailyAttendance WHERE id = ? AND brand_code = ?", (record_id, brand_code)).fetchone()
         old_rows[record_id] = dict(row) if row else None
 
     for index, record_id in enumerate(record_ids):
@@ -94,19 +113,22 @@ def update_daily_records():
             """
             UPDATE DailyAttendance
             SET in_time = ?, out_time = ?, normal_hours = ?, actual_hours = ?, ot_hours = ?
-            WHERE id = ?
+            WHERE id = ? AND brand_code = ?
             """,
-            (in_time, out_time, normal_hours, actual_hours, raw_ot, record_id),
+            (in_time, out_time, normal_hours, actual_hours, raw_ot, record_id, brand_code),
         )
 
     conn.commit()
-    set_month_input_source(calc_month, "web")
-    sample = conn.execute("SELECT nick_name, location FROM DailyAttendance WHERE id = ?", (record_ids[0],)).fetchone()
+    set_month_input_source(calc_month, "web", brand_code=brand_code)
+    sample = conn.execute(
+        "SELECT nick_name, location FROM DailyAttendance WHERE id = ? AND brand_code = ?",
+        (record_ids[0], brand_code),
+    ).fetchone()
     if sample:
-        sync_attendance_summary(calc_month, sample["nick_name"], sample["location"])
+        sync_attendance_summary(calc_month, sample["nick_name"], sample["location"], brand_code=brand_code)
     try:
         for record_id in record_ids:
-            new_row = conn.execute("SELECT * FROM DailyAttendance WHERE id = ?", (record_id,)).fetchone()
+            new_row = conn.execute("SELECT * FROM DailyAttendance WHERE id = ? AND brand_code = ?", (record_id, brand_code)).fetchone()
             log_audit(
                 "update",
                 "DailyAttendance",
@@ -120,11 +142,12 @@ def update_daily_records():
         pass
     conn.close()
     flash("✅ 考勤紀錄與常規工時已更新並重新結算！", "success")
-    return redirect(url_for("main.index", month=calc_month))
+    return redirect(url_for("main.index", month=calc_month, brand=brand_code))
 
 
 @bp.route("/add_daily_attendance", methods=["POST"])
 def add_daily_attendance():
+    brand_code = _resolve_brand_code()
     month = request.form.get("payroll_month")
     name = request.form.get("nick_name")
     date = request.form.get("work_date")
@@ -143,10 +166,10 @@ def add_daily_attendance():
     conn = get_db_connection()
     cursor = conn.execute(
         """
-        INSERT INTO DailyAttendance (payroll_month, work_date, nick_name, location, in_time, out_time, normal_hours, actual_hours, ot_hours)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO DailyAttendance (brand_code, payroll_month, work_date, nick_name, location, in_time, out_time, normal_hours, actual_hours, ot_hours)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
-        (month, date, name, location, in_time, out_time, normal_hours, actual_hours, raw_ot),
+        (brand_code, month, date, name, location, in_time, out_time, normal_hours, actual_hours, raw_ot),
     )
     conn.commit()
     record_id = cursor.lastrowid
@@ -172,28 +195,29 @@ def add_daily_attendance():
     except Exception:
         pass
     conn.close()
-    set_month_input_source(month, "web")
-    sync_attendance_summary(month, name, location)
+    set_month_input_source(month, "web", brand_code=brand_code)
+    sync_attendance_summary(month, name, location, brand_code=brand_code)
     return jsonify({"status": "success", "message": "已新增考勤紀錄並同步總表"})
 
 
 @bp.route("/delete_daily_attendance/<int:id>", methods=["POST"])
 def delete_daily_attendance(id):
+    brand_code = _resolve_brand_code()
     conn = get_db_connection()
     record = conn.execute(
-        "SELECT payroll_month, nick_name, location FROM DailyAttendance WHERE id = ?",
-        (id,),
+        "SELECT brand_code, payroll_month, nick_name, location FROM DailyAttendance WHERE id = ? AND brand_code = ?",
+        (id, brand_code),
     ).fetchone()
     if record:
         month = record["payroll_month"]
         name = record["nick_name"]
         location = record["location"]
-        old = conn.execute("SELECT * FROM DailyAttendance WHERE id = ?", (id,)).fetchone()
-        conn.execute("DELETE FROM DailyAttendance WHERE id = ?", (id,))
+        old = conn.execute("SELECT * FROM DailyAttendance WHERE id = ? AND brand_code = ?", (id, brand_code)).fetchone()
+        conn.execute("DELETE FROM DailyAttendance WHERE id = ? AND brand_code = ?", (id, brand_code))
         conn.commit()
         conn.close()
-        set_month_input_source(month, "web")
-        sync_attendance_summary(month, name, location)
+        set_month_input_source(month, "web", brand_code=brand_code)
+        sync_attendance_summary(month, name, location, brand_code=brand_code)
         try:
             log_audit(
                 "delete",
@@ -212,6 +236,7 @@ def delete_daily_attendance(id):
 
 @bp.route("/update_attendance", methods=["POST"])
 def update_attendance():
+    brand_code = _resolve_brand_code()
     month = request.form.get("calc_month")
     name = request.form.get("nick_name")
     location = request.form.get("location")
@@ -222,50 +247,50 @@ def update_attendance():
 
     conn = get_db_connection()
     old = conn.execute(
-        "SELECT * FROM Attendance WHERE payroll_month = ? AND nick_name = ? AND location = ?",
-        (month, name, location),
+        "SELECT * FROM Attendance WHERE brand_code = ? AND payroll_month = ? AND nick_name = ? AND location = ?",
+        (brand_code, month, name, location),
     ).fetchone()
     conn.execute(
         """
-        INSERT OR IGNORE INTO Attendance (payroll_month, nick_name, location, days_worked, hours, ot_hours)
-        VALUES (?, ?, ?, 0, 0, 0)
+        INSERT OR IGNORE INTO Attendance (brand_code, payroll_month, nick_name, location, days_worked, hours, ot_hours)
+        VALUES (?, ?, ?, ?, 0, 0, 0)
         """,
-        (month, name, location),
+        (brand_code, month, name, location),
     )
     conn.execute(
         """
         UPDATE Attendance
         SET expenses = ?, adjustment = ?, attendance_bonus = ?
-        WHERE payroll_month = ? AND nick_name = ? AND location = ?
+        WHERE brand_code = ? AND payroll_month = ? AND nick_name = ? AND location = ?
         """,
-        (expenses, adjustment, bonus, month, name, location),
+        (expenses, adjustment, bonus, brand_code, month, name, location),
     )
     if monthly_rate_str == "":
         conn.execute(
-            "DELETE FROM MonthlyRates WHERE payroll_month = ? AND nick_name = ?",
-            (month, name),
+            "DELETE FROM MonthlyRates WHERE brand_code = ? AND payroll_month = ? AND nick_name = ?",
+            (brand_code, month, name),
         )
     else:
         monthly_rate = float(monthly_rate_str)
         existing = conn.execute(
-            "SELECT id FROM MonthlyRates WHERE payroll_month = ? AND nick_name = ?",
-            (month, name),
+            "SELECT id FROM MonthlyRates WHERE brand_code = ? AND payroll_month = ? AND nick_name = ?",
+            (brand_code, month, name),
         ).fetchone()
         if existing:
             conn.execute(
-                "UPDATE MonthlyRates SET hourly_rate = ? WHERE payroll_month = ? AND nick_name = ?",
-                (monthly_rate, month, name),
+                "UPDATE MonthlyRates SET hourly_rate = ? WHERE brand_code = ? AND payroll_month = ? AND nick_name = ?",
+                (monthly_rate, brand_code, month, name),
             )
         else:
             conn.execute(
-                "INSERT INTO MonthlyRates (payroll_month, nick_name, hourly_rate) VALUES (?, ?, ?)",
-                (month, name, monthly_rate),
+                "INSERT INTO MonthlyRates (brand_code, payroll_month, nick_name, hourly_rate) VALUES (?, ?, ?, ?)",
+                (brand_code, month, name, monthly_rate),
             )
     conn.commit()
-    set_month_input_source(month, "web")
+    set_month_input_source(month, "web", brand_code=brand_code)
     new = conn.execute(
-        "SELECT * FROM Attendance WHERE payroll_month = ? AND nick_name = ? AND location = ?",
-        (month, name, location),
+        "SELECT * FROM Attendance WHERE brand_code = ? AND payroll_month = ? AND nick_name = ? AND location = ?",
+        (brand_code, month, name, location),
     ).fetchone()
     try:
         log_audit(
@@ -281,4 +306,4 @@ def update_attendance():
         pass
     conn.close()
     flash(f"✅ 已儲存 {name} 在 {location} 的月結微調與時薪設定", "success")
-    return redirect(url_for("main.index", month=month))
+    return redirect(url_for("main.index", month=month, brand=brand_code))

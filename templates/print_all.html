@@ -2,7 +2,7 @@
 <html lang="zh-HK">
 <head>
     <meta charset="UTF-8">
-    <title>{{ month }} - 全公司批次列印</title>
+    <title>{{ month }} - {{ current_brand_name }} 批次列印</title>
     <style>
         /* 這裡的 CSS 與 payslip.html 完全一致 */
         @page { size: A4; margin: 0; }
@@ -33,7 +33,7 @@
 </head>
 <body>
     <div class="no-print" style="text-align:center; padding: 15px; background: #222; position: sticky; top: 0; z-index: 100;">
-        <button onclick="window.print()" style="padding:10px 30px; cursor:pointer; font-weight:bold; background:#28a745; color:white; border:none; border-radius:4px;">🚀 一鍵列印全公司 ({{ records|length }} 張)</button>
+        <button onclick="window.print()" style="padding:10px 30px; cursor:pointer; font-weight:bold; background:#28a745; color:white; border:none; border-radius:4px;">🚀 一鍵列印 {{ current_brand_name }} ({{ records|length }} 張)</button>
     </div>
 
     {% for emp in records %}

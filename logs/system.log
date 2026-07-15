@@ -7333,3 +7333,1892 @@ sqlite3.OperationalError: database is locked
 2026-07-14 20:13:06,780 - INFO - 172.71.215.135 - - [14/Jul/2026 20:13:06] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
 2026-07-14 20:13:06,811 - INFO - 172.71.215.135 - - [14/Jul/2026 20:13:06] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
 2026-07-14 20:13:06,840 - INFO - 172.71.215.135 - - [14/Jul/2026 20:13:06] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-15 01:31:15,972 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://10.142.32.13:5001
+2026-07-15 01:31:15,973 - INFO - [33mPress CTRL+C to quit[0m
+2026-07-15 01:31:24,326 - INFO - 127.0.0.1 - - [15/Jul/2026 01:31:24] "GET / HTTP/1.1" 200 -
+2026-07-15 01:31:24,449 - INFO - 127.0.0.1 - - [15/Jul/2026 01:31:24] "GET /static/index.js HTTP/1.1" 200 -
+2026-07-15 01:31:24,450 - INFO - 127.0.0.1 - - [15/Jul/2026 01:31:24] "GET /static/app.css HTTP/1.1" 200 -
+2026-07-15 01:44:20,412 - INFO - 127.0.0.1 - - [15/Jul/2026 01:44:20] "GET /?month=2026-04 HTTP/1.1" 200 -
+2026-07-15 01:44:20,422 - INFO - 127.0.0.1 - - [15/Jul/2026 01:44:20] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:44:20,423 - INFO - 127.0.0.1 - - [15/Jul/2026 01:44:20] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 01:44:35,693 - INFO - 127.0.0.1 - - [15/Jul/2026 01:44:35] "[32mPOST /upload_and_import HTTP/1.1[0m" 302 -
+2026-07-15 01:44:35,739 - INFO - 127.0.0.1 - - [15/Jul/2026 01:44:35] "GET /?month=2026-04 HTTP/1.1" 200 -
+2026-07-15 01:44:35,752 - INFO - 127.0.0.1 - - [15/Jul/2026 01:44:35] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:44:35,753 - INFO - 127.0.0.1 - - [15/Jul/2026 01:44:35] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 01:45:36,741 - INFO - 127.0.0.1 - - [15/Jul/2026 01:45:36] "[32mPOST /upload_and_import HTTP/1.1[0m" 302 -
+2026-07-15 01:45:36,790 - INFO - 127.0.0.1 - - [15/Jul/2026 01:45:36] "GET /?month=2026-04 HTTP/1.1" 200 -
+2026-07-15 01:45:36,804 - INFO - 127.0.0.1 - - [15/Jul/2026 01:45:36] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:45:36,805 - INFO - 127.0.0.1 - - [15/Jul/2026 01:45:36] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 01:45:59,497 - INFO - 127.0.0.1 - - [15/Jul/2026 01:45:59] "GET /?month=2026-04 HTTP/1.1" 200 -
+2026-07-15 01:45:59,508 - INFO - 127.0.0.1 - - [15/Jul/2026 01:45:59] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:45:59,509 - INFO - 127.0.0.1 - - [15/Jul/2026 01:45:59] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 01:46:52,755 - INFO - 127.0.0.1 - - [15/Jul/2026 01:46:52] "GET /?month=2026-04 HTTP/1.1" 200 -
+2026-07-15 01:46:52,768 - INFO - 127.0.0.1 - - [15/Jul/2026 01:46:52] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:46:52,769 - INFO - 127.0.0.1 - - [15/Jul/2026 01:46:52] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 01:46:53,641 - INFO - 127.0.0.1 - - [15/Jul/2026 01:46:53] "GET /?month=2026-04 HTTP/1.1" 200 -
+2026-07-15 01:46:53,653 - INFO - 127.0.0.1 - - [15/Jul/2026 01:46:53] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:46:53,654 - INFO - 127.0.0.1 - - [15/Jul/2026 01:46:53] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 01:46:59,855 - INFO - 127.0.0.1 - - [15/Jul/2026 01:46:59] "[32mPOST /upload_and_import HTTP/1.1[0m" 302 -
+2026-07-15 01:46:59,903 - INFO - 127.0.0.1 - - [15/Jul/2026 01:46:59] "GET /?month=2026-04 HTTP/1.1" 200 -
+2026-07-15 01:46:59,916 - INFO - 127.0.0.1 - - [15/Jul/2026 01:46:59] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:46:59,917 - INFO - 127.0.0.1 - - [15/Jul/2026 01:46:59] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 01:47:35,598 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://10.142.32.13:5001
+2026-07-15 01:47:35,598 - INFO - [33mPress CTRL+C to quit[0m
+2026-07-15 01:47:35,601 - INFO -  * Restarting with stat
+2026-07-15 01:47:37,176 - WARNING -  * Debugger is active!
+2026-07-15 01:47:37,184 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 01:47:42,483 - INFO - 127.0.0.1 - - [15/Jul/2026 01:47:42] "GET /?month=2026-04 HTTP/1.1" 200 -
+2026-07-15 01:47:42,604 - INFO - 127.0.0.1 - - [15/Jul/2026 01:47:42] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:47:42,608 - INFO - 127.0.0.1 - - [15/Jul/2026 01:47:42] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 01:47:53,854 - INFO - 127.0.0.1 - - [15/Jul/2026 01:47:53] "[32mPOST /upload_and_import HTTP/1.1[0m" 302 -
+2026-07-15 01:47:53,923 - INFO - 127.0.0.1 - - [15/Jul/2026 01:47:53] "GET /?month=2026-04 HTTP/1.1" 200 -
+2026-07-15 01:47:53,938 - INFO - 127.0.0.1 - - [15/Jul/2026 01:47:53] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:47:53,938 - INFO - 127.0.0.1 - - [15/Jul/2026 01:47:53] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 01:48:09,118 - INFO - 127.0.0.1 - - [15/Jul/2026 01:48:09] "GET /validate?month=2026-04 HTTP/1.1" 200 -
+2026-07-15 01:48:09,127 - INFO - 127.0.0.1 - - [15/Jul/2026 01:48:09] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:48:28,146 - INFO - 127.0.0.1 - - [15/Jul/2026 01:48:28] "GET / HTTP/1.1" 200 -
+2026-07-15 01:48:28,158 - INFO - 127.0.0.1 - - [15/Jul/2026 01:48:28] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:48:28,159 - INFO - 127.0.0.1 - - [15/Jul/2026 01:48:28] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 01:48:33,947 - INFO - 127.0.0.1 - - [15/Jul/2026 01:48:33] "GET /?month=2026-05 HTTP/1.1" 200 -
+2026-07-15 01:48:33,956 - INFO - 127.0.0.1 - - [15/Jul/2026 01:48:33] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:48:33,957 - INFO - 127.0.0.1 - - [15/Jul/2026 01:48:33] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 01:48:40,069 - INFO - 127.0.0.1 - - [15/Jul/2026 01:48:40] "GET /validate?month=2026-05 HTTP/1.1" 200 -
+2026-07-15 01:48:40,078 - INFO - 127.0.0.1 - - [15/Jul/2026 01:48:40] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:48:42,923 - INFO - 127.0.0.1 - - [15/Jul/2026 01:48:42] "GET /validate?month=2026-04 HTTP/1.1" 200 -
+2026-07-15 01:48:42,932 - INFO - 127.0.0.1 - - [15/Jul/2026 01:48:42] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:48:46,291 - INFO - 127.0.0.1 - - [15/Jul/2026 01:48:46] "GET / HTTP/1.1" 200 -
+2026-07-15 01:48:46,301 - INFO - 127.0.0.1 - - [15/Jul/2026 01:48:46] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:48:46,302 - INFO - 127.0.0.1 - - [15/Jul/2026 01:48:46] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 01:48:50,764 - INFO - 127.0.0.1 - - [15/Jul/2026 01:48:50] "GET /?month=2026-05 HTTP/1.1" 200 -
+2026-07-15 01:48:50,775 - INFO - 127.0.0.1 - - [15/Jul/2026 01:48:50] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:48:50,775 - INFO - 127.0.0.1 - - [15/Jul/2026 01:48:50] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 01:48:58,304 - INFO - 127.0.0.1 - - [15/Jul/2026 01:48:58] "[32mPOST /upload_and_import HTTP/1.1[0m" 302 -
+2026-07-15 01:48:58,367 - INFO - 127.0.0.1 - - [15/Jul/2026 01:48:58] "GET /?month=2026-05 HTTP/1.1" 200 -
+2026-07-15 01:48:58,383 - INFO - 127.0.0.1 - - [15/Jul/2026 01:48:58] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:48:58,383 - INFO - 127.0.0.1 - - [15/Jul/2026 01:48:58] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 01:49:08,151 - INFO - 127.0.0.1 - - [15/Jul/2026 01:49:08] "GET /validate?month=2026-05 HTTP/1.1" 200 -
+2026-07-15 01:49:08,160 - INFO - 127.0.0.1 - - [15/Jul/2026 01:49:08] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:49:43,692 - INFO - 127.0.0.1 - - [15/Jul/2026 01:49:43] "GET / HTTP/1.1" 200 -
+2026-07-15 01:49:43,704 - INFO - 127.0.0.1 - - [15/Jul/2026 01:49:43] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:49:43,704 - INFO - 127.0.0.1 - - [15/Jul/2026 01:49:43] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 01:49:48,091 - INFO - 127.0.0.1 - - [15/Jul/2026 01:49:48] "GET /?month=2026-06 HTTP/1.1" 200 -
+2026-07-15 01:49:48,102 - INFO - 127.0.0.1 - - [15/Jul/2026 01:49:48] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:49:48,103 - INFO - 127.0.0.1 - - [15/Jul/2026 01:49:48] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 01:49:55,704 - INFO - 127.0.0.1 - - [15/Jul/2026 01:49:55] "[32mPOST /upload_and_import HTTP/1.1[0m" 302 -
+2026-07-15 01:49:55,723 - INFO - 127.0.0.1 - - [15/Jul/2026 01:49:55] "GET /?month=2026-06 HTTP/1.1" 200 -
+2026-07-15 01:49:55,738 - INFO - 127.0.0.1 - - [15/Jul/2026 01:49:55] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:49:55,739 - INFO - 127.0.0.1 - - [15/Jul/2026 01:49:55] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 01:51:15,594 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\importer.py', reloading
+2026-07-15 01:51:15,715 - INFO -  * Restarting with stat
+2026-07-15 01:51:17,351 - WARNING -  * Debugger is active!
+2026-07-15 01:51:17,361 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 01:52:06,878 - INFO - 127.0.0.1 - - [15/Jul/2026 01:52:06] "[32mPOST /upload_and_import HTTP/1.1[0m" 302 -
+2026-07-15 01:52:06,975 - INFO - 127.0.0.1 - - [15/Jul/2026 01:52:06] "GET /?month=2026-06 HTTP/1.1" 200 -
+2026-07-15 01:52:06,992 - INFO - 127.0.0.1 - - [15/Jul/2026 01:52:06] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:52:06,992 - INFO - 127.0.0.1 - - [15/Jul/2026 01:52:06] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 01:52:10,132 - INFO - 127.0.0.1 - - [15/Jul/2026 01:52:10] "GET /validate?month=2026-06 HTTP/1.1" 200 -
+2026-07-15 01:52:10,141 - INFO - 127.0.0.1 - - [15/Jul/2026 01:52:10] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:52:17,195 - INFO - 127.0.0.1 - - [15/Jul/2026 01:52:17] "GET / HTTP/1.1" 200 -
+2026-07-15 01:52:17,207 - INFO - 127.0.0.1 - - [15/Jul/2026 01:52:17] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:52:17,207 - INFO - 127.0.0.1 - - [15/Jul/2026 01:52:17] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 01:52:21,682 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\importer.py', reloading
+2026-07-15 01:52:21,795 - INFO -  * Restarting with stat
+2026-07-15 01:52:23,427 - WARNING -  * Debugger is active!
+2026-07-15 01:52:23,436 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 01:55:54,201 - INFO - 127.0.0.1 - - [15/Jul/2026 01:55:54] "GET /validate HTTP/1.1" 200 -
+2026-07-15 01:55:54,288 - INFO - 127.0.0.1 - - [15/Jul/2026 01:55:54] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:57:21,757 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\main.py', reloading
+2026-07-15 01:57:21,855 - INFO -  * Restarting with stat
+2026-07-15 01:57:23,431 - WARNING -  * Debugger is active!
+2026-07-15 01:57:23,439 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 01:58:57,810 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\main.py', reloading
+2026-07-15 01:58:57,900 - INFO -  * Restarting with stat
+2026-07-15 01:58:59,453 - WARNING -  * Debugger is active!
+2026-07-15 01:58:59,461 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 01:59:10,137 - INFO - 127.0.0.1 - - [15/Jul/2026 01:59:10] "GET /validate HTTP/1.1" 200 -
+2026-07-15 01:59:10,219 - INFO - 127.0.0.1 - - [15/Jul/2026 01:59:10] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:59:13,030 - INFO - 127.0.0.1 - - [15/Jul/2026 01:59:13] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-15 01:59:13,040 - INFO - 127.0.0.1 - - [15/Jul/2026 01:59:13] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:59:14,914 - INFO - 127.0.0.1 - - [15/Jul/2026 01:59:14] "GET / HTTP/1.1" 200 -
+2026-07-15 01:59:14,925 - INFO - 127.0.0.1 - - [15/Jul/2026 01:59:14] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:59:14,926 - INFO - 127.0.0.1 - - [15/Jul/2026 01:59:14] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 01:59:20,007 - INFO - 127.0.0.1 - - [15/Jul/2026 01:59:20] "GET /?month=2026-06 HTTP/1.1" 200 -
+2026-07-15 01:59:20,018 - INFO - 127.0.0.1 - - [15/Jul/2026 01:59:20] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 01:59:20,019 - INFO - 127.0.0.1 - - [15/Jul/2026 01:59:20] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 02:13:20,143 - INFO - 127.0.0.1 - - [15/Jul/2026 02:13:20] "GET /validate?month=2026-06 HTTP/1.1" 200 -
+2026-07-15 02:13:20,153 - INFO - 127.0.0.1 - - [15/Jul/2026 02:13:20] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:13:24,256 - INFO - 127.0.0.1 - - [15/Jul/2026 02:13:24] "GET /download_validation?month=2026-06 HTTP/1.1" 200 -
+2026-07-15 02:16:02,623 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\app_config.py', reloading
+2026-07-15 02:16:02,734 - INFO -  * Restarting with stat
+2026-07-15 02:16:04,420 - WARNING -  * Debugger is active!
+2026-07-15 02:16:04,427 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 02:16:16,720 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\repository.py', reloading
+2026-07-15 02:16:16,808 - INFO -  * Restarting with stat
+2026-07-15 02:16:18,418 - WARNING -  * Debugger is active!
+2026-07-15 02:16:18,426 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 02:16:21,897 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\importer.py', reloading
+2026-07-15 02:16:21,983 - INFO -  * Restarting with stat
+2026-07-15 02:16:23,545 - WARNING -  * Debugger is active!
+2026-07-15 02:16:23,552 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 02:16:28,171 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\payroll_engine.py', reloading
+2026-07-15 02:16:28,261 - INFO -  * Restarting with stat
+2026-07-15 02:16:29,917 - WARNING -  * Debugger is active!
+2026-07-15 02:16:29,925 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 02:16:35,605 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\services.py', reloading
+2026-07-15 02:16:35,695 - INFO -  * Restarting with stat
+2026-07-15 02:16:37,305 - WARNING -  * Debugger is active!
+2026-07-15 02:16:37,314 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 02:17:04,903 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\main.py', reloading
+2026-07-15 02:17:04,993 - INFO -  * Restarting with stat
+2026-07-15 02:17:06,603 - WARNING -  * Debugger is active!
+2026-07-15 02:17:06,611 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 02:17:31,717 - INFO - 127.0.0.1 - - [15/Jul/2026 02:17:31] "GET / HTTP/1.1" 200 -
+2026-07-15 02:17:31,846 - INFO - 127.0.0.1 - - [15/Jul/2026 02:17:31] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:17:31,851 - INFO - 127.0.0.1 - - [15/Jul/2026 02:17:31] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 02:17:38,546 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\main.py', reloading
+2026-07-15 02:17:38,634 - INFO -  * Restarting with stat
+2026-07-15 02:17:40,214 - WARNING -  * Debugger is active!
+2026-07-15 02:17:40,222 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 02:19:26,028 - INFO - 127.0.0.1 - - [15/Jul/2026 02:19:26] "GET / HTTP/1.1" 200 -
+2026-07-15 02:19:26,159 - INFO - 127.0.0.1 - - [15/Jul/2026 02:19:26] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:19:26,163 - INFO - 127.0.0.1 - - [15/Jul/2026 02:19:26] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 02:19:43,702 - INFO - 127.0.0.1 - - [15/Jul/2026 02:19:43] "GET / HTTP/1.1" 200 -
+2026-07-15 02:19:43,714 - INFO - 127.0.0.1 - - [15/Jul/2026 02:19:43] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:19:43,715 - INFO - 127.0.0.1 - - [15/Jul/2026 02:19:43] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 02:20:56,225 - INFO - 127.0.0.1 - - [15/Jul/2026 02:20:56] "GET /?month=2026-06&brand=century_field HTTP/1.1" 200 -
+2026-07-15 02:20:56,235 - INFO - 127.0.0.1 - - [15/Jul/2026 02:20:56] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:20:56,236 - INFO - 127.0.0.1 - - [15/Jul/2026 02:20:56] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 02:21:00,566 - INFO - 127.0.0.1 - - [15/Jul/2026 02:21:00] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-15 02:21:00,575 - INFO - 127.0.0.1 - - [15/Jul/2026 02:21:00] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:21:04,486 - INFO - 127.0.0.1 - - [15/Jul/2026 02:21:04] "GET /view_payslip/0/2026-06?brand=century_field HTTP/1.1" 200 -
+2026-07-15 02:21:04,523 - INFO - 127.0.0.1 - - [15/Jul/2026 02:21:04] "GET /static/logo.png HTTP/1.1" 200 -
+2026-07-15 02:21:31,687 - INFO - 127.0.0.1 - - [15/Jul/2026 02:21:31] "GET / HTTP/1.1" 200 -
+2026-07-15 02:21:31,698 - INFO - 127.0.0.1 - - [15/Jul/2026 02:21:31] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:21:31,699 - INFO - 127.0.0.1 - - [15/Jul/2026 02:21:31] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 02:22:39,446 - INFO - 127.0.0.1 - - [15/Jul/2026 02:22:39] "GET /validate HTTP/1.1" 200 -
+2026-07-15 02:22:39,454 - INFO - 127.0.0.1 - - [15/Jul/2026 02:22:39] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:22:45,692 - INFO - 127.0.0.1 - - [15/Jul/2026 02:22:45] "GET /manage_products HTTP/1.1" 200 -
+2026-07-15 02:22:45,703 - INFO - 127.0.0.1 - - [15/Jul/2026 02:22:45] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:22:47,836 - INFO - 127.0.0.1 - - [15/Jul/2026 02:22:47] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-15 02:22:47,846 - INFO - 127.0.0.1 - - [15/Jul/2026 02:22:47] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:22:50,617 - INFO - 127.0.0.1 - - [15/Jul/2026 02:22:50] "GET /validate HTTP/1.1" 200 -
+2026-07-15 02:22:50,626 - INFO - 127.0.0.1 - - [15/Jul/2026 02:22:50] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:22:55,909 - INFO - 127.0.0.1 - - [15/Jul/2026 02:22:55] "GET /validate HTTP/1.1" 200 -
+2026-07-15 02:22:55,918 - INFO - 127.0.0.1 - - [15/Jul/2026 02:22:55] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:22:57,648 - INFO - 127.0.0.1 - - [15/Jul/2026 02:22:57] "GET / HTTP/1.1" 200 -
+2026-07-15 02:22:57,658 - INFO - 127.0.0.1 - - [15/Jul/2026 02:22:57] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:22:57,659 - INFO - 127.0.0.1 - - [15/Jul/2026 02:22:57] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 02:24:31,153 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\main.py', reloading
+2026-07-15 02:24:31,243 - INFO -  * Restarting with stat
+2026-07-15 02:24:32,851 - WARNING -  * Debugger is active!
+2026-07-15 02:24:32,859 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 02:28:34,162 - INFO - 127.0.0.1 - - [15/Jul/2026 02:28:34] "GET / HTTP/1.1" 200 -
+2026-07-15 02:28:34,295 - INFO - 127.0.0.1 - - [15/Jul/2026 02:28:34] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:28:34,296 - INFO - 127.0.0.1 - - [15/Jul/2026 02:28:34] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 02:28:38,145 - INFO - 127.0.0.1 - - [15/Jul/2026 02:28:38] "GET /?month=2026-07&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 02:28:38,154 - INFO - 127.0.0.1 - - [15/Jul/2026 02:28:38] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:28:38,156 - INFO - 127.0.0.1 - - [15/Jul/2026 02:28:38] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 02:28:40,591 - INFO - 127.0.0.1 - - [15/Jul/2026 02:28:40] "GET /?month=2026-07&brand=century_field HTTP/1.1" 200 -
+2026-07-15 02:28:40,600 - INFO - 127.0.0.1 - - [15/Jul/2026 02:28:40] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:28:40,601 - INFO - 127.0.0.1 - - [15/Jul/2026 02:28:40] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 02:28:44,472 - INFO - 127.0.0.1 - - [15/Jul/2026 02:28:44] "GET /?month=2026-07&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 02:28:44,481 - INFO - 127.0.0.1 - - [15/Jul/2026 02:28:44] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:28:44,482 - INFO - 127.0.0.1 - - [15/Jul/2026 02:28:44] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 02:28:46,352 - INFO - 127.0.0.1 - - [15/Jul/2026 02:28:46] "GET /?month=2026-07&brand=century_field HTTP/1.1" 200 -
+2026-07-15 02:28:46,362 - INFO - 127.0.0.1 - - [15/Jul/2026 02:28:46] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:28:46,363 - INFO - 127.0.0.1 - - [15/Jul/2026 02:28:46] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 02:28:59,060 - INFO - 127.0.0.1 - - [15/Jul/2026 02:28:59] "GET /?month=2026-06&brand=century_field HTTP/1.1" 200 -
+2026-07-15 02:28:59,070 - INFO - 127.0.0.1 - - [15/Jul/2026 02:28:59] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:28:59,072 - INFO - 127.0.0.1 - - [15/Jul/2026 02:28:59] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 02:29:03,252 - INFO - 127.0.0.1 - - [15/Jul/2026 02:29:03] "GET /?month=2026-05&brand=century_field HTTP/1.1" 200 -
+2026-07-15 02:29:03,263 - INFO - 127.0.0.1 - - [15/Jul/2026 02:29:03] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:29:03,263 - INFO - 127.0.0.1 - - [15/Jul/2026 02:29:03] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 02:31:07,570 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\importer.py', reloading
+2026-07-15 02:31:07,662 - INFO -  * Restarting with stat
+2026-07-15 02:31:09,307 - WARNING -  * Debugger is active!
+2026-07-15 02:31:09,315 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 02:32:17,795 - INFO - 127.0.0.1 - - [15/Jul/2026 02:32:17] "GET /?month=2026-05&brand=century_field HTTP/1.1" 200 -
+2026-07-15 02:32:17,910 - INFO - 127.0.0.1 - - [15/Jul/2026 02:32:17] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:32:17,915 - INFO - 127.0.0.1 - - [15/Jul/2026 02:32:17] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 02:33:58,182 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\repository.py', reloading
+2026-07-15 02:33:58,287 - INFO -  * Restarting with stat
+2026-07-15 02:33:59,941 - WARNING -  * Debugger is active!
+2026-07-15 02:33:59,948 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 02:34:15,503 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\importer.py', reloading
+2026-07-15 02:34:15,588 - INFO -  * Restarting with stat
+2026-07-15 02:34:17,149 - WARNING -  * Debugger is active!
+2026-07-15 02:34:17,156 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 02:34:29,382 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\importer.py', reloading
+2026-07-15 02:34:29,474 - INFO -  * Restarting with stat
+2026-07-15 02:34:31,022 - WARNING -  * Debugger is active!
+2026-07-15 02:34:31,030 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 02:34:37,826 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\payroll_engine.py', reloading
+2026-07-15 02:34:37,929 - INFO -  * Restarting with stat
+2026-07-15 02:34:39,526 - WARNING -  * Debugger is active!
+2026-07-15 02:34:39,533 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 02:34:56,143 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\services.py', reloading
+2026-07-15 02:34:56,239 - INFO -  * Restarting with stat
+2026-07-15 02:34:57,858 - WARNING -  * Debugger is active!
+2026-07-15 02:34:57,867 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 02:35:03,573 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\services.py', reloading
+2026-07-15 02:35:03,662 - INFO -  * Restarting with stat
+2026-07-15 02:35:05,214 - WARNING -  * Debugger is active!
+2026-07-15 02:35:05,222 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 02:36:21,028 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\attendance.py', reloading
+2026-07-15 02:36:21,118 - INFO -  * Restarting with stat
+2026-07-15 02:36:22,681 - WARNING -  * Debugger is active!
+2026-07-15 02:36:22,689 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 02:36:41,541 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\attendance.py', reloading
+2026-07-15 02:36:41,625 - INFO -  * Restarting with stat
+2026-07-15 02:36:43,179 - WARNING -  * Debugger is active!
+2026-07-15 02:36:43,187 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 02:36:58,742 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\sales.py', reloading
+2026-07-15 02:36:58,828 - INFO -  * Restarting with stat
+2026-07-15 02:37:00,379 - WARNING -  * Debugger is active!
+2026-07-15 02:37:00,387 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 02:37:14,920 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-15 02:37:15,013 - INFO -  * Restarting with stat
+2026-07-15 02:37:16,570 - WARNING -  * Debugger is active!
+2026-07-15 02:37:16,578 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 02:37:24,485 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\repository.py', reloading
+2026-07-15 02:37:24,573 - INFO -  * Restarting with stat
+2026-07-15 02:37:26,127 - WARNING -  * Debugger is active!
+2026-07-15 02:37:26,135 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 02:37:51,615 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\rebuild_and_import.py', reloading
+2026-07-15 02:37:51,706 - INFO -  * Restarting with stat
+2026-07-15 02:37:53,231 - WARNING -  * Debugger is active!
+2026-07-15 02:37:53,240 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 02:38:14,380 - INFO - 127.0.0.1 - - [15/Jul/2026 02:38:14] "GET /?month=2026-05&brand=century_field HTTP/1.1" 200 -
+2026-07-15 02:38:14,499 - INFO - 127.0.0.1 - - [15/Jul/2026 02:38:14] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 02:38:14,501 - INFO - 127.0.0.1 - - [15/Jul/2026 02:38:14] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:38:30,956 - INFO - 127.0.0.1 - - [15/Jul/2026 02:38:30] "GET /?month=2026-05&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 02:38:30,965 - INFO - 127.0.0.1 - - [15/Jul/2026 02:38:30] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:38:30,966 - INFO - 127.0.0.1 - - [15/Jul/2026 02:38:30] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 02:38:34,726 - INFO - 127.0.0.1 - - [15/Jul/2026 02:38:34] "GET /?month=2026-05&brand=century_field HTTP/1.1" 200 -
+2026-07-15 02:38:34,737 - INFO - 127.0.0.1 - - [15/Jul/2026 02:38:34] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:38:34,738 - INFO - 127.0.0.1 - - [15/Jul/2026 02:38:34] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 02:38:37,248 - INFO - 127.0.0.1 - - [15/Jul/2026 02:38:37] "GET /?month=2026-05&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 02:38:37,259 - INFO - 127.0.0.1 - - [15/Jul/2026 02:38:37] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:38:37,259 - INFO - 127.0.0.1 - - [15/Jul/2026 02:38:37] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 02:38:40,932 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\repository.py', reloading
+2026-07-15 02:38:41,028 - INFO -  * Restarting with stat
+2026-07-15 02:38:42,718 - WARNING -  * Debugger is active!
+2026-07-15 02:38:42,727 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 02:38:42,955 - INFO - 127.0.0.1 - - [15/Jul/2026 02:38:42] "GET /?month=2026-05&brand=century_field HTTP/1.1" 200 -
+2026-07-15 02:38:43,077 - INFO - 127.0.0.1 - - [15/Jul/2026 02:38:43] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:38:43,079 - INFO - 127.0.0.1 - - [15/Jul/2026 02:38:43] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 02:39:33,523 - INFO - 127.0.0.1 - - [15/Jul/2026 02:39:33] "GET /?month=2026-06&brand=century_field HTTP/1.1" 200 -
+2026-07-15 02:39:33,534 - INFO - 127.0.0.1 - - [15/Jul/2026 02:39:33] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:39:33,535 - INFO - 127.0.0.1 - - [15/Jul/2026 02:39:33] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 02:39:46,341 - INFO - 127.0.0.1 - - [15/Jul/2026 02:39:46] "GET /?month=2026-06&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 02:39:46,351 - INFO - 127.0.0.1 - - [15/Jul/2026 02:39:46] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:39:46,352 - INFO - 127.0.0.1 - - [15/Jul/2026 02:39:46] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 02:41:58,607 - INFO - 127.0.0.1 - - [15/Jul/2026 02:41:58] "GET /?month=2026-03&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 02:41:58,616 - INFO - 127.0.0.1 - - [15/Jul/2026 02:41:58] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 02:41:58,616 - INFO - 127.0.0.1 - - [15/Jul/2026 02:41:58] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 02:57:15,941 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\repository.py', reloading
+2026-07-15 02:57:16,032 - INFO -  * Restarting with stat
+2026-07-15 03:00:32,743 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://10.142.32.13:5001
+2026-07-15 03:00:32,743 - INFO - [33mPress CTRL+C to quit[0m
+2026-07-15 03:00:32,745 - INFO -  * Restarting with stat
+2026-07-15 03:00:34,357 - WARNING -  * Debugger is active!
+2026-07-15 03:00:34,363 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 03:00:35,367 - INFO - 127.0.0.1 - - [15/Jul/2026 03:00:35] "GET /?month=2026-03&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 03:00:35,515 - INFO - 127.0.0.1 - - [15/Jul/2026 03:00:35] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:00:35,517 - INFO - 127.0.0.1 - - [15/Jul/2026 03:00:35] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 03:01:30,032 - INFO - 127.0.0.1 - - [15/Jul/2026 03:01:30] "GET /?month=2026-03&brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:01:30,042 - INFO - 127.0.0.1 - - [15/Jul/2026 03:01:30] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:01:30,043 - INFO - 127.0.0.1 - - [15/Jul/2026 03:01:30] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 03:01:39,946 - INFO - 127.0.0.1 - - [15/Jul/2026 03:01:39] "GET /?month=2026-03&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 03:01:39,955 - INFO - 127.0.0.1 - - [15/Jul/2026 03:01:39] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:01:39,957 - INFO - 127.0.0.1 - - [15/Jul/2026 03:01:39] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 03:10:29,179 - INFO - 127.0.0.1 - - [15/Jul/2026 03:10:29] "GET /manage_locations HTTP/1.1" 200 -
+2026-07-15 03:10:29,191 - INFO - 127.0.0.1 - - [15/Jul/2026 03:10:29] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:10:34,407 - INFO - 127.0.0.1 - - [15/Jul/2026 03:10:34] "GET / HTTP/1.1" 200 -
+2026-07-15 03:10:34,417 - INFO - 127.0.0.1 - - [15/Jul/2026 03:10:34] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:10:34,418 - INFO - 127.0.0.1 - - [15/Jul/2026 03:10:34] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 03:10:36,177 - INFO - 127.0.0.1 - - [15/Jul/2026 03:10:36] "GET / HTTP/1.1" 200 -
+2026-07-15 03:10:36,189 - INFO - 127.0.0.1 - - [15/Jul/2026 03:10:36] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:10:36,190 - INFO - 127.0.0.1 - - [15/Jul/2026 03:10:36] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 03:10:39,812 - INFO - 127.0.0.1 - - [15/Jul/2026 03:10:39] "GET /manage_locations HTTP/1.1" 200 -
+2026-07-15 03:10:39,819 - INFO - 127.0.0.1 - - [15/Jul/2026 03:10:39] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:10:47,155 - INFO - 127.0.0.1 - - [15/Jul/2026 03:10:47] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:10:47,163 - INFO - 127.0.0.1 - - [15/Jul/2026 03:10:47] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:10:47,172 - INFO - 127.0.0.1 - - [15/Jul/2026 03:10:47] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:10:54,277 - INFO - 127.0.0.1 - - [15/Jul/2026 03:10:54] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:10:54,285 - INFO - 127.0.0.1 - - [15/Jul/2026 03:10:54] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:10:54,301 - INFO - 127.0.0.1 - - [15/Jul/2026 03:10:54] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:11:02,353 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:02] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:11:02,361 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:02] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:11:02,377 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:02] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:11:09,089 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:09] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:11:09,096 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:09] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:11:09,111 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:09] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:11:13,042 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:13] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:11:13,050 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:13] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:11:13,067 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:13] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:11:26,994 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:26] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:11:27,002 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:27] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:11:27,017 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:27] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:11:32,753 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:32] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:11:32,761 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:32] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:11:32,777 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:32] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:11:38,321 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:38] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:11:38,329 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:38] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:11:38,346 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:38] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:11:41,986 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:41] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:11:41,995 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:41] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:11:42,010 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:42] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:11:47,633 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:47] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:11:47,641 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:47] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:11:47,658 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:47] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:11:55,786 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:55] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:11:55,794 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:55] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:11:55,810 - INFO - 127.0.0.1 - - [15/Jul/2026 03:11:55] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:12:03,653 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:03] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:12:03,662 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:03] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:12:03,678 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:03] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:12:08,487 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:08] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:12:08,495 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:08] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:12:08,510 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:08] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:12:11,564 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:11] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:12:11,572 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:11] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:12:11,587 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:11] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:12:14,622 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:14] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:12:14,629 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:14] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:12:14,645 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:14] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:12:17,755 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:17] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:12:17,763 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:17] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:12:17,778 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:17] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:12:29,677 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:29] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:12:29,684 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:29] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:12:29,702 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:29] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:12:34,550 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:34] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:12:34,558 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:34] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:12:34,575 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:34] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:12:39,220 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:39] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:12:39,227 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:39] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:12:39,244 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:39] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:12:43,612 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:43] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:12:43,620 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:43] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:12:43,638 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:43] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:12:47,855 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:47] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:12:47,862 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:47] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:12:47,878 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:47] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:12:51,695 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:51] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:12:51,703 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:51] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:12:51,717 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:51] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:12:55,961 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:55] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:12:55,970 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:55] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:12:55,988 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:55] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:12:59,054 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:59] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:12:59,062 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:59] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:12:59,081 - INFO - 127.0.0.1 - - [15/Jul/2026 03:12:59] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:13:01,987 - INFO - 127.0.0.1 - - [15/Jul/2026 03:13:01] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:13:01,995 - INFO - 127.0.0.1 - - [15/Jul/2026 03:13:01] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:13:02,011 - INFO - 127.0.0.1 - - [15/Jul/2026 03:13:02] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:13:06,215 - INFO - 127.0.0.1 - - [15/Jul/2026 03:13:06] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:13:06,223 - INFO - 127.0.0.1 - - [15/Jul/2026 03:13:06] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:13:06,239 - INFO - 127.0.0.1 - - [15/Jul/2026 03:13:06] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:13:10,720 - INFO - 127.0.0.1 - - [15/Jul/2026 03:13:10] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:13:10,728 - INFO - 127.0.0.1 - - [15/Jul/2026 03:13:10] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:13:10,744 - INFO - 127.0.0.1 - - [15/Jul/2026 03:13:10] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:13:59,421 - INFO - 127.0.0.1 - - [15/Jul/2026 03:13:59] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:13:59,430 - INFO - 127.0.0.1 - - [15/Jul/2026 03:13:59] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:13:59,448 - INFO - 127.0.0.1 - - [15/Jul/2026 03:13:59] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:14:29,523 - INFO - 127.0.0.1 - - [15/Jul/2026 03:14:29] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:14:29,530 - INFO - 127.0.0.1 - - [15/Jul/2026 03:14:29] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:14:29,547 - INFO - 127.0.0.1 - - [15/Jul/2026 03:14:29] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 03:14:34,895 - INFO - 127.0.0.1 - - [15/Jul/2026 03:14:34] "[32mPOST /update_location HTTP/1.1[0m" 302 -
+2026-07-15 03:14:34,903 - INFO - 127.0.0.1 - - [15/Jul/2026 03:14:34] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 03:14:34,919 - INFO - 127.0.0.1 - - [15/Jul/2026 03:14:34] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 14:33:59,200 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\importer.py', reloading
+2026-07-15 14:33:59,294 - INFO -  * Restarting with stat
+2026-07-15 14:34:03,408 - WARNING -  * Debugger is active!
+2026-07-15 14:34:03,416 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 14:34:08,012 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\main.py', reloading
+2026-07-15 14:34:08,109 - INFO -  * Restarting with stat
+2026-07-15 14:34:09,728 - WARNING -  * Debugger is active!
+2026-07-15 14:34:09,734 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 14:34:12,146 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\main.py', reloading
+2026-07-15 14:34:12,243 - INFO -  * Restarting with stat
+2026-07-15 14:34:13,864 - WARNING -  * Debugger is active!
+2026-07-15 14:34:13,873 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 14:40:24,875 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\importer.py', reloading
+2026-07-15 14:40:24,965 - INFO -  * Restarting with stat
+2026-07-15 14:40:26,697 - WARNING -  * Debugger is active!
+2026-07-15 14:40:26,707 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 14:43:23,378 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\importer.py', reloading
+2026-07-15 14:43:23,474 - INFO -  * Restarting with stat
+2026-07-15 14:43:25,157 - WARNING -  * Debugger is active!
+2026-07-15 14:43:25,166 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 14:44:20,156 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\importer.py', reloading
+2026-07-15 14:44:20,244 - INFO -  * Restarting with stat
+2026-07-15 14:44:21,932 - WARNING -  * Debugger is active!
+2026-07-15 14:44:21,940 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 14:44:51,560 - INFO - 127.0.0.1 - - [15/Jul/2026 14:44:51] "GET / HTTP/1.1" 200 -
+2026-07-15 14:44:51,676 - INFO - 127.0.0.1 - - [15/Jul/2026 14:44:51] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 14:44:51,684 - INFO - 127.0.0.1 - - [15/Jul/2026 14:44:51] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 14:44:55,498 - INFO - 127.0.0.1 - - [15/Jul/2026 14:44:55] "GET /?month=2026-07&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 14:44:55,508 - INFO - 127.0.0.1 - - [15/Jul/2026 14:44:55] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 14:44:55,509 - INFO - 127.0.0.1 - - [15/Jul/2026 14:44:55] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 14:44:59,830 - INFO - 127.0.0.1 - - [15/Jul/2026 14:44:59] "GET /?month=2026-03&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 14:44:59,840 - INFO - 127.0.0.1 - - [15/Jul/2026 14:44:59] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 14:44:59,841 - INFO - 127.0.0.1 - - [15/Jul/2026 14:44:59] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 14:52:31,166 - INFO - 127.0.0.1 - - [15/Jul/2026 14:52:31] "GET /?month=2026-03&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 14:52:31,180 - INFO - 127.0.0.1 - - [15/Jul/2026 14:52:31] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 14:52:31,181 - INFO - 127.0.0.1 - - [15/Jul/2026 14:52:31] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 14:56:58,325 - INFO - 127.0.0.1 - - [15/Jul/2026 14:56:58] "[32mPOST /upload_and_import HTTP/1.1[0m" 302 -
+2026-07-15 14:56:58,371 - INFO - 127.0.0.1 - - [15/Jul/2026 14:56:58] "GET /?month=2026-03&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 14:56:58,399 - INFO - 127.0.0.1 - - [15/Jul/2026 14:56:58] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 14:56:58,418 - INFO - 127.0.0.1 - - [15/Jul/2026 14:56:58] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 14:57:02,749 - INFO - 127.0.0.1 - - [15/Jul/2026 14:57:02] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-15 14:57:02,759 - INFO - 127.0.0.1 - - [15/Jul/2026 14:57:02] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 14:57:17,862 - INFO - 127.0.0.1 - - [15/Jul/2026 14:57:17] "GET /view_payslip/0/2026-03?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 14:57:17,881 - INFO - 127.0.0.1 - - [15/Jul/2026 14:57:17] "[36mGET /static/logo.png HTTP/1.1[0m" 304 -
+2026-07-15 14:58:37,939 - INFO - 127.0.0.1 - - [15/Jul/2026 14:58:37] "[32mPOST /upload_and_import HTTP/1.1[0m" 302 -
+2026-07-15 14:58:37,993 - INFO - 127.0.0.1 - - [15/Jul/2026 14:58:37] "GET /?month=2026-03&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 14:58:38,010 - INFO - 127.0.0.1 - - [15/Jul/2026 14:58:38] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 14:58:38,010 - INFO - 127.0.0.1 - - [15/Jul/2026 14:58:38] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 14:58:41,371 - INFO - 127.0.0.1 - - [15/Jul/2026 14:58:41] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-15 14:58:41,380 - INFO - 127.0.0.1 - - [15/Jul/2026 14:58:41] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 14:58:55,085 - INFO - 127.0.0.1 - - [15/Jul/2026 14:58:55] "GET /view_payslip/0/2026-03?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 14:58:55,118 - INFO - 127.0.0.1 - - [15/Jul/2026 14:58:55] "[36mGET /static/logo.png HTTP/1.1[0m" 304 -
+2026-07-15 14:59:57,113 - INFO - 127.0.0.1 - - [15/Jul/2026 14:59:57] "GET / HTTP/1.1" 200 -
+2026-07-15 14:59:57,126 - INFO - 127.0.0.1 - - [15/Jul/2026 14:59:57] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 14:59:57,127 - INFO - 127.0.0.1 - - [15/Jul/2026 14:59:57] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:00:06,536 - INFO - 127.0.0.1 - - [15/Jul/2026 15:00:06] "GET /?month=2026-03&brand=century_field HTTP/1.1" 200 -
+2026-07-15 15:00:06,547 - INFO - 127.0.0.1 - - [15/Jul/2026 15:00:06] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:00:06,548 - INFO - 127.0.0.1 - - [15/Jul/2026 15:00:06] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:00:14,838 - INFO - 127.0.0.1 - - [15/Jul/2026 15:00:14] "[32mPOST /upload_and_import HTTP/1.1[0m" 302 -
+2026-07-15 15:00:14,862 - INFO - 127.0.0.1 - - [15/Jul/2026 15:00:14] "GET /?month=2026-03&brand=century_field HTTP/1.1" 200 -
+2026-07-15 15:00:14,879 - INFO - 127.0.0.1 - - [15/Jul/2026 15:00:14] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:00:14,879 - INFO - 127.0.0.1 - - [15/Jul/2026 15:00:14] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:00:27,416 - INFO - 127.0.0.1 - - [15/Jul/2026 15:00:27] "GET /?month=2026-03&brand=century_field HTTP/1.1" 200 -
+2026-07-15 15:00:27,428 - INFO - 127.0.0.1 - - [15/Jul/2026 15:00:27] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:00:27,429 - INFO - 127.0.0.1 - - [15/Jul/2026 15:00:27] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:00:50,353 - INFO - 127.0.0.1 - - [15/Jul/2026 15:00:50] "GET /?month=2026-03&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 15:00:50,365 - INFO - 127.0.0.1 - - [15/Jul/2026 15:00:50] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:00:50,366 - INFO - 127.0.0.1 - - [15/Jul/2026 15:00:50] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:00:53,306 - INFO - 127.0.0.1 - - [15/Jul/2026 15:00:53] "GET /?month=2026-03&brand=century_field HTTP/1.1" 200 -
+2026-07-15 15:00:53,317 - INFO - 127.0.0.1 - - [15/Jul/2026 15:00:53] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:00:53,317 - INFO - 127.0.0.1 - - [15/Jul/2026 15:00:53] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:00:55,719 - INFO - 127.0.0.1 - - [15/Jul/2026 15:00:55] "GET /?month=2026-03&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 15:00:55,731 - INFO - 127.0.0.1 - - [15/Jul/2026 15:00:55] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:00:55,731 - INFO - 127.0.0.1 - - [15/Jul/2026 15:00:55] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:01:00,834 - INFO - 127.0.0.1 - - [15/Jul/2026 15:01:00] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-15 15:01:00,844 - INFO - 127.0.0.1 - - [15/Jul/2026 15:01:00] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:01:56,809 - INFO - 127.0.0.1 - - [15/Jul/2026 15:01:56] "GET /manage_locations HTTP/1.1" 200 -
+2026-07-15 15:01:56,821 - INFO - 127.0.0.1 - - [15/Jul/2026 15:01:56] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:03:34,455 - INFO - 127.0.0.1 - - [15/Jul/2026 15:03:34] "GET /validate HTTP/1.1" 200 -
+2026-07-15 15:03:34,463 - INFO - 127.0.0.1 - - [15/Jul/2026 15:03:34] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:03:36,698 - INFO - 127.0.0.1 - - [15/Jul/2026 15:03:36] "GET /validate?brand=toshiba&month=2026-07 HTTP/1.1" 200 -
+2026-07-15 15:03:36,706 - INFO - 127.0.0.1 - - [15/Jul/2026 15:03:36] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:03:39,982 - ERROR - Failed to read validation file history\202603 Toshiba Promoter Sales Report.xlsx
+Traceback (most recent call last):
+  File "c:\Users\horayr\Workspace\payroll\services.py", line 299, in perform_validation
+    ex_df = pd.read_excel(filepath, sheet_name="Total", header=6)
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 494, in read_excel
+    data = io.parse(
+        sheet_name=sheet_name,
+    ...<20 lines>...
+        dtype_backend=dtype_backend,
+    )
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 1780, in parse
+    return self._reader.parse(
+           ~~~~~~~~~~~~~~~~~~^
+        sheet_name=sheet_name,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ...<16 lines>...
+        **kwds,
+        ^^^^^^^
+    )
+    ^
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 753, in parse
+    sheet = self.get_sheet_by_name(asheetname)
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_openpyxl.py", line 589, in get_sheet_by_name
+    self.raise_if_bad_sheet_by_name(name)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 605, in raise_if_bad_sheet_by_name
+    raise ValueError(f"Worksheet named '{name}' not found")
+ValueError: Worksheet named 'Total' not found
+2026-07-15 15:03:40,380 - ERROR - Failed to read validation file history\202603 ToshibaAC Payroll (ALL)(\u5df2\u81ea\u52d5\u4fee\u5fa9).xlsx
+Traceback (most recent call last):
+  File "c:\Users\horayr\Workspace\payroll\services.py", line 301, in perform_validation
+    ex_df = ex_df.dropna(subset=["Name", "Total"])
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\core\frame.py", line 7801, in dropna
+    raise KeyError(np.array(subset)[check].tolist())
+KeyError: ['Name']
+2026-07-15 15:03:40,436 - INFO - 127.0.0.1 - - [15/Jul/2026 15:03:40] "GET /validate?brand=toshiba&month=2026-03 HTTP/1.1" 200 -
+2026-07-15 15:03:40,444 - INFO - 127.0.0.1 - - [15/Jul/2026 15:03:40] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:03:44,237 - INFO - 127.0.0.1 - - [15/Jul/2026 15:03:44] "GET /validate?brand=century_field&month=2026-03 HTTP/1.1" 200 -
+2026-07-15 15:03:44,245 - INFO - 127.0.0.1 - - [15/Jul/2026 15:03:44] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:03:47,818 - INFO - 127.0.0.1 - - [15/Jul/2026 15:03:47] "GET /validate?brand=century_field&month=2026-02 HTTP/1.1" 200 -
+2026-07-15 15:03:47,827 - INFO - 127.0.0.1 - - [15/Jul/2026 15:03:47] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:03:51,363 - INFO - 127.0.0.1 - - [15/Jul/2026 15:03:51] "GET /validate?brand=century_field&month=2026-03 HTTP/1.1" 200 -
+2026-07-15 15:03:51,371 - INFO - 127.0.0.1 - - [15/Jul/2026 15:03:51] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:03:55,816 - INFO - 127.0.0.1 - - [15/Jul/2026 15:03:55] "GET /validate?brand=century_field&month=2026-06 HTTP/1.1" 200 -
+2026-07-15 15:03:55,824 - INFO - 127.0.0.1 - - [15/Jul/2026 15:03:55] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:03:58,402 - INFO - 127.0.0.1 - - [15/Jul/2026 15:03:58] "GET /validate?brand=century_field&month=2026-05 HTTP/1.1" 200 -
+2026-07-15 15:03:58,412 - INFO - 127.0.0.1 - - [15/Jul/2026 15:03:58] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:04:03,344 - INFO - 127.0.0.1 - - [15/Jul/2026 15:04:03] "GET /validate?brand=century_field&month=2026-04 HTTP/1.1" 200 -
+2026-07-15 15:04:03,352 - INFO - 127.0.0.1 - - [15/Jul/2026 15:04:03] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:04:24,549 - INFO - 127.0.0.1 - - [15/Jul/2026 15:04:24] "GET / HTTP/1.1" 200 -
+2026-07-15 15:04:24,560 - INFO - 127.0.0.1 - - [15/Jul/2026 15:04:24] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:04:24,561 - INFO - 127.0.0.1 - - [15/Jul/2026 15:04:24] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:04:29,902 - INFO - 127.0.0.1 - - [15/Jul/2026 15:04:29] "GET /?month=2026-03&brand=century_field HTTP/1.1" 200 -
+2026-07-15 15:04:29,913 - INFO - 127.0.0.1 - - [15/Jul/2026 15:04:29] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:04:29,914 - INFO - 127.0.0.1 - - [15/Jul/2026 15:04:29] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:04:57,991 - INFO - 127.0.0.1 - - [15/Jul/2026 15:04:57] "[32mPOST /upload_and_import HTTP/1.1[0m" 302 -
+2026-07-15 15:04:58,045 - INFO - 127.0.0.1 - - [15/Jul/2026 15:04:58] "GET /?month=2026-03&brand=century_field HTTP/1.1" 200 -
+2026-07-15 15:04:58,060 - INFO - 127.0.0.1 - - [15/Jul/2026 15:04:58] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:04:58,060 - INFO - 127.0.0.1 - - [15/Jul/2026 15:04:58] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:05:05,903 - ERROR - Failed to read validation file history\202603 Toshiba Promoter Sales Report.xlsx
+Traceback (most recent call last):
+  File "c:\Users\horayr\Workspace\payroll\services.py", line 299, in perform_validation
+    ex_df = pd.read_excel(filepath, sheet_name="Total", header=6)
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 494, in read_excel
+    data = io.parse(
+        sheet_name=sheet_name,
+    ...<20 lines>...
+        dtype_backend=dtype_backend,
+    )
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 1780, in parse
+    return self._reader.parse(
+           ~~~~~~~~~~~~~~~~~~^
+        sheet_name=sheet_name,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ...<16 lines>...
+        **kwds,
+        ^^^^^^^
+    )
+    ^
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 753, in parse
+    sheet = self.get_sheet_by_name(asheetname)
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_openpyxl.py", line 589, in get_sheet_by_name
+    self.raise_if_bad_sheet_by_name(name)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 605, in raise_if_bad_sheet_by_name
+    raise ValueError(f"Worksheet named '{name}' not found")
+ValueError: Worksheet named 'Total' not found
+2026-07-15 15:05:06,230 - ERROR - Failed to read validation file history\202603 ToshibaAC Payroll (ALL)(\u5df2\u81ea\u52d5\u4fee\u5fa9).xlsx
+Traceback (most recent call last):
+  File "c:\Users\horayr\Workspace\payroll\services.py", line 301, in perform_validation
+    ex_df = ex_df.dropna(subset=["Name", "Total"])
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\core\frame.py", line 7801, in dropna
+    raise KeyError(np.array(subset)[check].tolist())
+KeyError: ['Name']
+2026-07-15 15:05:06,234 - INFO - 127.0.0.1 - - [15/Jul/2026 15:05:06] "GET /validate?month=2026-03 HTTP/1.1" 200 -
+2026-07-15 15:05:06,244 - INFO - 127.0.0.1 - - [15/Jul/2026 15:05:06] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:05:18,664 - ERROR - Failed to read validation file history\202603 Toshiba Promoter Sales Report.xlsx
+Traceback (most recent call last):
+  File "c:\Users\horayr\Workspace\payroll\services.py", line 299, in perform_validation
+    ex_df = pd.read_excel(filepath, sheet_name="Total", header=6)
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 494, in read_excel
+    data = io.parse(
+        sheet_name=sheet_name,
+    ...<20 lines>...
+        dtype_backend=dtype_backend,
+    )
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 1780, in parse
+    return self._reader.parse(
+           ~~~~~~~~~~~~~~~~~~^
+        sheet_name=sheet_name,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ...<16 lines>...
+        **kwds,
+        ^^^^^^^
+    )
+    ^
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 753, in parse
+    sheet = self.get_sheet_by_name(asheetname)
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_openpyxl.py", line 589, in get_sheet_by_name
+    self.raise_if_bad_sheet_by_name(name)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 605, in raise_if_bad_sheet_by_name
+    raise ValueError(f"Worksheet named '{name}' not found")
+ValueError: Worksheet named 'Total' not found
+2026-07-15 15:05:19,002 - ERROR - Failed to read validation file history\202603 ToshibaAC Payroll (ALL)(\u5df2\u81ea\u52d5\u4fee\u5fa9).xlsx
+Traceback (most recent call last):
+  File "c:\Users\horayr\Workspace\payroll\services.py", line 301, in perform_validation
+    ex_df = ex_df.dropna(subset=["Name", "Total"])
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\core\frame.py", line 7801, in dropna
+    raise KeyError(np.array(subset)[check].tolist())
+KeyError: ['Name']
+2026-07-15 15:05:19,006 - INFO - 127.0.0.1 - - [15/Jul/2026 15:05:19] "GET /validate?month=2026-03 HTTP/1.1" 200 -
+2026-07-15 15:05:19,017 - INFO - 127.0.0.1 - - [15/Jul/2026 15:05:19] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:05:23,205 - ERROR - Failed to read validation file history\202603 Toshiba Promoter Sales Report.xlsx
+Traceback (most recent call last):
+  File "c:\Users\horayr\Workspace\payroll\services.py", line 299, in perform_validation
+    ex_df = pd.read_excel(filepath, sheet_name="Total", header=6)
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 494, in read_excel
+    data = io.parse(
+        sheet_name=sheet_name,
+    ...<20 lines>...
+        dtype_backend=dtype_backend,
+    )
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 1780, in parse
+    return self._reader.parse(
+           ~~~~~~~~~~~~~~~~~~^
+        sheet_name=sheet_name,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ...<16 lines>...
+        **kwds,
+        ^^^^^^^
+    )
+    ^
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 753, in parse
+    sheet = self.get_sheet_by_name(asheetname)
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_openpyxl.py", line 589, in get_sheet_by_name
+    self.raise_if_bad_sheet_by_name(name)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 605, in raise_if_bad_sheet_by_name
+    raise ValueError(f"Worksheet named '{name}' not found")
+ValueError: Worksheet named 'Total' not found
+2026-07-15 15:05:23,518 - ERROR - Failed to read validation file history\202603 ToshibaAC Payroll (ALL)(\u5df2\u81ea\u52d5\u4fee\u5fa9).xlsx
+Traceback (most recent call last):
+  File "c:\Users\horayr\Workspace\payroll\services.py", line 301, in perform_validation
+    ex_df = ex_df.dropna(subset=["Name", "Total"])
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\core\frame.py", line 7801, in dropna
+    raise KeyError(np.array(subset)[check].tolist())
+KeyError: ['Name']
+2026-07-15 15:05:23,521 - INFO - 127.0.0.1 - - [15/Jul/2026 15:05:23] "GET /validate?brand=toshiba&month=2026-03 HTTP/1.1" 200 -
+2026-07-15 15:05:23,530 - INFO - 127.0.0.1 - - [15/Jul/2026 15:05:23] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:18:22,065 - INFO - 127.0.0.1 - - [15/Jul/2026 15:18:22] "GET / HTTP/1.1" 200 -
+2026-07-15 15:18:22,076 - INFO - 127.0.0.1 - - [15/Jul/2026 15:18:22] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:18:22,078 - INFO - 127.0.0.1 - - [15/Jul/2026 15:18:22] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:18:25,273 - INFO - 127.0.0.1 - - [15/Jul/2026 15:18:25] "GET /?month=2026-07&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 15:18:25,284 - INFO - 127.0.0.1 - - [15/Jul/2026 15:18:25] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:18:25,285 - INFO - 127.0.0.1 - - [15/Jul/2026 15:18:25] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:18:28,454 - INFO - 127.0.0.1 - - [15/Jul/2026 15:18:28] "GET /?month=2026-03&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 15:18:28,466 - INFO - 127.0.0.1 - - [15/Jul/2026 15:18:28] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:18:28,467 - INFO - 127.0.0.1 - - [15/Jul/2026 15:18:28] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:19:49,149 - INFO - 127.0.0.1 - - [15/Jul/2026 15:19:49] "GET /api/sales_records/2026-03/Andy/Citistore%20Y%20L HTTP/1.1" 200 -
+2026-07-15 15:19:57,301 - INFO - 127.0.0.1 - - [15/Jul/2026 15:19:57] "GET /?month=2026-03&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 15:19:57,318 - INFO - 127.0.0.1 - - [15/Jul/2026 15:19:57] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:19:57,319 - INFO - 127.0.0.1 - - [15/Jul/2026 15:19:57] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:20:03,646 - INFO - 127.0.0.1 - - [15/Jul/2026 15:20:03] "GET /api/daily_attendance/2026-03/0/0 HTTP/1.1" 200 -
+2026-07-15 15:20:05,529 - INFO - 127.0.0.1 - - [15/Jul/2026 15:20:05] "GET /?month=2026-03&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 15:20:05,545 - INFO - 127.0.0.1 - - [15/Jul/2026 15:20:05] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:20:05,546 - INFO - 127.0.0.1 - - [15/Jul/2026 15:20:05] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:20:23,412 - INFO - 127.0.0.1 - - [15/Jul/2026 15:20:23] "GET /api/sales_records/2026-03/Andy/Citistore%20Y%20L HTTP/1.1" 200 -
+2026-07-15 15:20:27,260 - INFO - 127.0.0.1 - - [15/Jul/2026 15:20:27] "GET /?month=2026-03&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 15:20:27,277 - INFO - 127.0.0.1 - - [15/Jul/2026 15:20:27] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:20:27,278 - INFO - 127.0.0.1 - - [15/Jul/2026 15:20:27] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:27:24,184 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\importer.py', reloading
+2026-07-15 15:27:24,324 - INFO -  * Restarting with stat
+2026-07-15 15:27:26,147 - WARNING -  * Debugger is active!
+2026-07-15 15:27:26,155 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:28:33,586 - INFO - 127.0.0.1 - - [15/Jul/2026 15:28:33] "GET /?month=2026-03&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 15:28:33,711 - INFO - 127.0.0.1 - - [15/Jul/2026 15:28:33] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:28:33,713 - INFO - 127.0.0.1 - - [15/Jul/2026 15:28:33] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:30:23,649 - INFO - 127.0.0.1 - - [15/Jul/2026 15:30:23] "GET /?month=2026-03&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 15:30:23,664 - INFO - 127.0.0.1 - - [15/Jul/2026 15:30:23] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:30:23,665 - INFO - 127.0.0.1 - - [15/Jul/2026 15:30:23] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:31:32,983 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\importer.py', reloading
+2026-07-15 15:31:33,074 - INFO -  * Restarting with stat
+2026-07-15 15:31:34,735 - WARNING -  * Debugger is active!
+2026-07-15 15:31:34,743 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:31:52,448 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\_reimport_toshiba_payroll_check_rate.py', reloading
+2026-07-15 15:31:52,544 - INFO -  * Restarting with stat
+2026-07-15 15:31:54,218 - WARNING -  * Debugger is active!
+2026-07-15 15:31:54,225 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:32:32,915 - INFO - 127.0.0.1 - - [15/Jul/2026 15:32:32] "GET /?month=2026-03&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 15:32:33,033 - INFO - 127.0.0.1 - - [15/Jul/2026 15:32:33] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:32:33,036 - INFO - 127.0.0.1 - - [15/Jul/2026 15:32:33] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:34:48,630 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\importer.py', reloading
+2026-07-15 15:34:48,718 - INFO -  * Restarting with stat
+2026-07-15 15:34:50,421 - WARNING -  * Debugger is active!
+2026-07-15 15:34:50,429 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:34:56,106 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\importer.py', reloading
+2026-07-15 15:34:56,200 - INFO -  * Restarting with stat
+2026-07-15 15:34:57,910 - WARNING -  * Debugger is active!
+2026-07-15 15:34:57,919 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:38:48,264 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\importer.py', reloading
+2026-07-15 15:38:48,356 - INFO -  * Restarting with stat
+2026-07-15 15:38:50,102 - WARNING -  * Debugger is active!
+2026-07-15 15:38:50,110 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:39:25,412 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\importer.py', reloading
+2026-07-15 15:39:25,503 - INFO -  * Restarting with stat
+2026-07-15 15:39:27,167 - WARNING -  * Debugger is active!
+2026-07-15 15:39:27,175 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:41:50,955 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\importer.py', reloading
+2026-07-15 15:41:51,060 - INFO -  * Restarting with stat
+2026-07-15 15:41:52,773 - WARNING -  * Debugger is active!
+2026-07-15 15:41:52,781 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:43:28,416 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\importer.py', reloading
+2026-07-15 15:43:28,512 - INFO -  * Restarting with stat
+2026-07-15 15:43:30,257 - WARNING -  * Debugger is active!
+2026-07-15 15:43:30,265 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:43:45,774 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\importer.py', reloading
+2026-07-15 15:43:45,860 - INFO -  * Restarting with stat
+2026-07-15 15:43:47,627 - WARNING -  * Debugger is active!
+2026-07-15 15:43:47,634 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:43:56,132 - INFO - 127.0.0.1 - - [15/Jul/2026 15:43:56] "GET /?month=2026-03&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 15:43:56,252 - INFO - 127.0.0.1 - - [15/Jul/2026 15:43:56] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:43:56,260 - INFO - 127.0.0.1 - - [15/Jul/2026 15:43:56] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:44:00,326 - INFO - 127.0.0.1 - - [15/Jul/2026 15:44:00] "GET /manage_locations HTTP/1.1" 200 -
+2026-07-15 15:44:00,335 - INFO - 127.0.0.1 - - [15/Jul/2026 15:44:00] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:44:48,122 - INFO - 127.0.0.1 - - [15/Jul/2026 15:44:48] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-15 15:44:48,135 - INFO - 127.0.0.1 - - [15/Jul/2026 15:44:48] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:45:28,734 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-15 15:45:28,827 - INFO -  * Restarting with stat
+2026-07-15 15:45:30,507 - WARNING -  * Debugger is active!
+2026-07-15 15:45:30,515 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:45:30,703 - INFO - 127.0.0.1 - - [15/Jul/2026 15:45:30] "GET / HTTP/1.1" 200 -
+2026-07-15 15:45:30,828 - INFO - 127.0.0.1 - - [15/Jul/2026 15:45:30] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:45:30,831 - INFO - 127.0.0.1 - - [15/Jul/2026 15:45:30] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:46:12,912 - INFO - 127.0.0.1 - - [15/Jul/2026 15:46:12] "GET /manage_locations HTTP/1.1" 200 -
+2026-07-15 15:46:12,921 - INFO - 127.0.0.1 - - [15/Jul/2026 15:46:12] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:46:15,555 - INFO - 127.0.0.1 - - [15/Jul/2026 15:46:15] "GET /manage_locations?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 15:46:15,564 - INFO - 127.0.0.1 - - [15/Jul/2026 15:46:15] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:46:20,659 - INFO - 127.0.0.1 - - [15/Jul/2026 15:46:20] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 15:46:20,669 - INFO - 127.0.0.1 - - [15/Jul/2026 15:46:20] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:46:36,921 - INFO - 127.0.0.1 - - [15/Jul/2026 15:46:36] "GET /manage_users HTTP/1.1" 200 -
+2026-07-15 15:46:36,929 - INFO - 127.0.0.1 - - [15/Jul/2026 15:46:36] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:46:39,845 - INFO - 127.0.0.1 - - [15/Jul/2026 15:46:39] "GET /settings HTTP/1.1" 200 -
+2026-07-15 15:46:39,856 - INFO - 127.0.0.1 - - [15/Jul/2026 15:46:39] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:47:08,141 - INFO - 127.0.0.1 - - [15/Jul/2026 15:47:08] "GET /manage_products HTTP/1.1" 200 -
+2026-07-15 15:47:08,155 - INFO - 127.0.0.1 - - [15/Jul/2026 15:47:08] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:47:41,340 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-15 15:47:41,427 - INFO -  * Restarting with stat
+2026-07-15 15:47:43,127 - WARNING -  * Debugger is active!
+2026-07-15 15:47:43,135 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:47:57,551 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-15 15:47:57,636 - INFO -  * Restarting with stat
+2026-07-15 15:47:59,270 - WARNING -  * Debugger is active!
+2026-07-15 15:47:59,278 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:48:22,559 - INFO - 127.0.0.1 - - [15/Jul/2026 15:48:22] "GET /settings HTTP/1.1" 200 -
+2026-07-15 15:48:22,639 - INFO - 127.0.0.1 - - [15/Jul/2026 15:48:22] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:48:25,899 - INFO - 127.0.0.1 - - [15/Jul/2026 15:48:25] "GET /settings?brand=toshiba&month=2026-07 HTTP/1.1" 200 -
+2026-07-15 15:48:25,909 - INFO - 127.0.0.1 - - [15/Jul/2026 15:48:25] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:48:30,968 - INFO - 127.0.0.1 - - [15/Jul/2026 15:48:30] "GET /settings?brand=century_field&month=2026-07 HTTP/1.1" 200 -
+2026-07-15 15:48:30,976 - INFO - 127.0.0.1 - - [15/Jul/2026 15:48:30] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:48:33,345 - INFO - 127.0.0.1 - - [15/Jul/2026 15:48:33] "GET /settings?brand=toshiba&month=2026-07 HTTP/1.1" 200 -
+2026-07-15 15:48:33,355 - INFO - 127.0.0.1 - - [15/Jul/2026 15:48:33] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:48:38,890 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-15 15:48:38,980 - INFO -  * Restarting with stat
+2026-07-15 15:48:40,662 - WARNING -  * Debugger is active!
+2026-07-15 15:48:40,670 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:48:41,317 - INFO - 127.0.0.1 - - [15/Jul/2026 15:48:41] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-15 15:48:41,394 - INFO - 127.0.0.1 - - [15/Jul/2026 15:48:41] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:49:08,255 - INFO - 127.0.0.1 - - [15/Jul/2026 15:49:08] "GET /audit_logs?table=Employees&action=&user=&q= HTTP/1.1" 200 -
+2026-07-15 15:49:08,264 - INFO - 127.0.0.1 - - [15/Jul/2026 15:49:08] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:49:14,147 - INFO - 127.0.0.1 - - [15/Jul/2026 15:49:14] "GET /audit_logs?table=Locations&action=&user=&q= HTTP/1.1" 200 -
+2026-07-15 15:49:14,156 - INFO - 127.0.0.1 - - [15/Jul/2026 15:49:14] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:49:18,718 - INFO - 127.0.0.1 - - [15/Jul/2026 15:49:18] "GET /settings HTTP/1.1" 200 -
+2026-07-15 15:49:18,728 - INFO - 127.0.0.1 - - [15/Jul/2026 15:49:18] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:49:22,038 - INFO - 127.0.0.1 - - [15/Jul/2026 15:49:22] "GET /settings?brand=toshiba&month=2026-07 HTTP/1.1" 200 -
+2026-07-15 15:49:22,047 - INFO - 127.0.0.1 - - [15/Jul/2026 15:49:22] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:50:14,302 - INFO - 127.0.0.1 - - [15/Jul/2026 15:50:14] "GET / HTTP/1.1" 200 -
+2026-07-15 15:50:14,314 - INFO - 127.0.0.1 - - [15/Jul/2026 15:50:14] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:50:14,315 - INFO - 127.0.0.1 - - [15/Jul/2026 15:50:14] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:50:52,089 - INFO - 127.0.0.1 - - [15/Jul/2026 15:50:52] "GET /manage_products HTTP/1.1" 200 -
+2026-07-15 15:50:52,102 - INFO - 127.0.0.1 - - [15/Jul/2026 15:50:52] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:51:18,551 - INFO - 127.0.0.1 - - [15/Jul/2026 15:51:18] "GET / HTTP/1.1" 200 -
+2026-07-15 15:51:18,564 - INFO - 127.0.0.1 - - [15/Jul/2026 15:51:18] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:51:18,564 - INFO - 127.0.0.1 - - [15/Jul/2026 15:51:18] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:51:19,760 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\repository.py', reloading
+2026-07-15 15:51:19,852 - INFO -  * Restarting with stat
+2026-07-15 15:51:21,516 - WARNING -  * Debugger is active!
+2026-07-15 15:51:21,524 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:51:23,922 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\repository.py', reloading
+2026-07-15 15:51:24,014 - INFO -  * Restarting with stat
+2026-07-15 15:51:25,667 - WARNING -  * Debugger is active!
+2026-07-15 15:51:25,675 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:51:34,651 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\main.py', reloading
+2026-07-15 15:51:34,738 - INFO -  * Restarting with stat
+2026-07-15 15:51:36,357 - WARNING -  * Debugger is active!
+2026-07-15 15:51:36,364 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:51:55,225 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-15 15:51:55,313 - INFO -  * Restarting with stat
+2026-07-15 15:51:56,978 - WARNING -  * Debugger is active!
+2026-07-15 15:51:56,986 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:52:19,507 - INFO - 127.0.0.1 - - [15/Jul/2026 15:52:19] "GET / HTTP/1.1" 200 -
+2026-07-15 15:52:19,638 - INFO - 127.0.0.1 - - [15/Jul/2026 15:52:19] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:52:19,640 - INFO - 127.0.0.1 - - [15/Jul/2026 15:52:19] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:52:22,429 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-15 15:52:22,517 - INFO -  * Restarting with stat
+2026-07-15 15:52:24,162 - WARNING -  * Debugger is active!
+2026-07-15 15:52:24,170 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:52:34,207 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\main.py', reloading
+2026-07-15 15:52:34,299 - INFO -  * Restarting with stat
+2026-07-15 15:52:35,926 - WARNING -  * Debugger is active!
+2026-07-15 15:52:35,935 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:52:41,609 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-15 15:52:41,695 - INFO -  * Restarting with stat
+2026-07-15 15:52:43,341 - WARNING -  * Debugger is active!
+2026-07-15 15:52:43,349 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:52:44,938 - INFO - 127.0.0.1 - - [15/Jul/2026 15:52:44] "GET / HTTP/1.1" 200 -
+2026-07-15 15:52:45,061 - INFO - 127.0.0.1 - - [15/Jul/2026 15:52:45] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:52:45,069 - INFO - 127.0.0.1 - - [15/Jul/2026 15:52:45] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:52:51,823 - INFO - 127.0.0.1 - - [15/Jul/2026 15:52:51] "GET /manage_brands HTTP/1.1" 200 -
+2026-07-15 15:52:51,830 - INFO - 127.0.0.1 - - [15/Jul/2026 15:52:51] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:52:53,474 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-15 15:52:53,563 - INFO -  * Restarting with stat
+2026-07-15 15:52:55,223 - WARNING -  * Debugger is active!
+2026-07-15 15:52:55,231 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:53:44,482 - INFO - 127.0.0.1 - - [15/Jul/2026 15:53:44] "GET / HTTP/1.1" 200 -
+2026-07-15 15:53:44,601 - INFO - 127.0.0.1 - - [15/Jul/2026 15:53:44] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:53:44,603 - INFO - 127.0.0.1 - - [15/Jul/2026 15:53:44] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:54:06,773 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-15 15:54:06,870 - INFO -  * Restarting with stat
+2026-07-15 15:54:08,550 - WARNING -  * Debugger is active!
+2026-07-15 15:54:08,558 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:54:12,658 - INFO - 127.0.0.1 - - [15/Jul/2026 15:54:12] "GET / HTTP/1.1" 200 -
+2026-07-15 15:54:12,770 - INFO - 127.0.0.1 - - [15/Jul/2026 15:54:12] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:54:12,774 - INFO - 127.0.0.1 - - [15/Jul/2026 15:54:12] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:54:16,488 - INFO - 127.0.0.1 - - [15/Jul/2026 15:54:16] "GET /manage_brands HTTP/1.1" 200 -
+2026-07-15 15:54:16,496 - INFO - 127.0.0.1 - - [15/Jul/2026 15:54:16] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:54:46,331 - INFO - 127.0.0.1 - - [15/Jul/2026 15:54:46] "GET / HTTP/1.1" 200 -
+2026-07-15 15:54:46,343 - INFO - 127.0.0.1 - - [15/Jul/2026 15:54:46] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 15:54:46,344 - INFO - 127.0.0.1 - - [15/Jul/2026 15:54:46] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 15:57:29,077 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\repository.py', reloading
+2026-07-15 15:57:29,176 - INFO -  * Restarting with stat
+2026-07-15 15:57:30,892 - WARNING -  * Debugger is active!
+2026-07-15 15:57:30,900 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:58:20,367 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\repository.py', reloading
+2026-07-15 15:58:20,454 - INFO -  * Restarting with stat
+2026-07-15 15:58:22,092 - WARNING -  * Debugger is active!
+2026-07-15 15:58:22,101 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:58:49,656 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\services.py', reloading
+2026-07-15 15:58:49,747 - INFO -  * Restarting with stat
+2026-07-15 15:58:51,388 - WARNING -  * Debugger is active!
+2026-07-15 15:58:51,397 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:58:58,181 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\main.py', reloading
+2026-07-15 15:58:58,265 - INFO -  * Restarting with stat
+2026-07-15 15:58:59,876 - WARNING -  * Debugger is active!
+2026-07-15 15:58:59,884 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:59:39,593 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-15 15:59:39,687 - INFO -  * Restarting with stat
+2026-07-15 15:59:41,344 - WARNING -  * Debugger is active!
+2026-07-15 15:59:41,352 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:59:44,830 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-15 15:59:44,914 - INFO -  * Restarting with stat
+2026-07-15 15:59:46,503 - WARNING -  * Debugger is active!
+2026-07-15 15:59:46,510 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 15:59:52,154 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-15 15:59:52,241 - INFO -  * Restarting with stat
+2026-07-15 15:59:53,858 - WARNING -  * Debugger is active!
+2026-07-15 15:59:53,867 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:00:02,803 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-15 16:00:02,889 - INFO -  * Restarting with stat
+2026-07-15 16:00:04,454 - WARNING -  * Debugger is active!
+2026-07-15 16:00:04,462 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:00:16,713 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-15 16:00:16,797 - INFO -  * Restarting with stat
+2026-07-15 16:00:18,382 - WARNING -  * Debugger is active!
+2026-07-15 16:00:18,390 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:00:21,871 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\attendance.py', reloading
+2026-07-15 16:00:21,973 - INFO -  * Restarting with stat
+2026-07-15 16:00:23,575 - WARNING -  * Debugger is active!
+2026-07-15 16:00:23,583 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:00:28,119 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\sales.py', reloading
+2026-07-15 16:00:28,203 - INFO -  * Restarting with stat
+2026-07-15 16:00:29,784 - WARNING -  * Debugger is active!
+2026-07-15 16:00:29,793 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:00:49,698 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\sales.py', reloading
+2026-07-15 16:00:49,786 - INFO -  * Restarting with stat
+2026-07-15 16:00:51,407 - WARNING -  * Debugger is active!
+2026-07-15 16:00:51,414 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:01:01,452 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\attendance.py', reloading
+2026-07-15 16:01:01,536 - INFO -  * Restarting with stat
+2026-07-15 16:01:03,139 - WARNING -  * Debugger is active!
+2026-07-15 16:01:03,148 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:01:43,810 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\repository.py', reloading
+2026-07-15 16:01:43,901 - INFO -  * Restarting with stat
+2026-07-15 16:01:45,508 - WARNING -  * Debugger is active!
+2026-07-15 16:01:45,516 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:01:48,978 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-15 16:01:49,064 - INFO -  * Restarting with stat
+2026-07-15 16:01:50,794 - WARNING -  * Debugger is active!
+2026-07-15 16:01:50,801 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:02:33,552 - INFO - 127.0.0.1 - - [15/Jul/2026 16:02:33] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:02:33,639 - INFO - 127.0.0.1 - - [15/Jul/2026 16:02:33] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:02:41,017 - INFO - 127.0.0.1 - - [15/Jul/2026 16:02:41] "GET /manage_users HTTP/1.1" 200 -
+2026-07-15 16:02:41,025 - INFO - 127.0.0.1 - - [15/Jul/2026 16:02:41] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:02:45,835 - INFO - 127.0.0.1 - - [15/Jul/2026 16:02:45] "[32mPOST /update_user_brands HTTP/1.1[0m" 302 -
+2026-07-15 16:02:45,845 - INFO - 127.0.0.1 - - [15/Jul/2026 16:02:45] "GET /manage_users HTTP/1.1" 200 -
+2026-07-15 16:02:45,861 - INFO - 127.0.0.1 - - [15/Jul/2026 16:02:45] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:03:27,763 - INFO - 127.0.0.1 - - [15/Jul/2026 16:03:27] "[32mPOST /add_user HTTP/1.1[0m" 302 -
+2026-07-15 16:03:27,773 - INFO - 127.0.0.1 - - [15/Jul/2026 16:03:27] "GET /manage_users HTTP/1.1" 200 -
+2026-07-15 16:03:27,789 - INFO - 127.0.0.1 - - [15/Jul/2026 16:03:27] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:03:40,912 - INFO - 127.0.0.1 - - [15/Jul/2026 16:03:40] "[32mPOST /update_user_brands HTTP/1.1[0m" 302 -
+2026-07-15 16:03:40,922 - INFO - 127.0.0.1 - - [15/Jul/2026 16:03:40] "GET /manage_users HTTP/1.1" 200 -
+2026-07-15 16:03:40,938 - INFO - 127.0.0.1 - - [15/Jul/2026 16:03:40] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:04:08,722 - INFO - 127.0.0.1 - - [15/Jul/2026 16:04:08] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-15 16:04:08,734 - INFO - 127.0.0.1 - - [15/Jul/2026 16:04:08] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:04:58,252 - INFO - 127.0.0.1 - - [15/Jul/2026 16:04:58] "GET / HTTP/1.1" 200 -
+2026-07-15 16:04:58,264 - INFO - 127.0.0.1 - - [15/Jul/2026 16:04:58] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:04:58,265 - INFO - 127.0.0.1 - - [15/Jul/2026 16:04:58] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:05:08,368 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\main.py', reloading
+2026-07-15 16:05:08,460 - INFO -  * Restarting with stat
+2026-07-15 16:05:10,144 - WARNING -  * Debugger is active!
+2026-07-15 16:05:10,152 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:05:10,383 - INFO - 127.0.0.1 - - [15/Jul/2026 16:05:10] "GET /?month=2026-03&brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:05:10,536 - INFO - 127.0.0.1 - - [15/Jul/2026 16:05:10] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:05:10,539 - INFO - 127.0.0.1 - - [15/Jul/2026 16:05:10] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:05:14,986 - INFO - 127.0.0.1 - - [15/Jul/2026 16:05:14] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-15 16:05:14,994 - INFO - 127.0.0.1 - - [15/Jul/2026 16:05:14] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:05:17,129 - INFO - 127.0.0.1 - - [15/Jul/2026 16:05:17] "GET /view_payslip/0/2026-03?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:05:17,152 - INFO - 127.0.0.1 - - [15/Jul/2026 16:05:17] "[36mGET /static/logo.png HTTP/1.1[0m" 304 -
+2026-07-15 16:05:35,033 - INFO - 127.0.0.1 - - [15/Jul/2026 16:05:35] "GET /?month=2026-03&brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:05:35,045 - INFO - 127.0.0.1 - - [15/Jul/2026 16:05:35] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:05:35,046 - INFO - 127.0.0.1 - - [15/Jul/2026 16:05:35] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:05:38,393 - INFO - 127.0.0.1 - - [15/Jul/2026 16:05:38] "GET /?month=2026-03&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:05:38,405 - INFO - 127.0.0.1 - - [15/Jul/2026 16:05:38] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:05:38,406 - INFO - 127.0.0.1 - - [15/Jul/2026 16:05:38] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:05:41,399 - INFO - 127.0.0.1 - - [15/Jul/2026 16:05:41] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-15 16:05:41,408 - INFO - 127.0.0.1 - - [15/Jul/2026 16:05:41] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:05:47,966 - INFO - 127.0.0.1 - - [15/Jul/2026 16:05:47] "GET /view_payslip/0/2026-03?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:05:47,987 - INFO - 127.0.0.1 - - [15/Jul/2026 16:05:47] "[36mGET /static/logo.png HTTP/1.1[0m" 304 -
+2026-07-15 16:05:59,174 - INFO - 127.0.0.1 - - [15/Jul/2026 16:05:59] "GET /?month=2026-03&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:05:59,186 - INFO - 127.0.0.1 - - [15/Jul/2026 16:05:59] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:05:59,186 - INFO - 127.0.0.1 - - [15/Jul/2026 16:05:59] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:06:15,948 - INFO - 127.0.0.1 - - [15/Jul/2026 16:06:15] "GET /manage_users HTTP/1.1" 200 -
+2026-07-15 16:06:15,955 - INFO - 127.0.0.1 - - [15/Jul/2026 16:06:15] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:06:24,444 - INFO - 127.0.0.1 - - [15/Jul/2026 16:06:24] "GET /manage_locations HTTP/1.1" 200 -
+2026-07-15 16:06:24,452 - INFO - 127.0.0.1 - - [15/Jul/2026 16:06:24] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:06:30,558 - INFO - 127.0.0.1 - - [15/Jul/2026 16:06:30] "GET /manage_locations?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:06:30,568 - INFO - 127.0.0.1 - - [15/Jul/2026 16:06:30] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:06:36,436 - INFO - 127.0.0.1 - - [15/Jul/2026 16:06:36] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:06:36,445 - INFO - 127.0.0.1 - - [15/Jul/2026 16:06:36] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:06:37,993 - INFO - 127.0.0.1 - - [15/Jul/2026 16:06:37] "GET /validate HTTP/1.1" 200 -
+2026-07-15 16:06:38,000 - INFO - 127.0.0.1 - - [15/Jul/2026 16:06:38] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:06:40,330 - INFO - 127.0.0.1 - - [15/Jul/2026 16:06:40] "GET /validate?brand=toshiba&month=2026-07 HTTP/1.1" 200 -
+2026-07-15 16:06:40,337 - INFO - 127.0.0.1 - - [15/Jul/2026 16:06:40] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:06:45,505 - ERROR - Failed to read validation file history\202603 Toshiba Promoter Sales Report.xlsx
+Traceback (most recent call last):
+  File "c:\Users\horayr\Workspace\payroll\services.py", line 322, in perform_validation
+    ex_df = pd.read_excel(filepath, sheet_name="Total", header=6)
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 494, in read_excel
+    data = io.parse(
+        sheet_name=sheet_name,
+    ...<20 lines>...
+        dtype_backend=dtype_backend,
+    )
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 1780, in parse
+    return self._reader.parse(
+           ~~~~~~~~~~~~~~~~~~^
+        sheet_name=sheet_name,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ...<16 lines>...
+        **kwds,
+        ^^^^^^^
+    )
+    ^
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 753, in parse
+    sheet = self.get_sheet_by_name(asheetname)
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_openpyxl.py", line 589, in get_sheet_by_name
+    self.raise_if_bad_sheet_by_name(name)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 605, in raise_if_bad_sheet_by_name
+    raise ValueError(f"Worksheet named '{name}' not found")
+ValueError: Worksheet named 'Total' not found
+2026-07-15 16:06:45,823 - ERROR - Failed to read validation file history\202603 ToshibaAC Payroll (ALL)(\u5df2\u81ea\u52d5\u4fee\u5fa9).xlsx
+Traceback (most recent call last):
+  File "c:\Users\horayr\Workspace\payroll\services.py", line 324, in perform_validation
+    ex_df = ex_df.dropna(subset=["Name", "Total"])
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\core\frame.py", line 7801, in dropna
+    raise KeyError(np.array(subset)[check].tolist())
+KeyError: ['Name']
+2026-07-15 16:06:45,829 - INFO - 127.0.0.1 - - [15/Jul/2026 16:06:45] "GET /validate?brand=toshiba&month=2026-03 HTTP/1.1" 200 -
+2026-07-15 16:06:45,837 - INFO - 127.0.0.1 - - [15/Jul/2026 16:06:45] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:06:52,284 - INFO - 127.0.0.1 - - [15/Jul/2026 16:06:52] "GET /validate?brand=toshiba&month=2026-02 HTTP/1.1" 200 -
+2026-07-15 16:06:52,291 - INFO - 127.0.0.1 - - [15/Jul/2026 16:06:52] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:07:00,891 - INFO - 127.0.0.1 - - [15/Jul/2026 16:07:00] "GET / HTTP/1.1" 200 -
+2026-07-15 16:07:00,901 - INFO - 127.0.0.1 - - [15/Jul/2026 16:07:00] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:07:00,902 - INFO - 127.0.0.1 - - [15/Jul/2026 16:07:00] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:08:02,479 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\services.py', reloading
+2026-07-15 16:08:02,614 - INFO -  * Restarting with stat
+2026-07-15 16:08:04,317 - WARNING -  * Debugger is active!
+2026-07-15 16:08:04,325 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:09:40,959 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\importer.py', reloading
+2026-07-15 16:09:41,051 - INFO -  * Restarting with stat
+2026-07-15 16:09:42,795 - WARNING -  * Debugger is active!
+2026-07-15 16:09:42,802 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:09:49,594 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\main.py', reloading
+2026-07-15 16:09:49,680 - INFO -  * Restarting with stat
+2026-07-15 16:09:51,325 - WARNING -  * Debugger is active!
+2026-07-15 16:09:51,332 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:09:52,945 - INFO - 127.0.0.1 - - [15/Jul/2026 16:09:52] "GET / HTTP/1.1" 200 -
+2026-07-15 16:09:53,076 - INFO - 127.0.0.1 - - [15/Jul/2026 16:09:53] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:09:53,080 - INFO - 127.0.0.1 - - [15/Jul/2026 16:09:53] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:09:55,940 - INFO - 127.0.0.1 - - [15/Jul/2026 16:09:55] "GET / HTTP/1.1" 200 -
+2026-07-15 16:09:55,951 - INFO - 127.0.0.1 - - [15/Jul/2026 16:09:55] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:09:55,952 - INFO - 127.0.0.1 - - [15/Jul/2026 16:09:55] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:09:56,733 - INFO - 127.0.0.1 - - [15/Jul/2026 16:09:56] "GET / HTTP/1.1" 200 -
+2026-07-15 16:09:56,745 - INFO - 127.0.0.1 - - [15/Jul/2026 16:09:56] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:09:56,746 - INFO - 127.0.0.1 - - [15/Jul/2026 16:09:56] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:12:38,444 - INFO - 127.0.0.1 - - [15/Jul/2026 16:12:38] "GET / HTTP/1.1" 200 -
+2026-07-15 16:12:38,457 - INFO - 127.0.0.1 - - [15/Jul/2026 16:12:38] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:12:38,458 - INFO - 127.0.0.1 - - [15/Jul/2026 16:12:38] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:13:07,275 - INFO - 127.0.0.1 - - [15/Jul/2026 16:13:07] "[32mPOST /upload_and_import HTTP/1.1[0m" 302 -
+2026-07-15 16:13:07,300 - INFO - 127.0.0.1 - - [15/Jul/2026 16:13:07] "GET /?month=2026-07&brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:13:07,315 - INFO - 127.0.0.1 - - [15/Jul/2026 16:13:07] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:13:07,316 - INFO - 127.0.0.1 - - [15/Jul/2026 16:13:07] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:14:20,839 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\importer.py', reloading
+2026-07-15 16:14:20,942 - INFO -  * Restarting with stat
+2026-07-15 16:14:22,627 - WARNING -  * Debugger is active!
+2026-07-15 16:14:22,635 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:14:23,302 - INFO - 127.0.0.1 - - [15/Jul/2026 16:14:23] "GET /?month=2026-07&brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:14:23,433 - INFO - 127.0.0.1 - - [15/Jul/2026 16:14:23] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:14:23,436 - INFO - 127.0.0.1 - - [15/Jul/2026 16:14:23] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:14:32,697 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\main.py', reloading
+2026-07-15 16:14:32,782 - INFO -  * Restarting with stat
+2026-07-15 16:14:34,450 - WARNING -  * Debugger is active!
+2026-07-15 16:14:34,456 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:14:34,950 - INFO - 127.0.0.1 - - [15/Jul/2026 16:14:34] "[32mPOST /upload_and_import HTTP/1.1[0m" 302 -
+2026-07-15 16:14:35,010 - INFO - 127.0.0.1 - - [15/Jul/2026 16:14:35] "GET /?month=2026-07&brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:14:35,136 - INFO - 127.0.0.1 - - [15/Jul/2026 16:14:35] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:14:35,138 - INFO - 127.0.0.1 - - [15/Jul/2026 16:14:35] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:14:38,585 - INFO - 127.0.0.1 - - [15/Jul/2026 16:14:38] "GET /?month=2026-07&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:14:38,595 - INFO - 127.0.0.1 - - [15/Jul/2026 16:14:38] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:14:38,596 - INFO - 127.0.0.1 - - [15/Jul/2026 16:14:38] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:15:05,359 - INFO - 127.0.0.1 - - [15/Jul/2026 16:15:05] "GET /?month=2026-07&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:15:05,370 - INFO - 127.0.0.1 - - [15/Jul/2026 16:15:05] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:15:05,371 - INFO - 127.0.0.1 - - [15/Jul/2026 16:15:05] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:15:17,119 - INFO - 127.0.0.1 - - [15/Jul/2026 16:15:17] "[32mPOST /upload_and_import HTTP/1.1[0m" 302 -
+2026-07-15 16:15:17,142 - INFO - 127.0.0.1 - - [15/Jul/2026 16:15:17] "GET /?month=2026-07&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:15:17,156 - INFO - 127.0.0.1 - - [15/Jul/2026 16:15:17] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:15:17,157 - INFO - 127.0.0.1 - - [15/Jul/2026 16:15:17] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:15:26,212 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\main.py', reloading
+2026-07-15 16:15:26,315 - INFO -  * Restarting with stat
+2026-07-15 16:15:28,040 - WARNING -  * Debugger is active!
+2026-07-15 16:15:28,049 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:15:42,177 - INFO - 127.0.0.1 - - [15/Jul/2026 16:15:42] "GET / HTTP/1.1" 200 -
+2026-07-15 16:15:42,285 - INFO - 127.0.0.1 - - [15/Jul/2026 16:15:42] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:15:42,295 - INFO - 127.0.0.1 - - [15/Jul/2026 16:15:42] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:17:03,027 - INFO - 127.0.0.1 - - [15/Jul/2026 16:17:03] "GET /?month=2026-07&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:17:03,038 - INFO - 127.0.0.1 - - [15/Jul/2026 16:17:03] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:17:03,039 - INFO - 127.0.0.1 - - [15/Jul/2026 16:17:03] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:17:05,887 - INFO - 127.0.0.1 - - [15/Jul/2026 16:17:05] "GET /?month=2026-07&brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:17:05,897 - INFO - 127.0.0.1 - - [15/Jul/2026 16:17:05] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:17:05,898 - INFO - 127.0.0.1 - - [15/Jul/2026 16:17:05] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:17:09,896 - INFO - 127.0.0.1 - - [15/Jul/2026 16:17:09] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:17:09,905 - INFO - 127.0.0.1 - - [15/Jul/2026 16:17:09] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:17:36,101 - INFO - 127.0.0.1 - - [15/Jul/2026 16:17:36] "GET /validate?month=2026-07 HTTP/1.1" 200 -
+2026-07-15 16:17:36,109 - INFO - 127.0.0.1 - - [15/Jul/2026 16:17:36] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:17:38,791 - INFO - 127.0.0.1 - - [15/Jul/2026 16:17:38] "GET / HTTP/1.1" 200 -
+2026-07-15 16:17:38,801 - INFO - 127.0.0.1 - - [15/Jul/2026 16:17:38] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:17:38,802 - INFO - 127.0.0.1 - - [15/Jul/2026 16:17:38] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:17:41,855 - INFO - 127.0.0.1 - - [15/Jul/2026 16:17:41] "GET /manage_products HTTP/1.1" 200 -
+2026-07-15 16:17:41,866 - INFO - 127.0.0.1 - - [15/Jul/2026 16:17:41] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:18:48,617 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-15 16:18:48,710 - INFO -  * Restarting with stat
+2026-07-15 16:18:50,368 - WARNING -  * Debugger is active!
+2026-07-15 16:18:50,376 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:19:22,003 - INFO - 127.0.0.1 - - [15/Jul/2026 16:19:22] "GET /manage_brands HTTP/1.1" 200 -
+2026-07-15 16:19:22,080 - INFO - 127.0.0.1 - - [15/Jul/2026 16:19:22] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:19:30,162 - INFO - 127.0.0.1 - - [15/Jul/2026 16:19:30] "GET /manage_products HTTP/1.1" 200 -
+2026-07-15 16:19:30,174 - INFO - 127.0.0.1 - - [15/Jul/2026 16:19:30] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:19:45,317 - INFO - 127.0.0.1 - - [15/Jul/2026 16:19:45] "GET /manage_products?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:19:45,327 - INFO - 127.0.0.1 - - [15/Jul/2026 16:19:45] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:20:08,486 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-15 16:20:08,573 - INFO -  * Restarting with stat
+2026-07-15 16:20:10,279 - WARNING -  * Debugger is active!
+2026-07-15 16:20:10,287 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:20:11,537 - INFO - 127.0.0.1 - - [15/Jul/2026 16:20:11] "GET /manage_products?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:20:11,614 - INFO - 127.0.0.1 - - [15/Jul/2026 16:20:11] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:20:13,159 - INFO - 127.0.0.1 - - [15/Jul/2026 16:20:13] "GET /manage_products?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:20:13,171 - INFO - 127.0.0.1 - - [15/Jul/2026 16:20:13] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:20:14,439 - INFO - 127.0.0.1 - - [15/Jul/2026 16:20:14] "GET /manage_products?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:20:14,448 - INFO - 127.0.0.1 - - [15/Jul/2026 16:20:14] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:20:16,895 - INFO - 127.0.0.1 - - [15/Jul/2026 16:20:16] "GET /manage_products?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:20:16,908 - INFO - 127.0.0.1 - - [15/Jul/2026 16:20:16] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:20:39,789 - INFO - 127.0.0.1 - - [15/Jul/2026 16:20:39] "GET / HTTP/1.1" 200 -
+2026-07-15 16:20:39,801 - INFO - 127.0.0.1 - - [15/Jul/2026 16:20:39] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:20:39,802 - INFO - 127.0.0.1 - - [15/Jul/2026 16:20:39] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:22:08,789 - INFO - 127.0.0.1 - - [15/Jul/2026 16:22:08] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-15 16:22:08,801 - INFO - 127.0.0.1 - - [15/Jul/2026 16:22:08] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:22:16,806 - INFO - 127.0.0.1 - - [15/Jul/2026 16:22:16] "GET /validate HTTP/1.1" 200 -
+2026-07-15 16:22:16,814 - INFO - 127.0.0.1 - - [15/Jul/2026 16:22:16] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:39:22,569 - INFO - 127.0.0.1 - - [15/Jul/2026 16:39:22] "GET / HTTP/1.1" 200 -
+2026-07-15 16:39:22,583 - INFO - 127.0.0.1 - - [15/Jul/2026 16:39:22] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:39:22,584 - INFO - 127.0.0.1 - - [15/Jul/2026 16:39:22] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:41:58,216 - INFO - 127.0.0.1 - - [15/Jul/2026 16:41:58] "GET / HTTP/1.1" 200 -
+2026-07-15 16:41:58,232 - INFO - 127.0.0.1 - - [15/Jul/2026 16:41:58] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:41:58,233 - INFO - 127.0.0.1 - - [15/Jul/2026 16:41:58] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:42:24,169 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:24] "GET / HTTP/1.1" 200 -
+2026-07-15 16:42:24,181 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:24] "GET /static/app.css HTTP/1.1" 200 -
+2026-07-15 16:42:24,183 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:24] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:42:36,505 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:36] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:42:36,515 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:36] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:42:36,516 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:36] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:42:37,379 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:37] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:42:37,389 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:37] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:42:37,390 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:37] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:42:37,967 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:37] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:42:37,977 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:37] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:42:37,978 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:37] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:42:38,468 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:38] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:42:38,479 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:38] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:42:38,480 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:38] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:42:38,943 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:38] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:42:38,954 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:38] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:42:38,955 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:38] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:42:39,398 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:39] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:42:39,410 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:39] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:42:39,411 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:39] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:42:39,830 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:39] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:42:39,840 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:39] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:42:39,841 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:39] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:42:40,325 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:40] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:42:40,336 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:40] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:42:40,337 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:40] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:42:40,757 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:40] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:42:40,767 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:40] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:42:40,768 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:40] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:42:43,271 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:43] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:42:43,282 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:43] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:42:43,283 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:43] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:42:43,688 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:43] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:42:43,698 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:43] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:42:43,699 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:43] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:42:44,214 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:44] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:42:44,227 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:44] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:42:44,227 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:44] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:42:52,770 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:52] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:42:52,781 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:52] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:42:52,782 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:52] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:42:53,183 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:53] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:42:53,193 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:53] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:42:53,194 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:53] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:42:53,553 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:53] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:42:53,564 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:53] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:42:53,564 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:53] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:42:53,928 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:53] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:42:53,939 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:53] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:42:53,939 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:53] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:42:54,271 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:54] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:42:54,282 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:54] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:42:54,283 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:54] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:42:54,591 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:54] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:42:54,601 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:54] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:42:54,602 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:54] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:42:54,926 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:54] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:42:54,936 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:54] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:42:54,937 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:54] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:42:55,330 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:55] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:42:55,341 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:55] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:42:55,342 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:55] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:42:56,506 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:56] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-15 16:42:56,516 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:56] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:42:58,280 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:58] "GET / HTTP/1.1" 200 -
+2026-07-15 16:42:58,290 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:58] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:42:58,291 - INFO - 127.0.0.1 - - [15/Jul/2026 16:42:58] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:43:26,810 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:26] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:43:26,820 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:26] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:28,850 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:28] "GET /settings?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:43:28,858 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:28] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:29,454 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:29] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:43:29,464 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:29] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:29,942 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:29] "GET /settings?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:43:29,951 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:29] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:30,789 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:30] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:43:30,798 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:30] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:31,275 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:31] "GET /settings?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:43:31,285 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:31] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:31,753 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:31] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:43:31,763 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:31] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:32,330 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:32] "GET /settings?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:43:32,340 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:32] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:32,940 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:32] "GET /settings?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:43:32,952 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:32] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:33,541 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:33] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:43:33,550 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:33] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:36,166 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:36] "GET /manage_users HTTP/1.1" 200 -
+2026-07-15 16:43:36,175 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:36] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:37,928 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:37] "GET /manage_users?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:43:37,936 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:37] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:38,457 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:38] "GET /manage_users?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:43:38,465 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:38] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:39,015 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:39] "GET /manage_users?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:43:39,024 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:39] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:39,440 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:39] "GET /manage_users?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:43:39,449 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:39] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:39,784 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:39] "GET /manage_users?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:43:39,795 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:39] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:40,154 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:40] "GET /manage_users?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:43:40,164 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:40] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:40,478 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:40] "GET /manage_users?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:43:40,487 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:40] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:41,720 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:41] "GET /manage_users?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:43:41,729 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:41] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:42,055 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:42] "GET /manage_users?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:43:42,064 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:42] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:42,380 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:42] "GET /manage_users?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:43:42,389 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:42] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:42,712 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:42] "GET /manage_users?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:43:42,721 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:42] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:43,016 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:43] "GET /manage_users?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:43:43,024 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:43] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:43,464 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:43] "GET /manage_users?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:43:43,475 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:43] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:43,824 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:43] "GET /manage_users?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:43:43,833 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:43] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:45,583 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:45] "GET /manage_users?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:43:45,592 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:45] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:46,031 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:46] "GET /manage_users?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:43:46,041 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:46] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:46,505 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:46] "GET /manage_users?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:43:46,514 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:46] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:48,763 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:48] "GET /manage_brands HTTP/1.1" 200 -
+2026-07-15 16:43:48,771 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:48] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:55,975 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:55] "GET /manage_locations HTTP/1.1" 200 -
+2026-07-15 16:43:55,985 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:55] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:57,282 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:57] "GET /manage_locations?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:43:57,290 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:57] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:57,850 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:57] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:43:57,859 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:57] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:58,250 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:58] "GET /manage_locations?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:43:58,259 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:58] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:58,682 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:58] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:43:58,691 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:58] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:59,050 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:59] "GET /manage_locations?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:43:59,059 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:59] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:59,410 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:59] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:43:59,419 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:59] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:43:59,778 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:59] "GET /manage_locations?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:43:59,787 - INFO - 127.0.0.1 - - [15/Jul/2026 16:43:59] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:00,274 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:00] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:44:00,283 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:00] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:00,739 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:00] "GET /manage_locations?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:44:00,748 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:00] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:01,162 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:01] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:44:01,171 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:01] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:01,640 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:01] "GET /manage_locations?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:44:01,649 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:01] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:02,113 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:02] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:44:02,122 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:02] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:02,688 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:02] "GET /manage_locations?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:44:02,697 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:02] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:03,297 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:03] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:44:03,307 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:03] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:03,897 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:03] "GET /manage_locations?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:44:03,906 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:03] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:08,107 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:08] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:44:08,116 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:08] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:08,674 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:08] "GET /manage_locations?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:44:08,683 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:08] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:09,378 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:09] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:44:09,387 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:09] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:09,802 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:09] "GET /manage_locations?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:44:09,811 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:09] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:10,203 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:10] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:44:10,212 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:10] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:10,572 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:10] "GET /manage_locations?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:44:10,581 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:10] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:10,945 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:10] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:44:10,954 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:10] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:11,323 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:11] "GET /manage_locations?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:44:11,332 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:11] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:11,962 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:11] "GET /manage_locations?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:44:11,973 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:11] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:12,394 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:12] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:44:12,403 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:12] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:13,803 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:13] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-15 16:44:13,815 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:13] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:15,404 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:15] "GET /validate HTTP/1.1" 200 -
+2026-07-15 16:44:15,412 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:15] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:17,291 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:17] "GET /validate?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:44:17,298 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:17] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:17,889 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:17] "GET /validate?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:44:17,896 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:17] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:18,463 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:18] "GET /validate?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:44:18,471 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:18] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:19,075 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:19] "GET /validate?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:44:19,083 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:19] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:19,673 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:19] "GET /validate?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:44:19,680 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:19] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:20,145 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:20] "GET /validate?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:44:20,153 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:20] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:20,420 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:20] "GET /validate?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:44:20,428 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:20] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:21,128 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:21] "GET /validate?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:44:21,135 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:21] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:21,817 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:21] "GET /validate?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:44:21,824 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:21] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:22,600 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:22] "GET /validate?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:44:22,608 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:22] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:32,604 - ERROR - Failed to read validation file history\202603 Toshiba Promoter Sales Report.xlsx
+Traceback (most recent call last):
+  File "c:\Users\horayr\Workspace\payroll\services.py", line 322, in perform_validation
+    ex_df = pd.read_excel(filepath, sheet_name="Total", header=6)
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 494, in read_excel
+    data = io.parse(
+        sheet_name=sheet_name,
+    ...<20 lines>...
+        dtype_backend=dtype_backend,
+    )
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 1780, in parse
+    return self._reader.parse(
+           ~~~~~~~~~~~~~~~~~~^
+        sheet_name=sheet_name,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ...<16 lines>...
+        **kwds,
+        ^^^^^^^
+    )
+    ^
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 753, in parse
+    sheet = self.get_sheet_by_name(asheetname)
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_openpyxl.py", line 589, in get_sheet_by_name
+    self.raise_if_bad_sheet_by_name(name)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 605, in raise_if_bad_sheet_by_name
+    raise ValueError(f"Worksheet named '{name}' not found")
+ValueError: Worksheet named 'Total' not found
+2026-07-15 16:44:32,951 - ERROR - Failed to read validation file history\202603 ToshibaAC Payroll (ALL)(\u5df2\u81ea\u52d5\u4fee\u5fa9).xlsx
+Traceback (most recent call last):
+  File "c:\Users\horayr\Workspace\payroll\services.py", line 324, in perform_validation
+    ex_df = ex_df.dropna(subset=["Name", "Total"])
+  File "c:\Users\horayr\Workspace\payroll\.venv\Lib\site-packages\pandas\core\frame.py", line 7801, in dropna
+    raise KeyError(np.array(subset)[check].tolist())
+KeyError: ['Name']
+2026-07-15 16:44:32,958 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:32] "GET /validate?brand=century_field&month=2026-03 HTTP/1.1" 200 -
+2026-07-15 16:44:32,967 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:32] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:44,303 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:44] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-15 16:44:44,314 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:44] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:45,360 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:45] "GET / HTTP/1.1" 200 -
+2026-07-15 16:44:45,370 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:45] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:44:45,371 - INFO - 127.0.0.1 - - [15/Jul/2026 16:44:45] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:45:12,656 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:12] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:45:12,667 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:12] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:45:12,668 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:12] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:45:13,424 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:13] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:45:13,435 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:13] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:45:13,436 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:13] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:45:13,865 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:13] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:45:13,876 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:13] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:45:13,877 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:13] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:45:14,266 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:14] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:45:14,277 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:14] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:45:14,278 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:14] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:45:14,657 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:14] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:45:14,667 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:14] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:45:14,668 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:14] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:45:15,610 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:15] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:45:15,620 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:15] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:45:15,621 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:15] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:45:16,065 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:16] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:45:16,076 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:16] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:45:16,076 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:16] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:45:16,897 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:16] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:45:16,909 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:16] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:45:16,910 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:16] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:45:17,385 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:17] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:45:17,395 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:17] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:45:17,396 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:17] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:45:18,442 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:18] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:45:18,452 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:18] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:45:18,453 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:18] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:45:19,045 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:19] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:45:19,055 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:19] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:45:19,056 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:19] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:45:19,642 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:19] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:45:19,652 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:19] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:45:19,653 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:19] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:45:20,253 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:20] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:45:20,266 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:20] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:45:20,267 - INFO - 127.0.0.1 - - [15/Jul/2026 16:45:20] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:46:18,446 - INFO - 127.0.0.1 - - [15/Jul/2026 16:46:18] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:46:18,457 - INFO - 127.0.0.1 - - [15/Jul/2026 16:46:18] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:46:18,458 - INFO - 127.0.0.1 - - [15/Jul/2026 16:46:18] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:46:20,195 - INFO - 127.0.0.1 - - [15/Jul/2026 16:46:20] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:46:20,206 - INFO - 127.0.0.1 - - [15/Jul/2026 16:46:20] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:46:20,207 - INFO - 127.0.0.1 - - [15/Jul/2026 16:46:20] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:47:02,336 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:02] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:47:02,349 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:02] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:47:02,349 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:02] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:47:07,363 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:07] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:47:07,374 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:07] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:47:07,375 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:07] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:47:08,005 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:08] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:47:08,016 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:08] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:47:08,017 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:08] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:47:08,429 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:08] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:47:08,440 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:08] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:47:08,441 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:08] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:47:08,835 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:08] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:47:08,846 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:08] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:47:08,847 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:08] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:47:10,834 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:10] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:47:10,846 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:10] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:47:10,847 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:10] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:47:12,154 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:12] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:47:12,166 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:12] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:47:12,167 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:12] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:47:13,146 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:13] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:47:13,159 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:13] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:47:13,160 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:13] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:47:27,678 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:27] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:47:27,692 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:27] "GET /static/app.css HTTP/1.1" 200 -
+2026-07-15 16:47:27,693 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:27] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:47:28,636 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:28] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:47:28,649 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:28] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:47:28,650 - INFO - 127.0.0.1 - - [15/Jul/2026 16:47:28] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:48:04,372 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:04] "GET /manage_users HTTP/1.1" 200 -
+2026-07-15 16:48:04,381 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:04] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:48:08,781 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:08] "GET /manage_users?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:48:08,790 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:08] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:48:09,300 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:09] "GET /manage_users?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:48:09,308 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:09] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:48:09,876 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:09] "GET /manage_users?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:48:09,884 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:09] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:48:10,380 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:10] "GET /manage_users?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:48:10,389 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:10] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:48:10,907 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:10] "GET /manage_users?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:48:10,916 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:10] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:48:11,319 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:11] "GET /manage_users?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:48:11,328 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:11] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:48:11,971 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:11] "GET /manage_users?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:48:11,980 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:11] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:48:12,424 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:12] "GET /manage_users?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:48:12,433 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:12] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:48:12,892 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:12] "GET /manage_users?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:48:12,901 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:12] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:48:18,065 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:18] "GET /manage_brands HTTP/1.1" 200 -
+2026-07-15 16:48:18,072 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:18] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:48:23,326 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:23] "GET /manage_backups HTTP/1.1" 200 -
+2026-07-15 16:48:23,334 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:23] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:48:25,770 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:25] "[32mPOST /create_backup HTTP/1.1[0m" 302 -
+2026-07-15 16:48:25,775 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:25] "GET /manage_backups HTTP/1.1" 200 -
+2026-07-15 16:48:25,791 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:25] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:48:46,328 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:46] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-15 16:48:46,341 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:46] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:48:47,975 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:47] "GET / HTTP/1.1" 200 -
+2026-07-15 16:48:47,986 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:47] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:48:47,986 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:47] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:48:53,201 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:53] "GET /manage_products?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:48:53,213 - INFO - 127.0.0.1 - - [15/Jul/2026 16:48:53] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:52:18,275 - INFO - 127.0.0.1 - - [15/Jul/2026 16:52:18] "GET / HTTP/1.1" 200 -
+2026-07-15 16:52:18,287 - INFO - 127.0.0.1 - - [15/Jul/2026 16:52:18] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:52:18,288 - INFO - 127.0.0.1 - - [15/Jul/2026 16:52:18] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:52:23,990 - INFO - 127.0.0.1 - - [15/Jul/2026 16:52:23] "GET / HTTP/1.1" 200 -
+2026-07-15 16:52:24,002 - INFO - 127.0.0.1 - - [15/Jul/2026 16:52:24] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:52:24,002 - INFO - 127.0.0.1 - - [15/Jul/2026 16:52:24] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:53:18,072 - INFO - 127.0.0.1 - - [15/Jul/2026 16:53:18] "GET / HTTP/1.1" 200 -
+2026-07-15 16:53:18,086 - INFO - 127.0.0.1 - - [15/Jul/2026 16:53:18] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:53:18,087 - INFO - 127.0.0.1 - - [15/Jul/2026 16:53:18] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:53:20,719 - INFO - 127.0.0.1 - - [15/Jul/2026 16:53:20] "GET / HTTP/1.1" 200 -
+2026-07-15 16:53:20,733 - INFO - 127.0.0.1 - - [15/Jul/2026 16:53:20] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:53:20,734 - INFO - 127.0.0.1 - - [15/Jul/2026 16:53:20] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:53:27,798 - INFO - 127.0.0.1 - - [15/Jul/2026 16:53:27] "GET / HTTP/1.1" 200 -
+2026-07-15 16:53:27,811 - INFO - 127.0.0.1 - - [15/Jul/2026 16:53:27] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:53:27,812 - INFO - 127.0.0.1 - - [15/Jul/2026 16:53:27] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:53:28,688 - INFO - 127.0.0.1 - - [15/Jul/2026 16:53:28] "GET / HTTP/1.1" 200 -
+2026-07-15 16:53:28,701 - INFO - 127.0.0.1 - - [15/Jul/2026 16:53:28] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:53:28,702 - INFO - 127.0.0.1 - - [15/Jul/2026 16:53:28] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:53:34,719 - INFO - 127.0.0.1 - - [15/Jul/2026 16:53:34] "GET / HTTP/1.1" 200 -
+2026-07-15 16:53:34,732 - INFO - 127.0.0.1 - - [15/Jul/2026 16:53:34] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:53:34,732 - INFO - 127.0.0.1 - - [15/Jul/2026 16:53:34] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:54:07,289 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:07] "GET / HTTP/1.1" 200 -
+2026-07-15 16:54:07,302 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:07] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:54:07,303 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:07] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:54:29,561 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\repository.py', reloading
+2026-07-15 16:54:29,675 - INFO -  * Restarting with stat
+2026-07-15 16:54:31,464 - WARNING -  * Debugger is active!
+2026-07-15 16:54:31,472 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:54:36,584 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:36] "GET / HTTP/1.1" 200 -
+2026-07-15 16:54:36,707 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:36] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:54:36,709 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:36] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:54:39,737 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:39] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:54:39,748 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:39] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:54:39,749 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:39] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:54:40,820 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:40] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:54:40,830 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:40] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:54:40,831 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:40] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:54:41,241 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:41] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:54:41,252 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:41] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:54:41,252 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:41] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:54:41,969 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:41] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:54:41,980 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:41] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:54:41,981 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:41] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:54:42,865 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:42] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:54:42,876 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:42] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:54:42,877 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:42] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:54:44,044 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:44] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:54:44,055 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:44] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:54:44,056 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:44] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:54:45,330 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:45] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:54:45,341 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:45] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:54:45,342 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:45] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:54:51,426 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-15 16:54:51,515 - INFO -  * Restarting with stat
+2026-07-15 16:54:53,146 - WARNING -  * Debugger is active!
+2026-07-15 16:54:53,154 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:54:53,726 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:53] "GET /validate HTTP/1.1" 200 -
+2026-07-15 16:54:53,795 - INFO - 127.0.0.1 - - [15/Jul/2026 16:54:53] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:54:57,753 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\app.py', reloading
+2026-07-15 16:54:57,843 - INFO -  * Restarting with stat
+2026-07-15 16:54:59,529 - WARNING -  * Debugger is active!
+2026-07-15 16:54:59,538 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:55:01,912 - INFO - 127.0.0.1 - - [15/Jul/2026 16:55:01] "[31m[1mGET /calculate_payroll HTTP/1.1[0m" 405 -
+2026-07-15 16:55:36,438 - INFO - 127.0.0.1 - - [15/Jul/2026 16:55:36] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-15 16:55:36,514 - INFO - 127.0.0.1 - - [15/Jul/2026 16:55:36] "GET /static/app.css HTTP/1.1" 200 -
+2026-07-15 16:55:37,108 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\repository.py', reloading
+2026-07-15 16:55:37,207 - INFO -  * Restarting with stat
+2026-07-15 16:55:38,854 - WARNING -  * Debugger is active!
+2026-07-15 16:55:38,859 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:55:42,604 - INFO - 127.0.0.1 - - [15/Jul/2026 16:55:42] "GET /manage_backups HTTP/1.1" 200 -
+2026-07-15 16:55:42,681 - INFO - 127.0.0.1 - - [15/Jul/2026 16:55:42] "GET /static/app.css HTTP/1.1" 200 -
+2026-07-15 16:55:43,435 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-15 16:55:43,527 - INFO -  * Restarting with stat
+2026-07-15 16:55:45,194 - WARNING -  * Debugger is active!
+2026-07-15 16:55:45,201 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:56:18,632 - INFO - 127.0.0.1 - - [15/Jul/2026 16:56:18] "GET /settings HTTP/1.1" 200 -
+2026-07-15 16:56:18,707 - INFO - 127.0.0.1 - - [15/Jul/2026 16:56:18] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:56:25,197 - INFO - 127.0.0.1 - - [15/Jul/2026 16:56:25] "GET /manage_users HTTP/1.1" 200 -
+2026-07-15 16:56:25,206 - INFO - 127.0.0.1 - - [15/Jul/2026 16:56:25] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:57:07,546 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-15 16:57:07,643 - INFO -  * Restarting with stat
+2026-07-15 16:57:09,419 - WARNING -  * Debugger is active!
+2026-07-15 16:57:09,427 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:58:15,110 - INFO - 127.0.0.1 - - [15/Jul/2026 16:58:15] "GET /manage_users HTTP/1.1" 200 -
+2026-07-15 16:58:15,194 - INFO - 127.0.0.1 - - [15/Jul/2026 16:58:15] "GET /static/app.css HTTP/1.1" 200 -
+2026-07-15 16:58:39,645 - INFO - 127.0.0.1 - - [15/Jul/2026 16:58:39] "GET /manage_users HTTP/1.1" 200 -
+2026-07-15 16:58:39,653 - INFO - 127.0.0.1 - - [15/Jul/2026 16:58:39] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:58:40,586 - INFO - 127.0.0.1 - - [15/Jul/2026 16:58:40] "GET /manage_users HTTP/1.1" 200 -
+2026-07-15 16:58:40,594 - INFO - 127.0.0.1 - - [15/Jul/2026 16:58:40] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:58:42,722 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-15 16:58:42,821 - INFO -  * Restarting with stat
+2026-07-15 16:58:44,483 - WARNING -  * Debugger is active!
+2026-07-15 16:58:44,491 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:58:57,540 - INFO - 127.0.0.1 - - [15/Jul/2026 16:58:57] "GET /manage_users HTTP/1.1" 200 -
+2026-07-15 16:58:57,616 - INFO - 127.0.0.1 - - [15/Jul/2026 16:58:57] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:59:01,366 - INFO - 127.0.0.1 - - [15/Jul/2026 16:59:01] "GET /manage_users HTTP/1.1" 200 -
+2026-07-15 16:59:01,376 - INFO - 127.0.0.1 - - [15/Jul/2026 16:59:01] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:59:04,382 - INFO -  * Detected change in 'c:\\Users\\horayr\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-15 16:59:04,488 - INFO -  * Restarting with stat
+2026-07-15 16:59:06,185 - WARNING -  * Debugger is active!
+2026-07-15 16:59:06,193 - INFO -  * Debugger PIN: 580-677-813
+2026-07-15 16:59:10,434 - INFO - 127.0.0.1 - - [15/Jul/2026 16:59:10] "GET / HTTP/1.1" 200 -
+2026-07-15 16:59:10,553 - INFO - 127.0.0.1 - - [15/Jul/2026 16:59:10] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:59:10,554 - INFO - 127.0.0.1 - - [15/Jul/2026 16:59:10] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:59:21,014 - INFO - 127.0.0.1 - - [15/Jul/2026 16:59:21] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 16:59:21,026 - INFO - 127.0.0.1 - - [15/Jul/2026 16:59:21] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:59:21,026 - INFO - 127.0.0.1 - - [15/Jul/2026 16:59:21] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:59:21,744 - INFO - 127.0.0.1 - - [15/Jul/2026 16:59:21] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:59:21,754 - INFO - 127.0.0.1 - - [15/Jul/2026 16:59:21] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:59:21,755 - INFO - 127.0.0.1 - - [15/Jul/2026 16:59:21] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 16:59:33,828 - INFO - 127.0.0.1 - - [15/Jul/2026 16:59:33] "GET /manage_products?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:59:33,840 - INFO - 127.0.0.1 - - [15/Jul/2026 16:59:33] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:59:37,786 - INFO - 127.0.0.1 - - [15/Jul/2026 16:59:37] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-15 16:59:37,795 - INFO - 127.0.0.1 - - [15/Jul/2026 16:59:37] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:59:40,165 - INFO - 127.0.0.1 - - [15/Jul/2026 16:59:40] "GET /manage_users HTTP/1.1" 200 -
+2026-07-15 16:59:40,174 - INFO - 127.0.0.1 - - [15/Jul/2026 16:59:40] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:59:44,466 - INFO - 127.0.0.1 - - [15/Jul/2026 16:59:44] "GET /manage_brands HTTP/1.1" 200 -
+2026-07-15 16:59:44,473 - INFO - 127.0.0.1 - - [15/Jul/2026 16:59:44] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 16:59:47,418 - INFO - 127.0.0.1 - - [15/Jul/2026 16:59:47] "GET /manage_products HTTP/1.1" 200 -
+2026-07-15 16:59:47,430 - INFO - 127.0.0.1 - - [15/Jul/2026 16:59:47] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:00:00,257 - INFO - 127.0.0.1 - - [15/Jul/2026 17:00:00] "GET / HTTP/1.1" 200 -
+2026-07-15 17:00:00,268 - INFO - 127.0.0.1 - - [15/Jul/2026 17:00:00] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:00:00,268 - INFO - 127.0.0.1 - - [15/Jul/2026 17:00:00] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:00:14,279 - INFO - 127.0.0.1 - - [15/Jul/2026 17:00:14] "GET /?month=2026-03&brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:00:14,290 - INFO - 127.0.0.1 - - [15/Jul/2026 17:00:14] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:00:14,291 - INFO - 127.0.0.1 - - [15/Jul/2026 17:00:14] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:00:20,528 - INFO - 127.0.0.1 - - [15/Jul/2026 17:00:20] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-15 17:00:20,538 - INFO - 127.0.0.1 - - [15/Jul/2026 17:00:20] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:01:25,393 - INFO - 127.0.0.1 - - [15/Jul/2026 17:01:25] "GET /validate HTTP/1.1" 200 -
+2026-07-15 17:01:25,404 - INFO - 127.0.0.1 - - [15/Jul/2026 17:01:25] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:04:08,419 - INFO - 127.0.0.1 - - [15/Jul/2026 17:04:08] "GET / HTTP/1.1" 200 -
+2026-07-15 17:04:08,431 - INFO - 127.0.0.1 - - [15/Jul/2026 17:04:08] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:04:08,432 - INFO - 127.0.0.1 - - [15/Jul/2026 17:04:08] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:04:16,270 - INFO - 127.0.0.1 - - [15/Jul/2026 17:04:16] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:04:16,279 - INFO - 127.0.0.1 - - [15/Jul/2026 17:04:16] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:04:18,267 - INFO - 127.0.0.1 - - [15/Jul/2026 17:04:18] "GET / HTTP/1.1" 200 -
+2026-07-15 17:04:18,278 - INFO - 127.0.0.1 - - [15/Jul/2026 17:04:18] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:04:18,279 - INFO - 127.0.0.1 - - [15/Jul/2026 17:04:18] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:05:39,470 - INFO - 127.0.0.1 - - [15/Jul/2026 17:05:39] "GET / HTTP/1.1" 200 -
+2026-07-15 17:05:39,484 - INFO - 127.0.0.1 - - [15/Jul/2026 17:05:39] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:05:39,485 - INFO - 127.0.0.1 - - [15/Jul/2026 17:05:39] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:05:46,206 - INFO - 127.0.0.1 - - [15/Jul/2026 17:05:46] "GET / HTTP/1.1" 200 -
+2026-07-15 17:05:46,218 - INFO - 127.0.0.1 - - [15/Jul/2026 17:05:46] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:05:46,219 - INFO - 127.0.0.1 - - [15/Jul/2026 17:05:46] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:05:48,531 - INFO - 127.0.0.1 - - [15/Jul/2026 17:05:48] "GET / HTTP/1.1" 200 -
+2026-07-15 17:05:48,543 - INFO - 127.0.0.1 - - [15/Jul/2026 17:05:48] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:05:48,544 - INFO - 127.0.0.1 - - [15/Jul/2026 17:05:48] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:05:53,676 - INFO - 127.0.0.1 - - [15/Jul/2026 17:05:53] "GET / HTTP/1.1" 200 -
+2026-07-15 17:05:53,689 - INFO - 127.0.0.1 - - [15/Jul/2026 17:05:53] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:05:53,689 - INFO - 127.0.0.1 - - [15/Jul/2026 17:05:53] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:05:56,462 - INFO - 127.0.0.1 - - [15/Jul/2026 17:05:56] "GET / HTTP/1.1" 200 -
+2026-07-15 17:05:56,474 - INFO - 127.0.0.1 - - [15/Jul/2026 17:05:56] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:05:56,475 - INFO - 127.0.0.1 - - [15/Jul/2026 17:05:56] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:06:00,677 - INFO - 127.0.0.1 - - [15/Jul/2026 17:06:00] "GET / HTTP/1.1" 200 -
+2026-07-15 17:06:00,689 - INFO - 127.0.0.1 - - [15/Jul/2026 17:06:00] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:06:00,689 - INFO - 127.0.0.1 - - [15/Jul/2026 17:06:00] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:06:09,544 - INFO - 127.0.0.1 - - [15/Jul/2026 17:06:09] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:06:09,553 - INFO - 127.0.0.1 - - [15/Jul/2026 17:06:09] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:06:37,473 - INFO - 127.0.0.1 - - [15/Jul/2026 17:06:37] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-15 17:06:37,486 - INFO - 127.0.0.1 - - [15/Jul/2026 17:06:37] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:06:40,005 - INFO - 127.0.0.1 - - [15/Jul/2026 17:06:40] "GET / HTTP/1.1" 200 -
+2026-07-15 17:06:40,016 - INFO - 127.0.0.1 - - [15/Jul/2026 17:06:40] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:06:40,017 - INFO - 127.0.0.1 - - [15/Jul/2026 17:06:40] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:07:02,364 - INFO - 127.0.0.1 - - [15/Jul/2026 17:07:02] "GET / HTTP/1.1" 200 -
+2026-07-15 17:07:02,378 - INFO - 127.0.0.1 - - [15/Jul/2026 17:07:02] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:07:02,379 - INFO - 127.0.0.1 - - [15/Jul/2026 17:07:02] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:07:04,903 - INFO - 127.0.0.1 - - [15/Jul/2026 17:07:04] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-15 17:07:04,914 - INFO - 127.0.0.1 - - [15/Jul/2026 17:07:04] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:07:50,467 - INFO - 127.0.0.1 - - [15/Jul/2026 17:07:50] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-15 17:07:50,482 - INFO - 127.0.0.1 - - [15/Jul/2026 17:07:50] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:07:59,210 - INFO - 127.0.0.1 - - [15/Jul/2026 17:07:59] "GET /validate HTTP/1.1" 200 -
+2026-07-15 17:07:59,218 - INFO - 127.0.0.1 - - [15/Jul/2026 17:07:59] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:08:00,376 - INFO - 127.0.0.1 - - [15/Jul/2026 17:08:00] "GET / HTTP/1.1" 200 -
+2026-07-15 17:08:00,388 - INFO - 127.0.0.1 - - [15/Jul/2026 17:08:00] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:08:00,389 - INFO - 127.0.0.1 - - [15/Jul/2026 17:08:00] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:08:02,050 - INFO - 127.0.0.1 - - [15/Jul/2026 17:08:02] "GET /validate HTTP/1.1" 200 -
+2026-07-15 17:08:02,058 - INFO - 127.0.0.1 - - [15/Jul/2026 17:08:02] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:08:05,957 - INFO - 127.0.0.1 - - [15/Jul/2026 17:08:05] "GET / HTTP/1.1" 200 -
+2026-07-15 17:08:05,968 - INFO - 127.0.0.1 - - [15/Jul/2026 17:08:05] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:08:05,969 - INFO - 127.0.0.1 - - [15/Jul/2026 17:08:05] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:08:20,596 - INFO - 127.0.0.1 - - [15/Jul/2026 17:08:20] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 17:08:20,607 - INFO - 127.0.0.1 - - [15/Jul/2026 17:08:20] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:08:20,608 - INFO - 127.0.0.1 - - [15/Jul/2026 17:08:20] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:08:21,504 - INFO - 127.0.0.1 - - [15/Jul/2026 17:08:21] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:08:21,514 - INFO - 127.0.0.1 - - [15/Jul/2026 17:08:21] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:08:21,515 - INFO - 127.0.0.1 - - [15/Jul/2026 17:08:21] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:08:26,810 - INFO - 127.0.0.1 - - [15/Jul/2026 17:08:26] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:08:26,819 - INFO - 127.0.0.1 - - [15/Jul/2026 17:08:26] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:11:08,555 - INFO - 127.0.0.1 - - [15/Jul/2026 17:11:08] "GET /settings?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 17:11:08,566 - INFO - 127.0.0.1 - - [15/Jul/2026 17:11:08] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:11:09,943 - INFO - 127.0.0.1 - - [15/Jul/2026 17:11:09] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:11:09,952 - INFO - 127.0.0.1 - - [15/Jul/2026 17:11:09] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:11:13,725 - INFO - 127.0.0.1 - - [15/Jul/2026 17:11:13] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:11:13,835 - INFO - 127.0.0.1 - - [15/Jul/2026 17:11:13] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2026-07-15 17:13:05,770 - INFO - 127.0.0.1 - - [15/Jul/2026 17:13:05] "GET / HTTP/1.1" 200 -
+2026-07-15 17:13:05,783 - INFO - 127.0.0.1 - - [15/Jul/2026 17:13:05] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:13:05,784 - INFO - 127.0.0.1 - - [15/Jul/2026 17:13:05] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:13:26,341 - INFO - 127.0.0.1 - - [15/Jul/2026 17:13:26] "GET / HTTP/1.1" 200 -
+2026-07-15 17:13:26,354 - INFO - 127.0.0.1 - - [15/Jul/2026 17:13:26] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:13:26,355 - INFO - 127.0.0.1 - - [15/Jul/2026 17:13:26] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:13:29,378 - INFO - 127.0.0.1 - - [15/Jul/2026 17:13:29] "GET / HTTP/1.1" 200 -
+2026-07-15 17:13:29,391 - INFO - 127.0.0.1 - - [15/Jul/2026 17:13:29] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:13:29,392 - INFO - 127.0.0.1 - - [15/Jul/2026 17:13:29] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:13:30,687 - INFO - 127.0.0.1 - - [15/Jul/2026 17:13:30] "GET / HTTP/1.1" 200 -
+2026-07-15 17:13:30,699 - INFO - 127.0.0.1 - - [15/Jul/2026 17:13:30] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:13:30,700 - INFO - 127.0.0.1 - - [15/Jul/2026 17:13:30] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:13:33,366 - INFO - 127.0.0.1 - - [15/Jul/2026 17:13:33] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:13:33,375 - INFO - 127.0.0.1 - - [15/Jul/2026 17:13:33] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:13:53,624 - INFO - 127.0.0.1 - - [15/Jul/2026 17:13:53] "GET / HTTP/1.1" 200 -
+2026-07-15 17:13:53,635 - INFO - 127.0.0.1 - - [15/Jul/2026 17:13:53] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:13:53,636 - INFO - 127.0.0.1 - - [15/Jul/2026 17:13:53] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:13:55,988 - INFO - 127.0.0.1 - - [15/Jul/2026 17:13:55] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-15 17:13:55,999 - INFO - 127.0.0.1 - - [15/Jul/2026 17:13:55] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:13:57,972 - INFO - 127.0.0.1 - - [15/Jul/2026 17:13:57] "GET /validate HTTP/1.1" 200 -
+2026-07-15 17:13:57,980 - INFO - 127.0.0.1 - - [15/Jul/2026 17:13:57] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:14:02,310 - INFO - 127.0.0.1 - - [15/Jul/2026 17:14:02] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:14:02,319 - INFO - 127.0.0.1 - - [15/Jul/2026 17:14:02] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:14:06,558 - INFO - 127.0.0.1 - - [15/Jul/2026 17:14:06] "GET /manage_backups HTTP/1.1" 200 -
+2026-07-15 17:14:06,566 - INFO - 127.0.0.1 - - [15/Jul/2026 17:14:06] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:14:09,200 - INFO - 127.0.0.1 - - [15/Jul/2026 17:14:09] "GET /manage_brands HTTP/1.1" 200 -
+2026-07-15 17:14:09,209 - INFO - 127.0.0.1 - - [15/Jul/2026 17:14:09] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:14:12,976 - INFO - 127.0.0.1 - - [15/Jul/2026 17:14:12] "GET /manage_locations HTTP/1.1" 200 -
+2026-07-15 17:14:12,985 - INFO - 127.0.0.1 - - [15/Jul/2026 17:14:12] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:14:37,425 - INFO - 127.0.0.1 - - [15/Jul/2026 17:14:37] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-15 17:14:37,436 - INFO - 127.0.0.1 - - [15/Jul/2026 17:14:37] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:14:41,161 - INFO - 127.0.0.1 - - [15/Jul/2026 17:14:41] "GET /settings HTTP/1.1" 200 -
+2026-07-15 17:14:41,170 - INFO - 127.0.0.1 - - [15/Jul/2026 17:14:41] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:14:53,175 - INFO - 127.0.0.1 - - [15/Jul/2026 17:14:53] "GET /settings HTTP/1.1" 200 -
+2026-07-15 17:14:53,186 - INFO - 127.0.0.1 - - [15/Jul/2026 17:14:53] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:14:54,870 - INFO - 127.0.0.1 - - [15/Jul/2026 17:14:54] "GET /settings HTTP/1.1" 200 -
+2026-07-15 17:14:54,882 - INFO - 127.0.0.1 - - [15/Jul/2026 17:14:54] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:14:55,735 - INFO - 127.0.0.1 - - [15/Jul/2026 17:14:55] "GET /settings HTTP/1.1" 200 -
+2026-07-15 17:14:55,745 - INFO - 127.0.0.1 - - [15/Jul/2026 17:14:55] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:14:56,432 - INFO - 127.0.0.1 - - [15/Jul/2026 17:14:56] "GET /settings HTTP/1.1" 200 -
+2026-07-15 17:14:56,443 - INFO - 127.0.0.1 - - [15/Jul/2026 17:14:56] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:14:57,014 - INFO - 127.0.0.1 - - [15/Jul/2026 17:14:57] "GET /settings HTTP/1.1" 200 -
+2026-07-15 17:14:57,025 - INFO - 127.0.0.1 - - [15/Jul/2026 17:14:57] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:14:57,960 - INFO - 127.0.0.1 - - [15/Jul/2026 17:14:57] "GET /settings HTTP/1.1" 200 -
+2026-07-15 17:14:57,971 - INFO - 127.0.0.1 - - [15/Jul/2026 17:14:57] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:15:03,186 - INFO - 127.0.0.1 - - [15/Jul/2026 17:15:03] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-15 17:15:03,198 - INFO - 127.0.0.1 - - [15/Jul/2026 17:15:03] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:15:08,268 - INFO - 127.0.0.1 - - [15/Jul/2026 17:15:08] "GET / HTTP/1.1" 200 -
+2026-07-15 17:15:08,279 - INFO - 127.0.0.1 - - [15/Jul/2026 17:15:08] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:15:08,280 - INFO - 127.0.0.1 - - [15/Jul/2026 17:15:08] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:15:12,873 - INFO - 127.0.0.1 - - [15/Jul/2026 17:15:12] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:15:12,882 - INFO - 127.0.0.1 - - [15/Jul/2026 17:15:12] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:15:16,420 - INFO - 127.0.0.1 - - [15/Jul/2026 17:15:16] "GET /manage_users HTTP/1.1" 200 -
+2026-07-15 17:15:16,429 - INFO - 127.0.0.1 - - [15/Jul/2026 17:15:16] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:15:18,442 - INFO - 127.0.0.1 - - [15/Jul/2026 17:15:18] "GET /manage_brands HTTP/1.1" 200 -
+2026-07-15 17:15:18,450 - INFO - 127.0.0.1 - - [15/Jul/2026 17:15:18] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:15:20,725 - INFO - 127.0.0.1 - - [15/Jul/2026 17:15:20] "GET /manage_brands HTTP/1.1" 200 -
+2026-07-15 17:15:20,734 - INFO - 127.0.0.1 - - [15/Jul/2026 17:15:20] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:15:20,783 - INFO - 127.0.0.1 - - [15/Jul/2026 17:15:20] "GET /manage_brands HTTP/1.1" 200 -
+2026-07-15 17:15:20,791 - INFO - 127.0.0.1 - - [15/Jul/2026 17:15:20] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:15:23,765 - INFO - 127.0.0.1 - - [15/Jul/2026 17:15:23] "GET /manage_locations HTTP/1.1" 200 -
+2026-07-15 17:15:23,774 - INFO - 127.0.0.1 - - [15/Jul/2026 17:15:23] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:15:42,740 - INFO - 127.0.0.1 - - [15/Jul/2026 17:15:42] "GET /validate HTTP/1.1" 200 -
+2026-07-15 17:15:42,749 - INFO - 127.0.0.1 - - [15/Jul/2026 17:15:42] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:15:47,286 - INFO - 127.0.0.1 - - [15/Jul/2026 17:15:47] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-15 17:15:47,296 - INFO - 127.0.0.1 - - [15/Jul/2026 17:15:47] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:15:52,525 - INFO - 127.0.0.1 - - [15/Jul/2026 17:15:52] "GET /manage_products HTTP/1.1" 200 -
+2026-07-15 17:15:52,537 - INFO - 127.0.0.1 - - [15/Jul/2026 17:15:52] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:16:21,818 - INFO - 127.0.0.1 - - [15/Jul/2026 17:16:21] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-15 17:16:21,830 - INFO - 127.0.0.1 - - [15/Jul/2026 17:16:21] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:16:24,608 - INFO - 127.0.0.1 - - [15/Jul/2026 17:16:24] "GET /validate HTTP/1.1" 200 -
+2026-07-15 17:16:24,615 - INFO - 127.0.0.1 - - [15/Jul/2026 17:16:24] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:16:32,175 - INFO - 127.0.0.1 - - [15/Jul/2026 17:16:32] "GET /manage_products?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:16:32,188 - INFO - 127.0.0.1 - - [15/Jul/2026 17:16:32] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:16:44,065 - INFO - 127.0.0.1 - - [15/Jul/2026 17:16:44] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:16:44,075 - INFO - 127.0.0.1 - - [15/Jul/2026 17:16:44] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:17:02,881 - INFO - 127.0.0.1 - - [15/Jul/2026 17:17:02] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:17:02,891 - INFO - 127.0.0.1 - - [15/Jul/2026 17:17:02] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:17:12,096 - INFO - 127.0.0.1 - - [15/Jul/2026 17:17:12] "GET /manage_products?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:17:12,109 - INFO - 127.0.0.1 - - [15/Jul/2026 17:17:12] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:17:21,816 - INFO - 127.0.0.1 - - [15/Jul/2026 17:17:21] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:17:21,826 - INFO - 127.0.0.1 - - [15/Jul/2026 17:17:21] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:18:33,531 - INFO - 127.0.0.1 - - [15/Jul/2026 17:18:33] "GET /validate HTTP/1.1" 200 -
+2026-07-15 17:18:33,541 - INFO - 127.0.0.1 - - [15/Jul/2026 17:18:33] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:18:38,076 - INFO - 127.0.0.1 - - [15/Jul/2026 17:18:38] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:18:38,084 - INFO - 127.0.0.1 - - [15/Jul/2026 17:18:38] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:19:02,718 - INFO - 127.0.0.1 - - [15/Jul/2026 17:19:02] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:19:02,730 - INFO - 127.0.0.1 - - [15/Jul/2026 17:19:02] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:19:26,693 - INFO - 127.0.0.1 - - [15/Jul/2026 17:19:26] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:19:26,707 - INFO - 127.0.0.1 - - [15/Jul/2026 17:19:26] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:19:28,376 - INFO - 127.0.0.1 - - [15/Jul/2026 17:19:28] "GET /manage_users HTTP/1.1" 200 -
+2026-07-15 17:19:28,385 - INFO - 127.0.0.1 - - [15/Jul/2026 17:19:28] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:19:30,382 - INFO - 127.0.0.1 - - [15/Jul/2026 17:19:30] "GET /manage_backups HTTP/1.1" 200 -
+2026-07-15 17:19:30,389 - INFO - 127.0.0.1 - - [15/Jul/2026 17:19:30] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:19:32,087 - INFO - 127.0.0.1 - - [15/Jul/2026 17:19:32] "GET /manage_brands HTTP/1.1" 200 -
+2026-07-15 17:19:32,095 - INFO - 127.0.0.1 - - [15/Jul/2026 17:19:32] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:19:38,131 - INFO - 127.0.0.1 - - [15/Jul/2026 17:19:38] "GET /manage_products HTTP/1.1" 200 -
+2026-07-15 17:19:38,145 - INFO - 127.0.0.1 - - [15/Jul/2026 17:19:38] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:19:44,812 - INFO - 127.0.0.1 - - [15/Jul/2026 17:19:44] "GET /manage_products?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 17:19:44,822 - INFO - 127.0.0.1 - - [15/Jul/2026 17:19:44] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:19:45,721 - INFO - 127.0.0.1 - - [15/Jul/2026 17:19:45] "GET /manage_products?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:19:45,734 - INFO - 127.0.0.1 - - [15/Jul/2026 17:19:45] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:19:46,595 - INFO - 127.0.0.1 - - [15/Jul/2026 17:19:46] "GET /manage_products?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 17:19:46,605 - INFO - 127.0.0.1 - - [15/Jul/2026 17:19:46] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:19:47,875 - INFO - 127.0.0.1 - - [15/Jul/2026 17:19:47] "GET /manage_products?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:19:47,887 - INFO - 127.0.0.1 - - [15/Jul/2026 17:19:47] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:20:17,414 - INFO - 127.0.0.1 - - [15/Jul/2026 17:20:17] "GET /manage_products?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 17:20:17,424 - INFO - 127.0.0.1 - - [15/Jul/2026 17:20:17] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:21:24,578 - INFO - 127.0.0.1 - - [15/Jul/2026 17:21:24] "GET /manage_products?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 17:21:24,591 - INFO - 127.0.0.1 - - [15/Jul/2026 17:21:24] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:21:27,836 - INFO - 127.0.0.1 - - [15/Jul/2026 17:21:27] "GET /settings?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 17:21:27,846 - INFO - 127.0.0.1 - - [15/Jul/2026 17:21:27] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:21:30,992 - INFO - 127.0.0.1 - - [15/Jul/2026 17:21:30] "GET /manage_backups HTTP/1.1" 200 -
+2026-07-15 17:21:31,000 - INFO - 127.0.0.1 - - [15/Jul/2026 17:21:31] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:21:34,835 - INFO - 127.0.0.1 - - [15/Jul/2026 17:21:34] "GET / HTTP/1.1" 200 -
+2026-07-15 17:21:34,846 - INFO - 127.0.0.1 - - [15/Jul/2026 17:21:34] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:21:34,847 - INFO - 127.0.0.1 - - [15/Jul/2026 17:21:34] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:22:13,893 - INFO - 127.0.0.1 - - [15/Jul/2026 17:22:13] "GET / HTTP/1.1" 200 -
+2026-07-15 17:22:13,906 - INFO - 127.0.0.1 - - [15/Jul/2026 17:22:13] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:22:13,907 - INFO - 127.0.0.1 - - [15/Jul/2026 17:22:13] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:22:17,526 - INFO - 127.0.0.1 - - [15/Jul/2026 17:22:17] "GET / HTTP/1.1" 200 -
+2026-07-15 17:22:17,538 - INFO - 127.0.0.1 - - [15/Jul/2026 17:22:17] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:22:17,539 - INFO - 127.0.0.1 - - [15/Jul/2026 17:22:17] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:22:18,282 - INFO - 127.0.0.1 - - [15/Jul/2026 17:22:18] "GET / HTTP/1.1" 200 -
+2026-07-15 17:22:18,295 - INFO - 127.0.0.1 - - [15/Jul/2026 17:22:18] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:22:18,295 - INFO - 127.0.0.1 - - [15/Jul/2026 17:22:18] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:22:24,004 - INFO - 127.0.0.1 - - [15/Jul/2026 17:22:24] "GET / HTTP/1.1" 200 -
+2026-07-15 17:22:24,017 - INFO - 127.0.0.1 - - [15/Jul/2026 17:22:24] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:22:24,017 - INFO - 127.0.0.1 - - [15/Jul/2026 17:22:24] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:23:16,246 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:16] "GET / HTTP/1.1" 200 -
+2026-07-15 17:23:16,259 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:16] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:23:16,260 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:16] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:23:19,482 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:19] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 17:23:19,493 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:19] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:23:19,494 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:19] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:23:20,351 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:20] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:23:20,362 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:20] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:23:20,363 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:20] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:23:21,170 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:21] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 17:23:21,181 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:21] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:23:21,182 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:21] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:23:22,134 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:22] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:23:22,145 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:22] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:23:22,146 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:22] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:23:22,852 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:22] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:23:22,867 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:22] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:23:22,867 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:22] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:23:23,317 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:23] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 17:23:23,329 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:23] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:23:23,330 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:23] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:23:32,906 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:32] "GET /manage_locations?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 17:23:32,915 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:32] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:23:39,563 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:39] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:23:39,572 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:39] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:23:46,110 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:46] "GET /manage_users HTTP/1.1" 200 -
+2026-07-15 17:23:46,119 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:46] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:23:54,085 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:54] "GET /manage_products HTTP/1.1" 200 -
+2026-07-15 17:23:54,099 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:54] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:23:57,847 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:57] "GET /manage_products?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 17:23:57,857 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:57] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:23:59,357 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:59] "GET /manage_products?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:23:59,369 - INFO - 127.0.0.1 - - [15/Jul/2026 17:23:59] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:24:02,279 - INFO - 127.0.0.1 - - [15/Jul/2026 17:24:02] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:24:02,289 - INFO - 127.0.0.1 - - [15/Jul/2026 17:24:02] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:26:18,303 - INFO - 127.0.0.1 - - [15/Jul/2026 17:26:18] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:26:18,315 - INFO - 127.0.0.1 - - [15/Jul/2026 17:26:18] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:26:38,483 - INFO - 127.0.0.1 - - [15/Jul/2026 17:26:38] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:26:38,493 - INFO - 127.0.0.1 - - [15/Jul/2026 17:26:38] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:26:42,983 - INFO - 127.0.0.1 - - [15/Jul/2026 17:26:42] "GET /manage_brands HTTP/1.1" 200 -
+2026-07-15 17:26:42,991 - INFO - 127.0.0.1 - - [15/Jul/2026 17:26:42] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:27:29,453 - INFO - 127.0.0.1 - - [15/Jul/2026 17:27:29] "GET /manage_brands HTTP/1.1" 200 -
+2026-07-15 17:27:29,464 - INFO - 127.0.0.1 - - [15/Jul/2026 17:27:29] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:27:34,889 - INFO - 127.0.0.1 - - [15/Jul/2026 17:27:34] "GET /manage_brands HTTP/1.1" 200 -
+2026-07-15 17:27:34,898 - INFO - 127.0.0.1 - - [15/Jul/2026 17:27:34] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:28:46,083 - INFO - 127.0.0.1 - - [15/Jul/2026 17:28:46] "GET /manage_brands HTTP/1.1" 200 -
+2026-07-15 17:28:46,093 - INFO - 127.0.0.1 - - [15/Jul/2026 17:28:46] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:29:12,130 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:12] "GET / HTTP/1.1" 200 -
+2026-07-15 17:29:12,141 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:12] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:29:12,142 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:12] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:29:14,703 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:14] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 17:29:14,715 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:14] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:29:14,716 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:14] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:29:15,393 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:15] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:29:15,404 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:15] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:29:15,405 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:15] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:29:17,095 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:17] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 17:29:17,105 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:17] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:29:17,106 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:17] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:29:17,720 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:17] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:29:17,733 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:17] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:29:17,733 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:17] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:29:18,251 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:18] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 17:29:18,262 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:18] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:29:18,263 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:18] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:29:36,507 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:36] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:29:36,519 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:36] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:29:36,520 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:36] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:29:38,946 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:38] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:29:38,955 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:38] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:29:44,455 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:44] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:29:44,465 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:44] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:29:46,737 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:46] "GET / HTTP/1.1" 200 -
+2026-07-15 17:29:46,748 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:46] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:29:46,749 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:46] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:29:51,700 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:51] "GET /?month=2026-02&brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:29:51,710 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:51] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:29:51,711 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:51] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:29:54,568 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:54] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-15 17:29:54,578 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:54] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:29:56,856 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:56] "GET /view_payslip/0/2026-02?brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:29:56,887 - INFO - 127.0.0.1 - - [15/Jul/2026 17:29:56] "[36mGET /static/logo.png HTTP/1.1[0m" 304 -
+2026-07-15 17:30:01,317 - INFO - 127.0.0.1 - - [15/Jul/2026 17:30:01] "GET /?month=2026-02&brand=century_field HTTP/1.1" 200 -
+2026-07-15 17:30:01,328 - INFO - 127.0.0.1 - - [15/Jul/2026 17:30:01] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:30:01,329 - INFO - 127.0.0.1 - - [15/Jul/2026 17:30:01] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:30:04,944 - INFO - 127.0.0.1 - - [15/Jul/2026 17:30:04] "GET /?month=2026-02&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 17:30:04,953 - INFO - 127.0.0.1 - - [15/Jul/2026 17:30:04] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:30:04,953 - INFO - 127.0.0.1 - - [15/Jul/2026 17:30:04] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:30:10,743 - INFO - 127.0.0.1 - - [15/Jul/2026 17:30:10] "GET /?month=2026-03&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 17:30:10,754 - INFO - 127.0.0.1 - - [15/Jul/2026 17:30:10] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:30:10,755 - INFO - 127.0.0.1 - - [15/Jul/2026 17:30:10] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-15 17:30:12,555 - INFO - 127.0.0.1 - - [15/Jul/2026 17:30:12] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-15 17:30:12,564 - INFO - 127.0.0.1 - - [15/Jul/2026 17:30:12] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:30:14,399 - INFO - 127.0.0.1 - - [15/Jul/2026 17:30:14] "GET /view_payslip/0/2026-03?brand=toshiba HTTP/1.1" 200 -
+2026-07-15 17:30:14,432 - INFO - 127.0.0.1 - - [15/Jul/2026 17:30:14] "[36mGET /static/logo.png HTTP/1.1[0m" 304 -
+2026-07-15 17:30:19,935 - INFO - 127.0.0.1 - - [15/Jul/2026 17:30:19] "GET /?month=2026-03&brand=toshiba HTTP/1.1" 200 -
+2026-07-15 17:30:19,947 - INFO - 127.0.0.1 - - [15/Jul/2026 17:30:19] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-15 17:30:19,948 - INFO - 127.0.0.1 - - [15/Jul/2026 17:30:19] "[36mGET /static/index.js HTTP/1.1[0m" 304 -

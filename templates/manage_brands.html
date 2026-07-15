@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="page-title">🏷️ 品牌代碼管理</h2>
+        <a href="/" class="btn btn-secondary">返回主控台</a>
+    </div>
+
+    <div class="card app-card">
+        <div class="table-wrap">
+            <table class="table align-middle mb-0 data-table">
+                <thead class="table-light">
+                    <tr>
+                        <th>品牌代碼</th>
+                        <th>品牌名稱</th>
+                        <th>狀態</th>
+                        <th class="text-end">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="table-primary" id="new-brand-row">
+                        <form id="add-brand-form" action="/add_brand" method="POST" style="display: contents;">
+                            <td>
+                                <input type="text" name="brand_code" class="form-control form-control-sm" placeholder="例如: samsung_hk" title="只允許小寫英數與底線" required>
+                            </td>
+                            <td>
+                                <input type="text" name="brand_name" class="form-control form-control-sm" placeholder="例如: Samsung HK" required>
+                            </td>
+                            <td>
+                                <span class="badge bg-success">新增</span>
+                            </td>
+                            <td class="text-end">
+                                <button type="submit" class="btn btn-sm btn-primary fw-bold">➕ 新增</button>
+                            </td>
+                        </form>
+                    </tr>
+                            {% for brand in brands %}
+                            <tr>
+                                <td><span class="badge bg-dark">{{ brand.brand_code }}</span></td>
+                                <td class="fw-bold">{{ brand.brand_name }}</td>
+                                <td>
+                                    {% if brand.is_active %}
+                                    <span class="badge bg-success">啟用中</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">停用</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <button
+                                        class="btn btn-sm btn-outline-primary"
+                                        onclick='openBrandModal({{ brand.brand_code|tojson }}, {{ brand.brand_name|tojson }}, {{ ("1" if brand.is_active else "0")|tojson }})'>
+                                        修改
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+    </div>
+
+<div class="modal fade" id="editBrandModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">✏️ 修改品牌設定</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/update_brand" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">品牌代碼</label>
+                        <input type="text" name="brand_code" id="edit_brand_code" class="form-control" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">品牌名稱</label>
+                        <input type="text" name="brand_name" id="edit_brand_name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">狀態</label>
+                        <select name="is_active" id="edit_brand_active" class="form-select">
+                            <option value="1">啟用</option>
+                            <option value="0">停用</option>
+                        </select>
+                        <div class="form-text">預設品牌 {{ default_brand_code }} 不可停用。</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">儲存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function openBrandModal(code, name, active) {
+    document.getElementById('edit_brand_code').value = code;
+    document.getElementById('edit_brand_name').value = name;
+    document.getElementById('edit_brand_active').value = active;
+
+    if (code === '{{ default_brand_code }}') {
+        document.getElementById('edit_brand_active').value = '1';
+        document.getElementById('edit_brand_active').setAttribute('disabled', 'disabled');
+    } else {
+        document.getElementById('edit_brand_active').removeAttribute('disabled');
+    }
+
+    new bootstrap.Modal(document.getElementById('editBrandModal')).show();
+}
+</script>
+{% endblock %}

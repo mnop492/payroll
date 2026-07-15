@@ -3,21 +3,22 @@ import io
 import os
 
 import pandas as pd
-from flask import Blueprint, flash, redirect, render_template, request, send_file, send_from_directory, session, url_for
-from werkzeug.utils import secure_filename
+from flask import Blueprint, flash, redirect, render_template, request, send_file, session, url_for
 
-from app_config import UPLOAD_FOLDER
-from importer import process_excel_import
+from app_config import DEFAULT_BRAND_CODE, HISTORY_FOLDER
+from importer import dispatch_import, validate_import_brand, validate_import_month
 from payroll_engine import process_payroll_from_db
-from repository import fetch_index_context, set_month_input_source
+from repository import fetch_index_context, get_brand_name, set_month_input_source
 from services import (
     authenticate_user,
     check_login_allowed,
     clear_login_failures,
+    get_current_user_available_brands,
     get_request_ip,
     log_audit,
     perform_validation,
     record_login_failure,
+    resolve_brand_for_current_user,
 )
 
 bp = Blueprint("main", __name__)
@@ -29,14 +30,22 @@ def normalize_next_url(next_url):
     return url_for("main.index")
 
 
+def resolve_brand_code(raw_brand):
+    return resolve_brand_for_current_user(raw_brand)
+
+
 @bp.route("/")
 def index():
     current_month = request.args.get("month", pd.Timestamp.now().strftime("%Y-%m"))
-    payroll_results = process_payroll_from_db(current_month)
-    context = fetch_index_context(current_month, payroll_results)
+    brand_code = resolve_brand_code(request.args.get("brand"))
+    payroll_results = process_payroll_from_db(current_month, brand_code=brand_code)
+    context = fetch_index_context(current_month, payroll_results, brand_code=brand_code)
     return render_template(
         "index.html",
         current_month=current_month,
+        current_brand=brand_code,
+        current_brand_name=get_brand_name(brand_code),
+        available_brands=get_current_user_available_brands(),
         staff_summary=context["staff_summary"],
         records=context["records"],
         attendances=context["attendances"],
@@ -47,6 +56,7 @@ def index():
         has_excel_history=context["has_excel_history"],
         index_page_data={
             "currentMonth": current_month,
+            "currentBrand": brand_code,
             "monthInputSource": context["month_input_source"],
         },
     )
@@ -55,37 +65,42 @@ def index():
 @bp.route("/calculate_payroll", methods=["POST"])
 def calculate_payroll():
     calc_month = request.form.get("calc_month")
-    records = process_payroll_from_db(calc_month)
+    brand_code = resolve_brand_code(request.form.get("brand"))
+    records = process_payroll_from_db(calc_month, brand_code=brand_code)
     if not records:
         flash(f"找不到 {calc_month} 的數據，請確認已輸入資料。", "danger")
-        return redirect(url_for("main.index"))
+        return redirect(url_for("main.index", month=calc_month, brand=brand_code))
 
     totals = {
         "basic": sum(row.get("底薪", 0) for row in records),
         "comm": sum(row.get("總佣金", 0) for row in records),
         "net": sum(row.get("實發薪資", 0) for row in records),
     }
-    excel_file = f"Payroll_Summary_{calc_month}.xlsx"
-    output_dir = "outputs"
-    os.makedirs(output_dir, exist_ok=True)
-    pd.DataFrame(records).to_excel(os.path.join(output_dir, excel_file), index=False)
     flash(f"{calc_month} 月份計算成功！", "success")
     return render_template(
         "result.html",
         records=records,
         calc_month=calc_month,
-        excel_file=excel_file,
+        current_brand=brand_code,
+        current_brand_name=get_brand_name(brand_code),
         totals=totals,
     )
 
 
 @bp.route("/view_payslip/<int:idx>/<month>")
 def view_payslip(idx, month):
-    records = process_payroll_from_db(month)
+    brand_code = resolve_brand_code(request.args.get("brand"))
+    records = process_payroll_from_db(month, brand_code=brand_code)
     if records and idx < len(records):
-        return render_template("payslip.html", emp=records[idx], month=month)
+        return render_template(
+            "payslip.html",
+            emp=records[idx],
+            month=month,
+            current_brand=brand_code,
+            current_brand_name=get_brand_name(brand_code),
+        )
     flash("找不到該薪資紀錄", "danger")
-    return redirect(url_for("main.index"))
+    return redirect(url_for("main.index", month=month, brand=brand_code))
 
 
 @bp.route("/download/<filename>")
@@ -93,32 +108,70 @@ def download_file(filename):
     return send_file(os.path.join("outputs", filename), as_attachment=True)
 
 
-@bp.route("/print_all/<calc_month>")
-def print_all_payslips(calc_month):
-    records = process_payroll_from_db(calc_month)
+@bp.route("/download_payroll")
+def download_payroll():
+    calc_month = request.args.get("month", pd.Timestamp.now().strftime("%Y-%m"))
+    brand_code = resolve_brand_code(request.args.get("brand"))
+    records = process_payroll_from_db(calc_month, brand_code=brand_code)
     if not records:
         flash(f"找不到 {calc_month} 的薪資資料，請先計算！", "danger")
-        return redirect(url_for("main.index"))
-    return render_template("print_all.html", records=records, month=calc_month)
+        return redirect(url_for("main.index", month=calc_month, brand=brand_code))
+
+    output = io.BytesIO()
+    pd.DataFrame(records).to_excel(output, index=False)
+    output.seek(0)
+    filename = f"Payroll_Summary_{calc_month}.xlsx"
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name=filename,
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+
+
+@bp.route("/print_all/<calc_month>")
+def print_all_payslips(calc_month):
+    brand_code = resolve_brand_code(request.args.get("brand"))
+    records = process_payroll_from_db(calc_month, brand_code=brand_code)
+    if not records:
+        flash(f"找不到 {calc_month} 的薪資資料，請先計算！", "danger")
+        return redirect(url_for("main.index", month=calc_month, brand=brand_code))
+    return render_template(
+        "print_all.html",
+        records=records,
+        month=calc_month,
+        current_brand=brand_code,
+        current_brand_name=get_brand_name(brand_code),
+    )
 
 
 @bp.route("/validate")
 def validate_data():
     current_month = request.args.get("month", pd.Timestamp.now().strftime("%Y-%m"))
-    results = perform_validation(current_month)
+    brand_code = resolve_brand_code(request.args.get("brand"))
+    results = perform_validation(current_month, brand_code=brand_code)
     summary = {
         "total": len(results),
         "matched": sum(1 for row in results if "✅" in row.get("status", "")),
         "mismatched": sum(1 for row in results if "❌" in row.get("status", "")),
         "missing": sum(1 for row in results if "❓" in row.get("status", "")),
     }
-    return render_template("validation.html", results=results, current_month=current_month, summary=summary)
+    return render_template(
+        "validation.html",
+        results=results,
+        current_month=current_month,
+        current_brand=brand_code,
+        current_brand_name=get_brand_name(brand_code),
+        available_brands=get_current_user_available_brands(),
+        summary=summary,
+    )
 
 
 @bp.route("/download_validation")
 def download_validation():
     current_month = request.args.get("month", pd.Timestamp.now().strftime("%Y-%m"))
-    results = perform_validation(current_month)
+    brand_code = resolve_brand_code(request.args.get("brand"))
+    results = perform_validation(current_month, brand_code=brand_code)
 
     export_cols = [
         ("month", "月份"),
@@ -164,37 +217,95 @@ def download_validation():
         rows.append(row)
 
     df = pd.DataFrame(rows)
-    os.makedirs("outputs", exist_ok=True)
-    output_path = os.path.join("outputs", "Validation_Report.xlsx")
-    df.to_excel(output_path, index=False)
-    return send_from_directory("outputs", "Validation_Report.xlsx", as_attachment=True)
+    output = io.BytesIO()
+    df.to_excel(output, index=False)
+    output.seek(0)
+    filename = f"Validation_Report_{current_month}.xlsx"
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name=filename,
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
 
 
 @bp.route("/upload_and_import", methods=["POST"])
 def upload_and_import():
     calc_month = request.form.get("calc_month")
+    brand_code = resolve_brand_code(request.form.get("brand"))
     update_emp = request.form.get("update_emp") == "on"
     if "excel_file" not in request.files:
         flash("❌ 未選擇檔案", "danger")
-        return redirect(url_for("main.index", month=calc_month))
+        return redirect(url_for("main.index", month=calc_month, brand=brand_code))
 
     file = request.files["excel_file"]
     if file.filename == "":
         flash("❌ 未選擇檔案", "danger")
-        return redirect(url_for("main.index", month=calc_month))
+        return redirect(url_for("main.index", month=calc_month, brand=brand_code))
 
-    original_filename = secure_filename(file.filename)
-    file_path = os.path.join(UPLOAD_FOLDER, original_filename)
-    file.save(file_path)
-    success, message = process_excel_import(file_path, calc_month, update_emp=update_emp)
+    original_filename = os.path.basename(file.filename).strip()
+    invalid_chars = '<>:"/\\|?*'
+    original_filename = "".join("_" if ch in invalid_chars else ch for ch in original_filename).rstrip(". ")
+    if not original_filename:
+        flash("❌ 檔名不合法", "danger")
+        return redirect(url_for("main.index", month=calc_month, brand=brand_code))
+
+    month_key = (calc_month or pd.Timestamp.now().strftime("%Y-%m")).replace("-", "")
+    archived_filename = original_filename
+    if not archived_filename.startswith(month_key):
+        archived_filename = f"{month_key} {archived_filename}"
+
+    # Keep human-readable history names; same-name uploads will overwrite existing files.
+    name_root, ext = os.path.splitext(archived_filename)
+    if not ext:
+        ext = ".xlsx"
+    archived_filename = f"{name_root}{ext}"
+
+    temp_filename = f".__uploadcheck__{archived_filename}"
+    temp_file_path = os.path.join(HISTORY_FOLDER, temp_filename)
+    file.save(temp_file_path)
+
+    is_valid_brand, detected_brand, brand_error = validate_import_brand(
+        temp_file_path,
+        brand_code,
+        original_filename=original_filename,
+    )
+    if not is_valid_brand:
+        try:
+            os.remove(temp_file_path)
+        except OSError:
+            pass
+        flash(f"❌ {brand_error}", "danger")
+        return redirect(url_for("main.index", month=calc_month, brand=brand_code))
+
+    is_valid_month, detected_month, month_error = validate_import_month(
+        temp_file_path,
+        calc_month,
+        original_filename=original_filename,
+    )
+    if not is_valid_month:
+        try:
+            os.remove(temp_file_path)
+        except OSError:
+            pass
+        flash(f"❌ {month_error}", "danger")
+        return redirect(url_for("main.index", month=calc_month, brand=brand_code))
+
+    file_path = os.path.join(HISTORY_FOLDER, archived_filename)
+    if os.path.exists(file_path):
+        os.remove(file_path)
+    os.replace(temp_file_path, file_path)
+    success, message = dispatch_import(file_path, calc_month, brand_code=brand_code, update_emp=update_emp)
     try:
         log_audit(
             "import_excel",
             "PayrollImport",
-            record_id=original_filename,
+            record_id=archived_filename,
             new_value={
                 "month": calc_month,
-                "filename": original_filename,
+                "brand": brand_code,
+                "filename": archived_filename,
+                "original_filename": original_filename,
                 "update_emp": bool(update_emp),
                 "success": bool(success),
                 "message": message,
@@ -205,11 +316,11 @@ def upload_and_import():
     except Exception:
         pass
     if success:
-        set_month_input_source(calc_month, "excel")
+        set_month_input_source(calc_month, "excel", brand_code=brand_code)
         flash("✅ 檔案已上傳至 history 並成功匯入數據！", "success")
     else:
-        flash(f"⚠️ 檔案已上傳但匯入失敗: {message}", "warning")
-    return redirect(url_for("main.index", month=calc_month))
+        flash(f"⚠️ 檔案已上傳至 history 但匯入失敗: {message}", "warning")
+    return redirect(url_for("main.index", month=calc_month, brand=brand_code))
 
 
 @bp.route("/login", methods=["GET", "POST"])

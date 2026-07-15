@@ -7,14 +7,14 @@
     <div class="col-12">
         <div class="card app-card mb-4 border-primary" id="payroll-workflow-panel">
             <div class="card-header bg-primary text-white">
-                <span class="fs-5">⚙️ 1. 薪資結算主控台</span>
+                <span class="fs-5">⚙️ 1. 薪資結算主控台 <span class="badge bg-light text-primary fw-bold ms-2">{{ current_brand_name }}</span></span>
             </div>
             <div class="card-body">
                 <div class="mb-4">
                     <label class="form-label fw-bold text-primary">1. 選擇結算月份</label>
                     <input class="form-control border-primary bg-light" type="month" 
                            value="{{ current_month }}" 
-                           onchange="window.location.href='/?month=' + this.value" required>
+                           onchange="window.location.href='/?month=' + this.value + '&brand={{ current_brand }}'" required>
                 </div>
 
                 {% if attendances or staff_summary %}
@@ -29,6 +29,7 @@
                         
                         <form action="/calculate_payroll" method="POST" class="mb-2">
                             <input type="hidden" name="calc_month" value="{{ current_month }}">
+                            <input type="hidden" name="brand" value="{{ current_brand }}">
                             <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">
                                 🚀 2. 進行薪資結算 (下一步)
                             </button>
@@ -49,7 +50,10 @@
                             <p class="small text-muted mb-3">如需用新的 Excel 覆蓋本月資料，可在這裡重新匯入。</p>
                             <form action="/upload_and_import" method="POST" enctype="multipart/form-data">
                                 <input type="hidden" name="calc_month" value="{{ current_month }}">
-                                <input class="form-control form-control-sm border-danger mb-2" type="file" name="excel_file" accept=".xlsx, .xls" required>
+                                <input type="hidden" name="brand" value="{{ current_brand }}">
+                                <input class="form-control form-control-sm border-danger mb-2 js-brand-file-input" type="file" name="excel_file" accept=".xlsx, .xls" required>
+                                <div class="alert alert-warning py-2 px-3 small mb-2 d-none js-brand-file-warning"></div>
+                                <div class="alert alert-warning py-2 px-3 small mb-2 d-none js-month-file-warning"></div>
                                 <button type="submit" class="btn btn-danger btn-sm w-100 fw-bold mb-2">
                                     ⚠️ 確認覆蓋並重新匯入
                                 </button>
@@ -60,7 +64,7 @@
                                     </label>
                                 </div>
                             </form>
-                            <a href="/validate?month={{ current_month }}" class="btn btn-outline-dark btn-sm w-100 fw-bold mt-2">
+                            <a href="/validate?month={{ current_month }}&brand={{ current_brand }}" class="btn btn-outline-dark btn-sm w-100 fw-bold mt-2">
                                 🔍 歷史數據自動校對
                             </a>
                         </div>
@@ -75,7 +79,7 @@
                                 <button class="btn btn-outline-success text-start" type="button" data-bs-toggle="modal" data-bs-target="#newSalesGroupModal" onclick="clearAttendanceModal()">
                                     新增銷售據點 / 單據資料
                                 </button>
-                                <a class="btn btn-outline-primary text-start" href="/settings?month={{ current_month }}">設定本月時薪 / 佣金覆寫</a>
+                                <a class="btn btn-outline-primary text-start" href="/settings?month={{ current_month }}&brand={{ current_brand }}">設定本月時薪 / 佣金覆寫</a>
                             </div>
                         </div>
                     </div>
@@ -95,7 +99,10 @@
                         <p class="small text-muted mb-3">適合仍以 Excel 為主的月份作業。匯入後再回到系統內覆核與修正。</p>
                         <form action="/upload_and_import" method="POST" enctype="multipart/form-data">
                             <input type="hidden" name="calc_month" value="{{ current_month }}">
-                            <input class="form-control border-success mb-2" type="file" name="excel_file" accept=".xlsx, .xls" required>
+                            <input type="hidden" name="brand" value="{{ current_brand }}">
+                            <input class="form-control border-success mb-2 js-brand-file-input" type="file" name="excel_file" accept=".xlsx, .xls" required>
+                            <div class="alert alert-warning py-2 px-3 small mb-2 d-none js-brand-file-warning"></div>
+                            <div class="alert alert-warning py-2 px-3 small mb-2 d-none js-month-file-warning"></div>
                             <div class="form-check form-switch bg-white p-2 rounded border mb-2">
                                 <input class="form-check-input ms-0 me-2" type="checkbox" name="update_emp" id="updateEmpCheck" checked>
                                 <label class="form-check-label fw-bold text-primary" for="updateEmpCheck">
@@ -109,7 +116,7 @@
                                 📤 匯入 {{ current_month }} 資料
                             </button>
                         </form>
-                        <a href="/validate?month={{ current_month }}" class="btn btn-outline-dark w-100 fw-bold shadow-sm mt-2">
+                        <a href="/validate?month={{ current_month }}&brand={{ current_brand }}" class="btn btn-outline-dark w-100 fw-bold shadow-sm mt-2">
                             🔍 歷史數據自動校對
                         </a>
                     </div>
@@ -124,8 +131,8 @@
                             <button class="btn btn-outline-success text-start" type="button" data-bs-toggle="modal" data-bs-target="#newSalesGroupModal" onclick="clearAttendanceModal()">
                                 新增銷售據點 / 單據資料
                             </button>
-                            <a class="btn btn-outline-primary text-start" href="/settings?month={{ current_month }}">設定本月時薪 / 佣金覆寫</a>
-                            <a class="btn btn-outline-secondary text-start" href="/manage_locations">維護標準店鋪與人事主檔</a>
+                            <a class="btn btn-outline-primary text-start" href="/settings?month={{ current_month }}&brand={{ current_brand }}">設定本月時薪 / 佣金覆寫</a>
+                            <a class="btn btn-outline-secondary text-start" href="/manage_locations?brand={{ current_brand }}">維護標準店鋪與人事主檔</a>
                         </div>
                     </div>
 
@@ -147,9 +154,10 @@
             <div class="fw-bold">已完成修正後，可直接校對或重算 {{ current_month }} 薪資</div>
         </div>
         <div class="quick-action-buttons">
-            <a href="/settings?month={{ current_month }}" class="btn btn-outline-secondary">檢查本月覆寫</a>
+            <a href="/settings?month={{ current_month }}&brand={{ current_brand }}" class="btn btn-outline-secondary">檢查本月覆寫</a>
             <form action="/calculate_payroll" method="POST" class="m-0">
                 <input type="hidden" name="calc_month" value="{{ current_month }}">
+                <input type="hidden" name="brand" value="{{ current_brand }}">
                 <button type="submit" class="btn btn-success fw-bold">立即重新計算薪資</button>
             </form>
         </div>
@@ -561,6 +569,7 @@
 </div>
 
 <script id="index-page-data" type="application/json">{{ index_page_data | tojson }}</script>
+<script id="brand-list-data" type="application/json">{{ available_brands | tojson }}</script>
 <script src="{{ url_for('static', filename='index.js') }}"></script>
 <script>
     (function() {
@@ -585,6 +594,118 @@
 
         modeSelect.addEventListener('change', updateMode);
         updateMode();
+    })();
+
+    (function() {
+        const pageDataEl = document.getElementById('index-page-data');
+        const brandDataEl = document.getElementById('brand-list-data');
+        if (!pageDataEl || !brandDataEl) {
+            return;
+        }
+
+        const pageData = JSON.parse(pageDataEl.textContent || '{}');
+        const availableBrands = JSON.parse(brandDataEl.textContent || '[]');
+        const currentBrand = (pageData.currentBrand || '').toLowerCase();
+        const currentBrandName = (availableBrands.find((item) => item.brand_code === currentBrand) || {}).brand_name || currentBrand;
+        const currentMonth = String(pageData.currentMonth || '');
+        const fileInputs = document.querySelectorAll('.js-brand-file-input');
+
+        function getBrandKeywords(brand) {
+            const code = String(brand.brand_code || '').toLowerCase();
+            const name = String(brand.brand_name || '').toLowerCase();
+            const keywords = new Set([code, name]);
+
+            if (code === 'century_field') {
+                keywords.add('century');
+                keywords.add('field');
+                keywords.add('century field');
+            }
+            if (code === 'toshiba') {
+                keywords.add('toshiba');
+            }
+
+            return Array.from(keywords).filter(Boolean);
+        }
+
+        const brandKeywords = availableBrands.map((brand) => ({
+            code: String(brand.brand_code || '').toLowerCase(),
+            name: brand.brand_name || brand.brand_code,
+            keywords: getBrandKeywords(brand),
+        }));
+
+        function detectBrandByFilename(filename) {
+            const lowered = String(filename || '').toLowerCase();
+            for (const brand of brandKeywords) {
+                if (brand.keywords.some((keyword) => keyword && lowered.includes(keyword))) {
+                    return brand;
+                }
+            }
+            return null;
+        }
+
+        function detectMonthByFilename(filename) {
+            const lowered = String(filename || '').toLowerCase();
+            const match = lowered.match(/(^|[^\d])(20\d{2})[-_\s/]?(0[1-9]|1[0-2])(?!\d)/);
+            if (!match) {
+                return null;
+            }
+            return `${match[2]}-${match[3]}`;
+        }
+
+        function updateBrandWarning(input) {
+            const warningEl = input.parentElement.querySelector('.js-brand-file-warning');
+            if (!warningEl) {
+                return;
+            }
+
+            const file = input.files && input.files[0];
+            if (!file) {
+                warningEl.classList.add('d-none');
+                warningEl.textContent = '';
+                return;
+            }
+
+            const detectedBrand = detectBrandByFilename(file.name);
+            if (detectedBrand && detectedBrand.code !== currentBrand) {
+                warningEl.textContent = `提醒：檔名看起來像「${detectedBrand.name}」品牌，但你目前選的是「${currentBrandName}」。請先確認品牌是否選對。`;
+                warningEl.classList.remove('d-none');
+                return;
+            }
+
+            warningEl.classList.add('d-none');
+            warningEl.textContent = '';
+        }
+
+        function updateMonthWarning(input) {
+            const warningEl = input.parentElement.querySelector('.js-month-file-warning');
+            if (!warningEl) {
+                return;
+            }
+
+            const file = input.files && input.files[0];
+            if (!file) {
+                warningEl.classList.add('d-none');
+                warningEl.textContent = '';
+                return;
+            }
+
+            const detectedMonth = detectMonthByFilename(file.name);
+            if (detectedMonth && currentMonth && detectedMonth !== currentMonth) {
+                warningEl.textContent = `提醒：檔名看起來像 ${detectedMonth} 月資料，但你目前選的是 ${currentMonth}。請先確認月份是否選對。`;
+                warningEl.classList.remove('d-none');
+                return;
+            }
+
+            warningEl.classList.add('d-none');
+            warningEl.textContent = '';
+        }
+
+        fileInputs.forEach((input) => {
+            input.addEventListener('change', function() {
+                updateBrandWarning(this);
+                updateMonthWarning(this);
+            });
+        });
     })();
 </script>
 {% endblock %}

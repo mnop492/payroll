@@ -6,6 +6,11 @@ HISTORY_FOLDER = "history"
 UPLOAD_FOLDER = "uploads"
 LOG_FOLDER = "logs"
 BACKUP_FOLDER = "backups"
+DEFAULT_BRAND_CODE = os.environ.get("PAYROLL_DEFAULT_BRAND", "century_field").strip().lower() or "century_field"
+SUPPORTED_BRANDS = {
+	"century_field": "Century Field",
+	"toshiba": "Toshiba",
+}
 ADMIN_USERS = {"admin", "auditor", "superuser"}
 DEFAULT_ADMIN_USERNAME = os.environ.get("PAYROLL_ADMIN_USERNAME", "admin")
 AUDIT_ADMIN_PASSWORD = os.environ.get("AUDIT_ADMIN_PASSWORD", "audit2026")

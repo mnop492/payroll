@@ -19,6 +19,7 @@ from blueprints.attendance import bp as attendance_bp
 from blueprints.main import bp as main_bp
 from blueprints.sales import bp as sales_bp
 from blueprints.settings import bp as settings_bp
+from blueprints.settings import start_auto_backup_worker
 from repository import ensure_core_tables
 from services import seed_default_admin_user
 
@@ -62,6 +63,10 @@ def create_app():
     app.register_blueprint(sales_bp)
     app.register_blueprint(settings_bp)
 
+    # Start nightly backup worker once per process.
+    if os.environ.get("WERKZEUG_RUN_MAIN") == "true" or not app.debug:
+        start_auto_backup_worker()
+
     @app.before_request
     def require_login():
         endpoint = request.endpoint or ""
@@ -82,4 +87,4 @@ app = create_app()
 if __name__ == "__main__":
     ssl_context = get_ssl_context()
     scheme = "https" if ssl_context else "http"
-    app.run(host="0.0.0.0", port=5001, debug=False, ssl_context=ssl_context)
+    app.run(host="0.0.0.0", port=5001, debug=True, ssl_context=ssl_context)

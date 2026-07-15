@@ -1,30 +1,123 @@
 import csv
 import io
 import json
+import logging
 import os
 import shutil
 import sqlite3
+import re
+import threading
+import time
 from datetime import datetime
+from urllib.parse import parse_qs, urlparse
 from werkzeug.security import generate_password_hash
 
 import pandas as pd
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 
-from app_config import BACKUP_FOLDER, DB_PATH, DEFAULT_ADMIN_USERNAME
-from repository import fetch_manage_locations_context, fetch_manage_products_context, fetch_settings_context, get_db_connection
-from services import admin_required, is_audit_admin, log_audit
+from app_config import BACKUP_FOLDER, DB_PATH, DEFAULT_ADMIN_USERNAME, DEFAULT_BRAND_CODE
+from repository import (
+    fetch_manage_locations_context,
+    fetch_manage_products_context,
+    fetch_settings_context,
+    get_all_brands,
+    get_auto_backup_settings,
+    get_available_brands,
+    get_brand_name,
+    get_db_connection,
+    get_user_brand_permissions_map,
+    grant_all_active_brands_to_user,
+    set_auto_backup_settings,
+    set_user_brand_permissions,
+    try_claim_auto_backup_run,
+)
+from services import admin_required, get_current_user_available_brands, is_audit_admin, log_audit, resolve_brand_for_current_user
 
 bp = Blueprint("settings", __name__)
+
+_auto_backup_worker_started = False
+_auto_backup_lock = threading.Lock()
+
+
+def _is_valid_backup_time(value):
+    return bool(re.fullmatch(r"(?:[01]\d|2[0-3]):[0-5]\d", str(value or "").strip()))
+
+
+def _create_backup_file(prefix="payroll_backup"):
+    os.makedirs(BACKUP_FOLDER, exist_ok=True)
+    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"{prefix}_{ts}.db"
+    target = os.path.join(BACKUP_FOLDER, filename)
+    shutil.copy2(DB_PATH, target)
+    return filename
+
+
+def _run_scheduled_backup_if_due():
+    settings = get_auto_backup_settings()
+    if not settings.get("enabled"):
+        return
+
+    backup_time = (settings.get("backup_time") or "02:00").strip()
+    if not _is_valid_backup_time(backup_time):
+        return
+
+    now = datetime.now()
+    today = now.strftime("%Y-%m-%d")
+    current_hhmm = now.strftime("%H:%M")
+    if current_hhmm < backup_time:
+        return
+
+    if not try_claim_auto_backup_run(today, current_hhmm):
+        return
+
+    filename = _create_backup_file(prefix="payroll_auto_backup")
+    logging.info("Nightly auto backup created: %s", filename)
+
+
+def start_auto_backup_worker():
+    global _auto_backup_worker_started
+    with _auto_backup_lock:
+        if _auto_backup_worker_started:
+            return
+
+        def _loop():
+            while True:
+                try:
+                    _run_scheduled_backup_if_due()
+                except Exception as exc:
+                    logging.exception("Auto backup worker error: %s", exc)
+                time.sleep(45)
+
+        t = threading.Thread(target=_loop, name="payroll-auto-backup", daemon=True)
+        t.start()
+        _auto_backup_worker_started = True
+
+
+def _resolve_brand_code():
+    candidate = (request.form.get("brand") or request.args.get("brand") or "").strip().lower()
+    if candidate:
+        return resolve_brand_for_current_user(candidate)
+    ref = request.referrer or ""
+    if ref:
+        qs = parse_qs(urlparse(ref).query)
+        ref_brand = (qs.get("brand", [""])[0] or "").strip().lower()
+        if ref_brand:
+            return resolve_brand_for_current_user(ref_brand)
+    return resolve_brand_for_current_user(DEFAULT_BRAND_CODE)
 
 
 @bp.route("/settings")
 def settings():
     current_month = request.args.get("month", pd.Timestamp.now().strftime("%Y-%m"))
-    employees, monthly_map, monthly_comm_map = fetch_settings_context(current_month)
+    brand_code = _resolve_brand_code()
+    employees, monthly_map, monthly_comm_map = fetch_settings_context(current_month, brand_code=brand_code)
     return render_template(
         "settings.html",
         employees=employees,
         current_month=current_month,
+        current_brand=brand_code,
+        current_brand_name=get_brand_name(brand_code),
+        available_brands=get_current_user_available_brands(),
         monthly_map=monthly_map,
         monthly_comm_map=monthly_comm_map,
     )
@@ -38,7 +131,12 @@ def manage_users():
         "SELECT id, username, is_admin, is_active, created_at, updated_at FROM Users ORDER BY username"
     ).fetchall()
     conn.close()
-    return render_template("manage_users.html", users=users)
+    return render_template(
+        "manage_users.html",
+        users=users,
+        available_brands=get_available_brands(),
+        user_brand_map=get_user_brand_permissions_map(),
+    )
 
 
 @bp.route("/manage_backups")
@@ -59,17 +157,13 @@ def manage_backups():
                 "mtime": datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M:%S"),
             }
         )
-    return render_template("manage_backups.html", files=files)
+    return render_template("manage_backups.html", files=files, auto_backup=get_auto_backup_settings())
 
 
 @bp.route("/create_backup", methods=["POST"])
 @admin_required
 def create_backup():
-    os.makedirs(BACKUP_FOLDER, exist_ok=True)
-    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"payroll_backup_{ts}.db"
-    target = os.path.join(BACKUP_FOLDER, filename)
-    shutil.copy2(DB_PATH, target)
+    filename = _create_backup_file(prefix="payroll_backup")
     try:
         log_audit(
             "backup",
@@ -82,6 +176,22 @@ def create_backup():
     except Exception:
         pass
     flash(f"✅ 已建立備份：{filename}", "success")
+    return redirect(url_for("settings.manage_backups"))
+
+
+@bp.route("/update_auto_backup", methods=["POST"])
+@admin_required
+def update_auto_backup():
+    enabled = request.form.get("enabled") == "on"
+    backup_time = (request.form.get("backup_time") or "02:00").strip()
+
+    if not _is_valid_backup_time(backup_time):
+        flash("⚠️ 自動備份時間格式錯誤，請使用 HH:MM（24 小時制）。", "danger")
+        return redirect(url_for("settings.manage_backups"))
+
+    set_auto_backup_settings(enabled=enabled, backup_time=backup_time)
+    state = "已啟用" if enabled else "已停用"
+    flash(f"✅ 每晚自動備份設定已更新：{state}，時間 {backup_time}", "success")
     return redirect(url_for("settings.manage_backups"))
 
 
@@ -134,6 +244,7 @@ def add_user():
             (username, generate_password_hash(password), is_admin),
         )
         conn.commit()
+        grant_all_active_brands_to_user(username)
         try:
             log_audit(
                 "create",
@@ -308,6 +419,7 @@ def delete_user(user_id):
         flash("⚠️ 不能刪除預設管理員", "warning")
         return redirect(url_for("settings.manage_users"))
 
+    conn.execute("DELETE FROM UserBrandPermissions WHERE username = ?", (old["username"],))
     conn.execute("DELETE FROM Users WHERE id = ?", (user_id,))
     conn.commit()
     conn.close()
@@ -326,24 +438,62 @@ def delete_user(user_id):
     return redirect(url_for("settings.manage_users"))
 
 
+@bp.route("/update_user_brands", methods=["POST"])
+@admin_required
+def update_user_brands():
+    user_id = request.form.get("id")
+    brand_codes = request.form.getlist("brand_codes")
+
+    if not user_id:
+        flash("⚠️ 缺少使用者 ID", "danger")
+        return redirect(url_for("settings.manage_users"))
+
+    conn = get_db_connection()
+    user_row = conn.execute("SELECT username FROM Users WHERE id = ?", (user_id,)).fetchone()
+    conn.close()
+    if not user_row:
+        flash("⚠️ 找不到該使用者", "danger")
+        return redirect(url_for("settings.manage_users"))
+
+    username = user_row["username"]
+    if not brand_codes:
+        flash("⚠️ 至少要保留一個可操作品牌。", "warning")
+        return redirect(url_for("settings.manage_users"))
+    set_user_brand_permissions(username, brand_codes)
+    try:
+        log_audit(
+            "update",
+            "UserBrandPermissions",
+            record_id=user_id,
+            new_value={"username": username, "brand_codes": brand_codes},
+            user=session.get("user"),
+            ip=request.remote_addr,
+        )
+    except Exception:
+        pass
+    flash(f"✅ 已更新 {username} 的品牌授權", "success")
+    return redirect(url_for("settings.manage_users"))
+
+
 @bp.route("/update_monthly_rate", methods=["POST"])
 def update_monthly_rate():
+    brand_code = _resolve_brand_code()
     payroll_month = request.form.get("payroll_month") or pd.Timestamp.now().strftime("%Y-%m")
     nick_name = request.form.get("nick_name")
     monthly_rate_value = request.form.get("monthly_hourly_rate", "").strip()
 
     conn = get_db_connection()
     old = conn.execute(
-        "SELECT * FROM MonthlyRates WHERE payroll_month = ? AND nick_name = ?",
-        (payroll_month, nick_name),
+        "SELECT * FROM MonthlyRates WHERE brand_code = ? AND payroll_month = ? AND nick_name = ?",
+        (brand_code, payroll_month, nick_name),
     ).fetchone()
     old_dict = dict(old) if old else None
 
     if monthly_rate_value == "":
         if old:
             conn.execute(
-                "DELETE FROM MonthlyRates WHERE payroll_month = ? AND nick_name = ?",
-                (payroll_month, nick_name),
+                "DELETE FROM MonthlyRates WHERE brand_code = ? AND payroll_month = ? AND nick_name = ?",
+                (brand_code, payroll_month, nick_name),
             )
             conn.commit()
             try:
@@ -357,20 +507,20 @@ def update_monthly_rate():
         hourly_rate = float(monthly_rate_value)
         if old:
             conn.execute(
-                "UPDATE MonthlyRates SET hourly_rate = ? WHERE payroll_month = ? AND nick_name = ?",
-                (hourly_rate, payroll_month, nick_name),
+                "UPDATE MonthlyRates SET hourly_rate = ? WHERE brand_code = ? AND payroll_month = ? AND nick_name = ?",
+                (hourly_rate, brand_code, payroll_month, nick_name),
             )
             action = "update"
         else:
             conn.execute(
-                "INSERT INTO MonthlyRates (payroll_month, nick_name, hourly_rate) VALUES (?, ?, ?)",
-                (payroll_month, nick_name, hourly_rate),
+                "INSERT INTO MonthlyRates (brand_code, payroll_month, nick_name, hourly_rate) VALUES (?, ?, ?, ?)",
+                (brand_code, payroll_month, nick_name, hourly_rate),
             )
             action = "create"
         conn.commit()
         new = conn.execute(
-            "SELECT * FROM MonthlyRates WHERE payroll_month = ? AND nick_name = ?",
-            (payroll_month, nick_name),
+            "SELECT * FROM MonthlyRates WHERE brand_code = ? AND payroll_month = ? AND nick_name = ?",
+            (brand_code, payroll_month, nick_name),
         ).fetchone()
         try:
             log_audit(action, "MonthlyRates", record_id=f"{payroll_month}:{nick_name}", old_value=old_dict, new_value=dict(new) if new else None, user=None, ip=request.remote_addr)
@@ -379,11 +529,12 @@ def update_monthly_rate():
         flash(f"✅ 已儲存 {nick_name} 的 {payroll_month} 月度時薪：${hourly_rate:.2f}", "success")
 
     conn.close()
-    return redirect(url_for("settings.settings", month=payroll_month))
+    return redirect(url_for("settings.settings", month=payroll_month, brand=brand_code))
 
 
 @bp.route("/update_employee", methods=["POST"])
 def update_employee():
+    brand_code = _resolve_brand_code()
     emp_id = request.form.get("id")
     full_name = request.form.get("full_name")
     hourly_rate = float(request.form.get("hourly_rate", 0))
@@ -397,39 +548,42 @@ def update_employee():
     if emp_id:
         conn = get_db_connection()
         try:
-            old = conn.execute("SELECT * FROM Employees WHERE id = ?", (emp_id,)).fetchone()
+            old = conn.execute("SELECT * FROM Employees WHERE id = ? AND brand_code = ?", (emp_id, brand_code)).fetchone()
+            if not old:
+                flash("⚠️ 找不到該品牌下的員工資料", "danger")
+                return redirect(url_for("settings.settings", month=payroll_month, brand=brand_code))
             old_dict = dict(old) if old else None
             nick_name = old["nick_name"] if old else None
             conn.execute(
                 """
                 UPDATE Employees
                 SET full_name = ?, hourly_rate = ?, allowance = ?, commission_rate = ?, mpf_start_month = ?
-                WHERE id = ?
+                WHERE id = ? AND brand_code = ?
                 """,
-                (full_name, hourly_rate, allowance, commission_rate, mpf_start_month, emp_id),
+                (full_name, hourly_rate, allowance, commission_rate, mpf_start_month, emp_id, brand_code),
             )
             conn.commit()
             if nick_name:
                 if monthly_hourly_rate == "" and monthly_commission_rate == "":
                     conn.execute(
-                        "DELETE FROM MonthlyRates WHERE payroll_month = ? AND nick_name = ?",
-                        (payroll_month, nick_name),
+                        "DELETE FROM MonthlyRates WHERE brand_code = ? AND payroll_month = ? AND nick_name = ?",
+                        (brand_code, payroll_month, nick_name),
                     )
                 else:
                     hr_val = float(monthly_hourly_rate) if monthly_hourly_rate != "" else None
                     comm_val = float(monthly_commission_rate) if monthly_commission_rate != "" else None
                     conn.execute(
                         """
-                        INSERT INTO MonthlyRates (payroll_month, nick_name, hourly_rate, commission_rate)
-                        VALUES (?, ?, ?, ?)
-                        ON CONFLICT(payroll_month, nick_name) DO UPDATE SET
+                        INSERT INTO MonthlyRates (brand_code, payroll_month, nick_name, hourly_rate, commission_rate)
+                        VALUES (?, ?, ?, ?, ?)
+                        ON CONFLICT(brand_code, payroll_month, nick_name) DO UPDATE SET
                         hourly_rate = excluded.hourly_rate,
                         commission_rate = excluded.commission_rate
                         """,
-                        (payroll_month, nick_name, hr_val, comm_val),
+                        (brand_code, payroll_month, nick_name, hr_val, comm_val),
                     )
                 conn.commit()
-            new = conn.execute("SELECT * FROM Employees WHERE id = ?", (emp_id,)).fetchone()
+            new = conn.execute("SELECT * FROM Employees WHERE id = ? AND brand_code = ?", (emp_id, brand_code)).fetchone()
             try:
                 log_audit("update", "Employees", record_id=emp_id, old_value=old_dict, new_value=dict(new) if new else None, user=None, ip=request.remote_addr)
             except Exception:
@@ -439,19 +593,20 @@ def update_employee():
             flash(f"⚠️ 更新失敗：{str(exc)}", "danger")
         finally:
             conn.close()
-    return redirect(url_for("settings.settings", month=payroll_month))
+    return redirect(url_for("settings.settings", month=payroll_month, brand=brand_code))
 
 
 @bp.route("/save_special_comm", methods=["POST"])
 def save_special_comm():
+    brand_code = _resolve_brand_code()
     model = request.form.get("model").strip()
     start = request.form.get("start")
     end = request.form.get("end")
     rate = request.form.get("rate")
     conn = get_db_connection()
     cursor = conn.execute(
-        "INSERT INTO SpecialCommissions (model, start_month, end_month, rate) VALUES (?, ?, ?, ?)",
-        (model, start, end, float(rate)),
+        "INSERT INTO SpecialCommissions (brand_code, model, start_month, end_month, rate) VALUES (?, ?, ?, ?, ?)",
+        (brand_code, model, start, end, float(rate)),
     )
     conn.commit()
     try:
@@ -460,58 +615,69 @@ def save_special_comm():
         pass
     conn.close()
     flash(f"已成功加入 {model} 的特殊佣金規則", "success")
-    return redirect(url_for("settings.settings"))
+    return redirect(url_for("settings.settings", brand=brand_code))
 
 
 @bp.route("/delete_special_comm/<int:id>")
 def delete_special_comm(id):
+    brand_code = _resolve_brand_code()
     conn = get_db_connection()
-    old = conn.execute("SELECT * FROM SpecialCommissions WHERE id = ?", (id,)).fetchone()
-    conn.execute("DELETE FROM SpecialCommissions WHERE id = ?", (id,))
+    old = conn.execute("SELECT * FROM SpecialCommissions WHERE id = ? AND brand_code = ?", (id, brand_code)).fetchone()
+    conn.execute("DELETE FROM SpecialCommissions WHERE id = ? AND brand_code = ?", (id, brand_code))
     conn.commit()
     conn.close()
     try:
         log_audit("delete", "SpecialCommissions", record_id=id, old_value=dict(old) if old else None, user=None, ip=request.remote_addr)
     except Exception:
         pass
-    return redirect(request.referrer or url_for("settings.manage_products"))
+    return redirect(request.referrer or url_for("settings.manage_products", brand=brand_code))
 
 
 @bp.route("/update_emp_mpf", methods=["POST"])
 def update_emp_mpf():
+    brand_code = _resolve_brand_code()
     name = request.form.get("name")
     start_month = request.form.get("start_month")
     conn = get_db_connection()
-    old = conn.execute("SELECT * FROM Employees WHERE nick_name = ?", (name,)).fetchone()
-    conn.execute("UPDATE Employees SET mpf_start_month = ? WHERE nick_name = ?", (start_month, name))
+    old = conn.execute("SELECT * FROM Employees WHERE brand_code = ? AND nick_name = ?", (brand_code, name)).fetchone()
+    conn.execute("UPDATE Employees SET mpf_start_month = ? WHERE brand_code = ? AND nick_name = ?", (start_month, brand_code, name))
     conn.commit()
-    new = conn.execute("SELECT * FROM Employees WHERE nick_name = ?", (name,)).fetchone()
+    new = conn.execute("SELECT * FROM Employees WHERE brand_code = ? AND nick_name = ?", (brand_code, name)).fetchone()
     try:
         log_audit("update", "Employees", record_id=new["id"] if new else None, old_value=dict(old) if old else None, new_value=dict(new) if new else None, user=None, ip=request.remote_addr)
     except Exception:
         pass
     conn.close()
     flash(f"已更新 {name} 的 MPF 起扣月份", "success")
-    return redirect(url_for("settings.settings"))
+    return redirect(url_for("settings.settings", brand=brand_code))
 
 
 @bp.route("/manage_products")
 def manage_products():
-    products, special_rules = fetch_manage_products_context()
-    return render_template("manage_products.html", products=products, special_rules=special_rules)
+    brand_code = _resolve_brand_code()
+    products, special_rules = fetch_manage_products_context(brand_code=brand_code)
+    return render_template(
+        "manage_products.html",
+        products=products,
+        special_rules=special_rules,
+        current_brand=brand_code,
+        current_brand_name=get_brand_name(brand_code),
+        available_brands=get_current_user_available_brands(),
+    )
 
 
 @bp.route("/update_product_config", methods=["POST"])
 def update_product_config():
+    brand_code = _resolve_brand_code()
     model = request.form.get("model")
     update_type = request.form.get("update_type")
     rate = float(request.form.get("rate"))
     conn = get_db_connection()
     if update_type == "permanent":
-        old = conn.execute("SELECT * FROM Products WHERE model = ?", (model,)).fetchone()
-        conn.execute("UPDATE Products SET commission_rate = ? WHERE model = ?", (rate, model))
+        old = conn.execute("SELECT * FROM Products WHERE brand_code = ? AND model = ?", (brand_code, model)).fetchone()
+        conn.execute("UPDATE Products SET commission_rate = ? WHERE brand_code = ? AND model = ?", (rate, brand_code, model))
         conn.commit()
-        new = conn.execute("SELECT * FROM Products WHERE model = ?", (model,)).fetchone()
+        new = conn.execute("SELECT * FROM Products WHERE brand_code = ? AND model = ?", (brand_code, model)).fetchone()
         try:
             log_audit("update", "Products", record_id=new["id"] if new else None, old_value=dict(old) if old else None, new_value=dict(new) if new else None, user=None, ip=request.remote_addr)
         except Exception:
@@ -523,10 +689,10 @@ def update_product_config():
         if not start or not end:
             flash("❌ 設定特佣時必須填寫開始與結束月份", "danger")
             conn.close()
-            return redirect(url_for("settings.manage_products"))
+            return redirect(url_for("settings.manage_products", brand=brand_code))
         cursor = conn.execute(
-            "INSERT INTO SpecialCommissions (model, start_month, end_month, rate) VALUES (?, ?, ?, ?)",
-            (model, start, end, rate),
+            "INSERT INTO SpecialCommissions (brand_code, model, start_month, end_month, rate) VALUES (?, ?, ?, ?, ?)",
+            (brand_code, model, start, end, rate),
         )
         conn.commit()
         try:
@@ -535,46 +701,172 @@ def update_product_config():
             pass
         flash(f"✅ 已成功為 {model} 加入特佣規則 ({start} 至 {end})", "success")
     conn.close()
-    return redirect(url_for("settings.manage_products"))
+    return redirect(url_for("settings.manage_products", brand=brand_code))
 
 
 @bp.route("/bulk_update_products", methods=["POST"])
 def bulk_update_products():
+    brand_code = _resolve_brand_code()
     product_ids = request.form.getlist("product_ids")
     new_rate = request.form.get("new_rate")
     if not product_ids or not new_rate:
         flash("請先勾選產品並輸入新的佣金比例！", "warning")
-        return redirect(url_for("settings.manage_products"))
+        return redirect(url_for("settings.manage_products", brand=brand_code))
 
     conn = get_db_connection()
     placeholders = ",".join("?" * len(product_ids))
-    old_rows = conn.execute(f"SELECT * FROM Products WHERE id IN ({placeholders})", product_ids).fetchall()
-    params = [float(new_rate)] + product_ids
-    conn.execute(f"UPDATE Products SET commission_rate = ? WHERE id IN ({placeholders})", params)
+    old_rows = conn.execute(
+        f"SELECT * FROM Products WHERE brand_code = ? AND id IN ({placeholders})",
+        [brand_code] + product_ids,
+    ).fetchall()
+    conn.execute(
+        f"UPDATE Products SET commission_rate = ? WHERE brand_code = ? AND id IN ({placeholders})",
+        [float(new_rate), brand_code] + product_ids,
+    )
     conn.commit()
-    new_rows = conn.execute(f"SELECT * FROM Products WHERE id IN ({placeholders})", product_ids).fetchall()
+    new_rows = conn.execute(
+        f"SELECT * FROM Products WHERE brand_code = ? AND id IN ({placeholders})",
+        [brand_code] + product_ids,
+    ).fetchall()
     try:
         log_audit("bulk_update", "Products", record_id=None, old_value=[dict(row) for row in old_rows], new_value=[dict(row) for row in new_rows], user=None, ip=request.remote_addr)
     except Exception:
         pass
     conn.close()
     flash(f"✅ 成功將 {len(product_ids)} 件產品的永久佣金比例更新為 {float(new_rate) * 100}%！", "success")
-    return redirect(url_for("settings.manage_products"))
+    return redirect(url_for("settings.manage_products", brand=brand_code))
 
 
 @bp.route("/manage_locations")
 def manage_locations():
-    return render_template("manage_locations.html", locations=fetch_manage_locations_context())
+    brand_code = _resolve_brand_code()
+    return render_template(
+        "manage_locations.html",
+        locations=fetch_manage_locations_context(brand_code=brand_code),
+        current_brand=brand_code,
+        current_brand_name=get_brand_name(brand_code),
+        available_brands=get_current_user_available_brands(),
+    )
+
+
+@bp.route("/manage_brands")
+@admin_required
+def manage_brands():
+    brands = get_all_brands()
+    return render_template(
+        "manage_brands.html",
+        brands=brands,
+        default_brand_code=DEFAULT_BRAND_CODE,
+    )
+
+
+@bp.route("/add_brand", methods=["POST"])
+@admin_required
+def add_brand():
+    brand_code = (request.form.get("brand_code") or "").strip().lower()
+    brand_name = (request.form.get("brand_name") or "").strip()
+
+    if not brand_code or not re.fullmatch(r"[a-z0-9_]+", brand_code):
+        flash("⚠️ 品牌代碼只能包含小寫英數與底線。", "danger")
+        return redirect(url_for("settings.manage_brands"))
+    if not brand_name:
+        flash("⚠️ 請輸入品牌名稱。", "danger")
+        return redirect(url_for("settings.manage_brands"))
+
+    conn = get_db_connection()
+    try:
+        cursor = conn.execute(
+            """
+            INSERT INTO Brands (brand_code, brand_name, is_active)
+            VALUES (?, ?, 1)
+            """,
+            (brand_code, brand_name),
+        )
+        conn.commit()
+        try:
+            log_audit(
+                "create",
+                "Brands",
+                record_id=cursor.lastrowid,
+                new_value={"brand_code": brand_code, "brand_name": brand_name, "is_active": 1},
+                user=None,
+                ip=request.remote_addr,
+            )
+        except Exception:
+            pass
+        flash(f"✅ 已新增品牌：{brand_name} ({brand_code})", "success")
+    except sqlite3.IntegrityError:
+        flash("⚠️ 品牌代碼已存在。", "danger")
+    finally:
+        conn.close()
+
+    return redirect(url_for("settings.manage_brands"))
+
+
+@bp.route("/update_brand", methods=["POST"])
+@admin_required
+def update_brand():
+    brand_code = (request.form.get("brand_code") or "").strip().lower()
+    brand_name = (request.form.get("brand_name") or "").strip()
+    raw_is_active = request.form.get("is_active")
+
+    if not brand_code:
+        flash("⚠️ 缺少品牌代碼。", "danger")
+        return redirect(url_for("settings.manage_brands"))
+    if not brand_name:
+        flash("⚠️ 請輸入品牌名稱。", "danger")
+        return redirect(url_for("settings.manage_brands"))
+    if brand_code == DEFAULT_BRAND_CODE and is_active == 0:
+        flash("⚠️ 不能停用預設品牌。", "danger")
+        return redirect(url_for("settings.manage_brands"))
+
+    conn = get_db_connection()
+    old = conn.execute("SELECT * FROM Brands WHERE brand_code = ?", (brand_code,)).fetchone()
+    if not old:
+        conn.close()
+        flash("⚠️ 找不到指定品牌。", "danger")
+        return redirect(url_for("settings.manage_brands"))
+
+    if raw_is_active in {"0", "1"}:
+        is_active = 1 if raw_is_active == "1" else 0
+    else:
+        is_active = int(old["is_active"]) if old else 1
+
+    conn.execute(
+        "UPDATE Brands SET brand_name = ?, is_active = ?, updated_at = CURRENT_TIMESTAMP WHERE brand_code = ?",
+        (brand_name, is_active, brand_code),
+    )
+    conn.commit()
+    new = conn.execute("SELECT * FROM Brands WHERE brand_code = ?", (brand_code,)).fetchone()
+    conn.close()
+    try:
+        log_audit(
+            "update",
+            "Brands",
+            record_id=brand_code,
+            old_value=dict(old) if old else None,
+            new_value=dict(new) if new else None,
+            user=None,
+            ip=request.remote_addr,
+        )
+    except Exception:
+        pass
+    flash("✅ 品牌設定已更新", "success")
+    return redirect(url_for("settings.manage_brands"))
 
 
 @bp.route("/add_location", methods=["POST"])
 def add_location():
+    brand_code = _resolve_brand_code()
     name = request.form.get("name").strip()
     region = request.form.get("region")
     if name:
         conn = get_db_connection()
         try:
-            cursor = conn.execute("INSERT INTO Locations (name, region) VALUES (?, ?)", (name, region))
+            cursor = conn.execute(
+                "INSERT INTO Locations (brand_code, name, region) VALUES (?, ?, ?)",
+                (brand_code, name, region),
+            )
             conn.commit()
             try:
                 log_audit("create", "Locations", record_id=cursor.lastrowid, new_value={"name": name, "region": region}, user=None, ip=request.remote_addr)
@@ -584,14 +876,15 @@ def add_location():
         except sqlite3.IntegrityError:
             flash("⚠️ 店鋪名稱已存在", "danger")
         conn.close()
-    return redirect(url_for("settings.manage_locations"))
+    return redirect(url_for("settings.manage_locations", brand=brand_code))
 
 
 @bp.route("/delete_location/<int:id>")
 def delete_location(id):
+    brand_code = _resolve_brand_code()
     conn = get_db_connection()
-    old = conn.execute("SELECT * FROM Locations WHERE id = ?", (id,)).fetchone()
-    conn.execute("DELETE FROM Locations WHERE id = ?", (id,))
+    old = conn.execute("SELECT * FROM Locations WHERE id = ? AND brand_code = ?", (id, brand_code)).fetchone()
+    conn.execute("DELETE FROM Locations WHERE id = ? AND brand_code = ?", (id, brand_code))
     conn.commit()
     conn.close()
     try:
@@ -599,21 +892,25 @@ def delete_location(id):
     except Exception:
         pass
     flash("🗑️ 店鋪已刪除", "info")
-    return redirect(url_for("settings.manage_locations"))
+    return redirect(url_for("settings.manage_locations", brand=brand_code))
 
 
 @bp.route("/update_location", methods=["POST"])
 def update_location():
+    brand_code = _resolve_brand_code()
     loc_id = request.form.get("id")
     name = request.form.get("name").strip()
     region = request.form.get("region")
     if loc_id and name:
         conn = get_db_connection()
         try:
-            old = conn.execute("SELECT * FROM Locations WHERE id = ?", (loc_id,)).fetchone()
-            conn.execute("UPDATE Locations SET name = ?, region = ? WHERE id = ?", (name, region, loc_id))
+            old = conn.execute("SELECT * FROM Locations WHERE id = ? AND brand_code = ?", (loc_id, brand_code)).fetchone()
+            conn.execute(
+                "UPDATE Locations SET name = ?, region = ? WHERE id = ? AND brand_code = ?",
+                (name, region, loc_id, brand_code),
+            )
             conn.commit()
-            new = conn.execute("SELECT * FROM Locations WHERE id = ?", (loc_id,)).fetchone()
+            new = conn.execute("SELECT * FROM Locations WHERE id = ? AND brand_code = ?", (loc_id, brand_code)).fetchone()
             try:
                 log_audit("update", "Locations", record_id=loc_id, old_value=dict(old) if old else None, new_value=dict(new) if new else None, user=None, ip=request.remote_addr)
             except Exception:
@@ -622,7 +919,7 @@ def update_location():
         except sqlite3.IntegrityError:
             flash("⚠️ 修改失敗：店鋪名稱可能與現有重複", "danger")
         conn.close()
-    return redirect(url_for("settings.manage_locations"))
+    return redirect(url_for("settings.manage_locations", brand=brand_code))
 
 
 @bp.route("/audit_logs")

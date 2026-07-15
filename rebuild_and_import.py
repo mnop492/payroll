@@ -213,9 +213,9 @@ def import_history(conn):
                     nick_name = str(row['Nick Name']).strip()
                     if nick_name and nick_name.lower() not in ['nan', '0', '']:
                         # 寫入資料庫：hours 存入底薪工時，ot_hours 存入有效加班
-                        cursor.execute('''INSERT INTO Attendance (payroll_month, nick_name, location, days_worked, hours, ot_hours) VALUES (?, ?, ?, ?, ?, ?)
-                                          ON CONFLICT(payroll_month, nick_name, location) DO UPDATE SET days_worked=excluded.days_worked, hours=excluded.hours, ot_hours=excluded.ot_hours''', 
-                                       (payroll_month, nick_name, str(row['Location']).strip(), int(row['Date']), float(row['Payable_Normal']), float(row['Payable_OT'])))
+                                cursor.execute('''INSERT INTO Attendance (brand_code, payroll_month, nick_name, location, days_worked, hours, ot_hours) VALUES ('century_field', ?, ?, ?, ?, ?, ?)
+                                                        ON CONFLICT(brand_code, payroll_month, nick_name, location) DO UPDATE SET days_worked=excluded.days_worked, hours=excluded.hours, ot_hours=excluded.ot_hours''', 
+                                                    (payroll_month, nick_name, str(row['Location']).strip(), int(row['Date']), float(row['Payable_Normal']), float(row['Payable_OT'])))
             except Exception as e: 
                 print(f"  └─ ⚠️ 無法讀取 工作表1 (考勤): {e}")
 
@@ -246,13 +246,13 @@ def import_history(conn):
                                 cursor.execute('''
                                     UPDATE Attendance 
                                     SET expenses = ?, adjustment = ?, attendance_bonus = ? 
-                                    WHERE payroll_month = ? AND nick_name = ? AND location LIKE ?
+                                    WHERE brand_code = 'century_field' AND payroll_month = ? AND nick_name = ? AND location LIKE ?
                                 ''', (exp, adj, att_bonus, payroll_month, nick_name, f"%{shop}%"))
                             else:
                                 # 如果 Excel 沒寫地點，才用保底的 LIMIT 1
                                 cursor.execute('''
                                     UPDATE Attendance SET expenses = ?, adjustment = ?, attendance_bonus = ? 
-                                    WHERE id = (SELECT id FROM Attendance WHERE payroll_month = ? AND nick_name = ? LIMIT 1)
+                                    WHERE id = (SELECT id FROM Attendance WHERE brand_code = 'century_field' AND payroll_month = ? AND nick_name = ? LIMIT 1)
                                 ''', (exp, adj, att_bonus, payroll_month, nick_name))
                 else:
                     print("  └─ ⚠️ 找不到 Total 表格的標題列 (跳過微調匯入)")

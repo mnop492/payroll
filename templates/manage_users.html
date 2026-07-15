@@ -37,6 +37,7 @@
           <tr>
             <th>使用者</th>
             <th>Admin</th>
+            <th>品牌授權</th>
             <th>啟用</th>
             <th>建立時間</th>
             <th>更新時間</th>
@@ -53,6 +54,25 @@
                 <input type="hidden" name="id" value="{{ u.id }}">
                 <input type="checkbox" name="is_admin" {% if u.is_admin %}checked{% endif %}>
                 <button class="btn btn-sm btn-outline-primary">儲存</button>
+              </form>
+            </td>
+            <td>
+              <form action="/update_user_brands" method="POST" class="d-flex flex-column gap-2">
+                <input type="hidden" name="id" value="{{ u.id }}">
+                <div class="d-flex flex-wrap gap-2">
+                  {% for b in available_brands %}
+                  <label class="form-check-label small border rounded px-2 py-1">
+                    <input
+                      class="form-check-input me-1"
+                      type="checkbox"
+                      name="brand_codes"
+                      value="{{ b.brand_code }}"
+                      {% if b.brand_code in user_brand_map.get(u.username, []) %}checked{% endif %}>
+                    {{ b.brand_name }}
+                  </label>
+                  {% endfor %}
+                </div>
+                <button class="btn btn-sm btn-outline-success align-self-start">儲存授權</button>
               </form>
             </td>
             <td>
