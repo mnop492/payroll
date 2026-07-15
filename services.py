@@ -263,9 +263,7 @@ def perform_validation(payroll_month_filter=None, brand_code="century_field"):
     brand_name = (SUPPORTED_BRANDS.get(brand_code, "") or "").lower()
 
     def _filename_matches_brand(filename):
-        if brand_code == DEFAULT_BRAND_CODE:
-            # Default brand keeps compatibility with historical files.
-            return True
+        # 移除向下相容邏輯，強制所有品牌（包含 Century Field）都必須比對檔名關鍵字
         return bool(brand_name) and (brand_name in filename.lower())
 
     for filename in sorted(os.listdir(HISTORY_FOLDER)):

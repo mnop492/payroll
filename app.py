@@ -23,6 +23,10 @@ from blueprints.settings import start_auto_backup_worker
 from repository import ensure_core_tables
 from services import seed_default_admin_user
 
+import warnings
+
+# Suppress the harmless openpyxl warning
+warnings.filterwarnings('ignore', category=UserWarning, module='openpyxl')
 
 def get_ssl_context():
     if not ENABLE_HTTPS:

@@ -110,28 +110,53 @@ def _looks_like_toshiba_sales(file_path, sheet_names):
 
 
 def detect_import_brand(file_path, original_filename=""):
-    """Best-effort brand detection used to block obvious cross-brand uploads."""
-    filename = clean_text(original_filename or file_path).lower()
-    if "toshiba" in filename:
-        return "toshiba"
-    if "century" in filename:
-        return "century_field"
+    """只根據檔名進行品牌辨識，不開啟 Excel 內容"""
+    # 確保檔名存在並轉為小寫
+    filename = str(original_filename or file_path).lower()
+    
+    # 1. 取得資料庫中最新的品牌對照表
+    supported_brands = get_supported_brands_from_db()
+    
+    # 2. 僅掃描檔名關鍵字
+    for brand_code, brand_name in supported_brands.items():
+        name_lower = brand_name.lower()          
+        code_lower = brand_code.lower()          
+        code_space = code_lower.replace("_", " ")
+        
+        # [精確比對] 檔名包含完整名稱或代碼
+        if name_lower in filename or code_lower in filename or code_space in filename:
+            return brand_code
+            
+        # [模糊比對] 針對多單字品牌，取第一個單字作為關鍵字
+        first_word = name_lower.split()[0]
+        if len(first_word) >= 4 and first_word in filename:
+            return brand_code
 
-    try:
-        sheet_names = pd.ExcelFile(file_path).sheet_names
-    except Exception:
-        return None
-
-    if _looks_like_toshiba_payroll(file_path, sheet_names) or _looks_like_toshiba_sales(file_path, sheet_names):
-        return "toshiba"
-
-    if "editable-sales-form" in sheet_names:
-        return "century_field"
-    if "Name List" in sheet_names and "Total" in sheet_names:
-        return "century_field"
-
+    # 如果檔名怎麼寫都沒命中，回傳 None (代表不阻擋，直接信任使用者選擇的品牌)
     return None
 
+def get_supported_brands_from_db():
+    """
+    從資料庫的 brand 資料表中動態讀取所有支援的品牌
+    回傳字典格式，例如：{'toshiba': 'Toshiba', 'ecovacs': 'Ecovacs'}
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        # 假設你的 brand 資料表欄位為 brand_code 與 brand_name
+        # (請根據你資料庫中實際的欄位名稱調整，例如 code / name)
+        cursor.execute("SELECT brand_code, brand_name FROM brand")
+        rows = cursor.fetchall()
+        
+        # 將每一行轉為字典的 key-value 對
+        # 因為使用了 sqlite3.Row，可以直接用欄位名稱存取
+        return {row['brand_code']: row['brand_name'] for row in rows}
+    except sqlite3.OperationalError as e:
+        # 預防資料表不存在或欄位不對時程式崩潰，提供安全備份
+        print(f"資料庫讀取品牌失敗: {e}")
+        return {}
+    finally:
+        conn.close()
 
 def validate_import_brand(file_path, selected_brand_code, original_filename=""):
     detected_brand = detect_import_brand(file_path, original_filename=original_filename)
@@ -140,10 +165,14 @@ def validate_import_brand(file_path, selected_brand_code, original_filename=""):
     if detected_brand == selected_brand_code:
         return True, detected_brand, None
 
-    detected_name = SUPPORTED_BRANDS.get(detected_brand, detected_brand)
-    selected_name = SUPPORTED_BRANDS.get(selected_brand_code, selected_brand_code)
-    return False, detected_brand, f"上傳檔案辨識為 {detected_name}，與目前選擇的品牌 {selected_name} 不一致，已阻止匯入。"
+    # 🌟 改為從資料庫動態獲取最新的品牌對照表
+    supported_brands = get_supported_brands_from_db()
 
+    # 取得顯示名稱（若資料庫中找不到，則以代碼當作預設值）
+    detected_name = supported_brands.get(detected_brand, detected_brand)
+    selected_name = supported_brands.get(selected_brand_code, selected_brand_code)
+    
+    return False, detected_brand, f"上傳檔案辨識為 {detected_name}，與目前選擇的品牌 {selected_name} 不一致，已阻止匯入。"
 
 def _normalize_header_name(value):
     return re.sub(r"\s+", " ", str(value or "")).strip().lower()
