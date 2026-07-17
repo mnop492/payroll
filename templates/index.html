@@ -165,82 +165,6 @@
 </div>
 {% endif %}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 {# --- 過濾時薪制與月薪制考勤 --- #}
 {% set hourly_attendances = attendances | selectattr("salary_type", "equalto", "hourly") | list %}
 {% set monthly_attendances = attendances | selectattr("salary_type", "equalto", "monthly") | list %}
@@ -331,14 +255,14 @@
                 </div>
             </div>
 
-            {# === 月薪制頁籤 === #}
+                        {# === 月薪制頁籤 === #}
             <div class="tab-pane fade" id="monthly-attendance" role="tabpanel" aria-labelledby="monthly-tab">
                 <div class="table-wrap">
                     <table class="table table-hover text-center align-middle mb-0 data-table">
                         <thead class="table-light">
                             <tr>
                                 <th style="width: 70px;">ID</th> <th>推廣員</th> <th>全名</th>
-                                <th>地點</th>
+                                <th>服務地點</th>
                                 <th class="text-primary fw-bold">固定月薪</th>
                                 <th class="text-success">報銷</th>
                                 <th>勤工獎</th>
@@ -350,7 +274,15 @@
                             {% for att in monthly_attendances %}
                             <tr>
                                 <td class="fw-bold">{{ loop.index }}</td> <td class="fw-bold text-primary">{{ att.nick_name }}</td> <td class="fw-bold">{{ att.full_name }}</td>
-                                <td><span class="badge bg-info text-dark">{{ att.location }}</span></td>
+                                <td>
+                                    {% set locs = att.location.split("、") %}
+                                    {% if locs | length > 1 %}                                                                                
+                                                                                <span class="badge bg-secondary" data-bs-toggle="tooltip" title="跨多個地點">{{ locs | length }} 個地點</span></br>
+                                                                                <span class="badge bg-info text-dark">{{ att.location }}</span>
+                                    {% else %}
+                                        <span class="badge bg-info text-dark">{{ att.location }}</span>
+                                    {% endif %}
+                                </td>
                                 <td class="text-primary fw-bold fs-5">${{ "{:,.0f}".format(att.monthly_salary) }}</td>
                                 <td class="text-success fw-bold">${{ "{:,.1f}".format(att.expenses) }}</td>
                                 <td>${{ "{:,.1f}".format(att.attendance_bonus or 0) }}</td>
@@ -358,7 +290,7 @@
                                 <td>
                                     <div class="btn-group">
                                         <button class="btn btn-sm btn-primary"
-                                            onclick="editAttendance('{{ att.nick_name }}', '{{ att.location }}', {{ att.days_worked }}, {{ att.hours }}, {{ att.ot_hours }}, {{ att.expenses or 0 }}, {{ att.adjustment or 0 }}, {{ att.attendance_bonus or 0 }}, {{ att.monthly_hourly_rate if att.monthly_hourly_rate is not none else 'null' }}, {{ att.default_hourly_rate }})">
+                                            onclick="editAttendance('{{ att.nick_name }}', '{{ att.location.split('、')[0] }}', {{ att.days_worked }}, {{ att.hours }}, {{ att.ot_hours }}, {{ att.expenses or 0 }}, {{ att.adjustment or 0 }}, {{ att.attendance_bonus or 0 }}, {{ att.monthly_hourly_rate if att.monthly_hourly_rate is not none else 'null' }}, {{ att.default_hourly_rate }})">
                                             修改
                                         </button>
                                         <form action="/delete_attendance/{{ att.id }}" method="POST" class="m-0" onsubmit="return confirm('確定刪除？')">

@@ -946,26 +946,62 @@ def fetch_index_context(current_month, payroll_results, brand_code=DEFAULT_BRAND
     emp_salary_type_map = {row["nick_name"]: row["salary_type"] or "hourly" for row in employees_rows}
     emp_monthly_salary_map = {row["nick_name"]: float(row["monthly_salary"] or 0) for row in employees_rows}
 
-    counted_monthly_basic = set()
-    
-    # ...
+        # 🌟 月薪制員工跨多地點時合併為一筆顯示
+    # 先為所有 attendance 補上基本資料
     for attendance in attendances:
         attendance["full_name"] = emp_full_map.get(attendance.get("nick_name"), "")
         attendance["monthly_hourly_rate"] = monthly_rate_map.get(attendance.get("nick_name"))
         attendance["default_hourly_rate"] = emp_default_hr_map.get(attendance.get("nick_name"), 0)
         attendance["salary_type"] = emp_salary_type_map.get(attendance.get("nick_name"), "hourly")
         attendance["monthly_salary"] = emp_monthly_salary_map.get(attendance.get("nick_name"), 0)
-        
-        # 🌟 新增：計算預估底薪
-        s_type = attendance["salary_type"]
-        if s_type == "monthly":
-            nick = attendance.get("nick_name")
-            if nick in counted_monthly_basic:
-                attendance["estimated_basic"] = 0
-            else:
-                attendance["estimated_basic"] = attendance["monthly_salary"]
-                counted_monthly_basic.add(nick)
+
+    # 合併月薪制：按 nick_name 聚合
+    monthly_merged = {}
+    hourly_attendances = []
+    for attendance in attendances:
+        if attendance["salary_type"] == "monthly":
+            nick = attendance["nick_name"]
+            if nick not in monthly_merged:
+                monthly_merged[nick] = {
+                    "id": attendance["id"],
+                    "nick_name": nick,
+                    "full_name": attendance["full_name"],
+                    "salary_type": "monthly",
+                    "monthly_salary": attendance["monthly_salary"],
+                    "monthly_hourly_rate": attendance["monthly_hourly_rate"],
+                    "default_hourly_rate": attendance["default_hourly_rate"],
+                    "locations": [],
+                    "expenses": 0,
+                    "adjustment": 0,
+                    "attendance_bonus": 0,
+                    "days_worked": 0,
+                    "hours": 0,
+                    "ot_hours": 0,
+                    "basic_pay_override": "",
+                    "allowance_override": "",
+                }
+            merged = monthly_merged[nick]
+            merged["locations"].append(attendance["location"])
+            merged["expenses"] += attendance.get("expenses", 0)
+            merged["adjustment"] += attendance.get("adjustment", 0)
+            merged["attendance_bonus"] += attendance.get("attendance_bonus", 0)
+            merged["days_worked"] += attendance.get("days_worked", 0)
+            merged["hours"] += attendance.get("hours", 0)
+            merged["ot_hours"] += attendance.get("ot_hours", 0)
         else:
+            hourly_attendances.append(attendance)
+
+    # 把合併後的月薪制加回去
+    for merged in monthly_merged.values():
+        merged["location"] = "、".join(merged.pop("locations"))
+        merged["estimated_basic"] = merged["monthly_salary"]
+        hourly_attendances.append(merged)
+
+    attendances = hourly_attendances
+
+    # 計算預估底薪（只對時薪制）
+    for attendance in attendances:
+        if attendance["salary_type"] != "monthly":
             eff_hr = attendance["monthly_hourly_rate"] if attendance["monthly_hourly_rate"] is not None else attendance["default_hourly_rate"]
             attendance["estimated_basic"] = attendance.get("hours", 0) * eff_hr
 

@@ -25,98 +25,175 @@
         </form>
     </div>
 
+    {% set hourly_emps = employees | selectattr('salary_type', 'ne', 'monthly') | list %}
+    {% set monthly_emps = employees | selectattr('salary_type', 'equalto', 'monthly') | list %}
+
     <div class="card app-card border-warning">
         <div class="card-header bg-warning text-dark fw-bold fs-5">
             📋 員工基礎薪酬與 MPF 設定
         </div>
         <div class="card-body p-0">
-            <div class="table-wrap">
-                <table class="table table-hover align-middle mb-0 text-center data-table">
-                    <thead class="table-light">
-                        <tr>
-                            <th>員工暱稱 (系統唯一)</th>
-                            <th>全名 (Full Name)</th>
-                            <th>計薪模式</th>
-                            <th>預設時薪 ($)</th>
-                            <th>本月覆寫時薪 ($)</th>
-                            <th>津貼 ($)</th>
-                            <th>預設佣金比例</th>
-                            <th class="text-primary">本月覆寫佣金</th> <th>MPF 起扣月份</th>
-                            <th class="text-end pe-4">操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="table-primary">
-                            <form action="/add_employee" method="POST" style="display: contents;">
-                                <input type="hidden" name="brand" value="{{ current_brand }}">
-                                <input type="hidden" name="payroll_month" value="{{ current_month }}">
-                                <td>
-                                    <input type="text" name="nick_name" class="form-control form-control-sm" placeholder="新增暱稱" required>
-                                </td>
-                                <td>
-                                    <input type="text" name="full_name" class="form-control form-control-sm" placeholder="新增全名">
-                                </td>
-                                <td>
-                                    <select class="form-select form-select-sm mb-1" name="salary_type">
-                                        <option value="hourly">時薪制</option>
-                                        <option value="monthly">月薪制</option>
-                                    </select>
-                                    <input type="number" step="0.1" name="monthly_salary" class="form-control form-control-sm" placeholder="月薪(可選)">
-                                </td>
-                                <td><input type="number" step="0.1" name="hourly_rate" class="form-control form-control-sm" placeholder="時薪"></td>
-                                <td><input type="number" step="0.1" name="monthly_hourly_rate" class="form-control form-control-sm" placeholder="本月覆寫"></td>
-                                <td><input type="number" step="0.1" name="allowance" class="form-control form-control-sm" placeholder="津貼"></td>
-                                <td><input type="number" step="0.001" name="commission_rate" class="form-control form-control-sm" placeholder="0.03"></td>
-                                <td><input type="number" step="0.001" name="monthly_commission_rate" class="form-control form-control-sm" placeholder="本月覆寫"></td>
-                                <td><input type="month" name="mpf_start_month" class="form-control form-control-sm"></td>
-                                <td class="text-end pe-4">
-                                    <button type="submit" class="btn btn-sm btn-primary text-nowrap px-2" style="min-width: 72px;">➕ 新增</button>
-                                </td>
-                            </form>
-                        </tr>
-                        {% for emp in employees %}
-                        <tr id="emp-{{ emp.id }}" data-row-id="{{ emp.id }}" data-type="employee">
-                            <td class="fw-bold text-primary">{{ emp.nick_name }}</td>
-                            <td class="fw-bold">{{ emp.full_name if emp.full_name and emp.full_name != 'None' else '' }}</td>
-                            <td>
-                                {% if (emp.salary_type or 'hourly') == 'monthly' %}
-                                    <span class="badge bg-warning text-dark">月薪制</span>
-                                    <div class="small text-muted mt-1">${{ emp.monthly_salary or 0 }}</div>
-                                {% else %}
-                                    <span class="badge bg-info text-dark">時薪制</span>
-                                {% endif %}
-                            </td>
-                            <td>${{ emp.hourly_rate }}</td>
-                            <td>${{ monthly_map.get(emp.nick_name, '') if monthly_map.get(emp.nick_name, '') != '' else '-' }}</td>
-                            <td>${{ emp.allowance }}</td>
-                            <td>{{ (emp.commission_rate * 100) | int }}%</td>
-                            <td>
-                                {% set m_comm = monthly_comm_map.get(emp.nick_name) %}
-                                {% if m_comm is not none and m_comm != '' %}
-                                    <span class="badge bg-primary fs-6">{{ (m_comm * 100) | int }}%</span>
-                                {% else %}
-                                    <span class="text-muted">-</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ emp.mpf_start_month if emp.mpf_start_month and emp.mpf_start_month != 'None' else '-' }}</td>
-                            <td class="text-end pe-4">
-                                <button class="btn btn-sm btn-outline-primary text-nowrap px-2 me-1" style="min-width: 72px;" 
-                                        onclick='openEmpModal({{ emp.id|tojson }}, {{ emp.nick_name|tojson }}, {{ (emp.full_name if emp.full_name and emp.full_name != "None" else "")|tojson }}, {{ emp.hourly_rate|tojson }}, {{ monthly_map.get(emp.nick_name, "")|tojson }}, {{ emp.allowance|tojson }}, {{ emp.commission_rate|tojson }}, {{ monthly_comm_map.get(emp.nick_name, "")|tojson }}, {{ emp.mpf_start_month|tojson }}, {{ (emp.salary_type or "hourly")|tojson }}, {{ (emp.monthly_salary or 0)|tojson }})'>
-                                    ✏️ 修改
-                                </button>
-                                <form action="/delete_employee/{{ emp.id }}" method="POST" class="d-inline">
-                                    <input type="hidden" name="brand" value="{{ current_brand }}">
-                                    <input type="hidden" name="payroll_month" value="{{ current_month }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger text-nowrap px-2" style="min-width: 72px;" onclick="return confirm('確定刪除員工 {{ emp.nick_name }}？');">🗑️ 刪除</button>
-                                </form>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+            {# --- 頁籤導航 --- #}
+            <ul class="nav nav-tabs px-3 pt-3" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#hourly-employees" type="button" role="tab">
+                        ⏱️ 時薪制員工 <span class="badge bg-info ms-1">{{ hourly_emps | length }}</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#monthly-employees" type="button" role="tab">
+                        📅 月薪制員工 <span class="badge bg-warning text-dark ms-1">{{ monthly_emps | length }}</span>
+                    </button>
+                </li>
+            </ul>
+
+            {# --- 頁籤內容 --- #}
+            <div class="tab-content">
+
+                {# === 時薪制頁籤 === #}
+                <div class="tab-pane fade show active" id="hourly-employees" role="tabpanel">
+                    <div class="table-wrap">
+                        <table class="table table-hover align-middle mb-0 text-center data-table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>員工暱稱</th>
+                                    <th>全名</th>
+                                    <th>預設時薪 ($)</th>
+                                    <th>本月覆寫時薪 ($)</th>
+                                    <th>津貼 ($)</th>
+                                    <th>預設佣金</th>
+                                    <th class="text-primary">本月覆寫佣金</th>
+                                    <th>MPF 起扣月份</th>
+                                    <th class="text-end pe-4">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {# 時薪制新增列 #}
+                                <tr class="table-primary">
+                                    <form action="/add_employee" method="POST" style="display: contents;">
+                                        <input type="hidden" name="brand" value="{{ current_brand }}">
+                                        <input type="hidden" name="payroll_month" value="{{ current_month }}">
+                                        <input type="hidden" name="salary_type" value="hourly">
+                                        <td><input type="text" name="nick_name" class="form-control form-control-sm" placeholder="新增暱稱" required></td>
+                                        <td><input type="text" name="full_name" class="form-control form-control-sm" placeholder="新增全名"></td>
+                                        <td><input type="number" step="0.1" name="hourly_rate" class="form-control form-control-sm" placeholder="時薪 ($)"></td>
+                                        <td><input type="number" step="0.1" name="monthly_hourly_rate" class="form-control form-control-sm" placeholder="本月覆寫"></td>
+                                        <td><input type="number" step="0.1" name="allowance" class="form-control form-control-sm" placeholder="津貼 ($)"></td>
+                                        <td><input type="number" step="0.001" name="commission_rate" class="form-control form-control-sm" placeholder="0.03"></td>
+                                        <td><input type="number" step="0.001" name="monthly_commission_rate" class="form-control form-control-sm" placeholder="本月覆寫"></td>
+                                        <td><input type="month" name="mpf_start_month" class="form-control form-control-sm"></td>
+                                        <td class="text-end pe-4">
+                                            <button type="submit" class="btn btn-sm btn-primary text-nowrap px-2" style="min-width: 72px;">➕ 新增</button>
+                                        </td>
+                                    </form>
+                                </tr>
+                                {% for emp in hourly_emps %}
+                                <tr id="emp-{{ emp.id }}" data-row-id="{{ emp.id }}" data-type="employee">
+                                    <td class="fw-bold text-primary">{{ emp.nick_name }}</td>
+                                    <td class="fw-bold">{{ emp.full_name if emp.full_name and emp.full_name != 'None' else '' }}</td>
+                                    <td>${{ emp.hourly_rate }}</td>
+                                    <td>${{ monthly_map.get(emp.nick_name, '') if monthly_map.get(emp.nick_name, '') != '' else '-' }}</td>
+                                    <td>${{ emp.allowance }}</td>
+                                    <td>{{ (emp.commission_rate * 100) | int }}%</td>
+                                    <td>
+                                        {% set m_comm = monthly_comm_map.get(emp.nick_name) %}
+                                        {% if m_comm is not none and m_comm != '' %}
+                                            <span class="badge bg-primary fs-6">{{ (m_comm * 100) | int }}%</span>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ emp.mpf_start_month if emp.mpf_start_month and emp.mpf_start_month != 'None' else '-' }}</td>
+                                    <td class="text-end pe-4">
+                                        <button class="btn btn-sm btn-outline-primary text-nowrap px-2 me-1" style="min-width: 72px;"
+                                                onclick='openEmpModal({{ emp.id|tojson }}, {{ emp.nick_name|tojson }}, {{ (emp.full_name if emp.full_name and emp.full_name != "None" else "")|tojson }}, {{ emp.hourly_rate|tojson }}, {{ monthly_map.get(emp.nick_name, "")|tojson }}, {{ emp.allowance|tojson }}, {{ emp.commission_rate|tojson }}, {{ monthly_comm_map.get(emp.nick_name, "")|tojson }}, {{ emp.mpf_start_month|tojson }}, "hourly", 0)'>
+                                            ✏️ 修改
+                                        </button>
+                                        <form action="/delete_employee/{{ emp.id }}" method="POST" class="d-inline">
+                                            <input type="hidden" name="brand" value="{{ current_brand }}">
+                                            <input type="hidden" name="payroll_month" value="{{ current_month }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger text-nowrap px-2" style="min-width: 72px;" onclick="return confirm('確定刪除員工 {{ emp.nick_name }}？');">🗑️ 刪除</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {# === 月薪制頁籤 === #}
+                <div class="tab-pane fade" id="monthly-employees" role="tabpanel">
+                    <div class="table-wrap">
+                        <table class="table table-hover align-middle mb-0 text-center data-table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>員工暱稱</th>
+                                    <th>全名</th>
+                                    <th>固定月薪 ($)</th>
+                                    <th>津貼 ($)</th>
+                                    <th>預設佣金</th>
+                                    <th class="text-primary">本月覆寫佣金</th>
+                                    <th>MPF 起扣月份</th>
+                                    <th class="text-end pe-4">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {# 月薪制新增列 #}
+                                <tr class="table-warning">
+                                    <form action="/add_employee" method="POST" style="display: contents;">
+                                        <input type="hidden" name="brand" value="{{ current_brand }}">
+                                        <input type="hidden" name="payroll_month" value="{{ current_month }}">
+                                        <input type="hidden" name="salary_type" value="monthly">
+                                        <td><input type="text" name="nick_name" class="form-control form-control-sm" placeholder="新增暱稱" required></td>
+                                        <td><input type="text" name="full_name" class="form-control form-control-sm" placeholder="新增全名"></td>
+                                        <td><input type="number" step="0.1" name="monthly_salary" class="form-control form-control-sm" placeholder="月薪 ($)"></td>
+                                        <td><input type="number" step="0.1" name="allowance" class="form-control form-control-sm" placeholder="津貼 ($)"></td>
+                                        <td><input type="number" step="0.001" name="commission_rate" class="form-control form-control-sm" placeholder="0.03"></td>
+                                        <td><input type="number" step="0.001" name="monthly_commission_rate" class="form-control form-control-sm" placeholder="本月覆寫"></td>
+                                        <td><input type="month" name="mpf_start_month" class="form-control form-control-sm"></td>
+                                        <td class="text-end pe-4">
+                                            <button type="submit" class="btn btn-sm btn-warning text-dark text-nowrap px-2" style="min-width: 72px;">➕ 新增</button>
+                                        </td>
+                                    </form>
+                                </tr>
+                                {% for emp in monthly_emps %}
+                                <tr id="emp-{{ emp.id }}" data-row-id="{{ emp.id }}" data-type="employee">
+                                    <td class="fw-bold text-primary">{{ emp.nick_name }}</td>
+                                    <td class="fw-bold">{{ emp.full_name if emp.full_name and emp.full_name != 'None' else '' }}</td>
+                                    <td class="fw-bold fs-5 text-primary">${{ "{:,.0f}".format(emp.monthly_salary or 0) }}</td>
+                                    <td>${{ emp.allowance }}</td>
+                                    <td>{{ (emp.commission_rate * 100) | int }}%</td>
+                                    <td>
+                                        {% set m_comm = monthly_comm_map.get(emp.nick_name) %}
+                                        {% if m_comm is not none and m_comm != '' %}
+                                            <span class="badge bg-primary fs-6">{{ (m_comm * 100) | int }}%</span>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ emp.mpf_start_month if emp.mpf_start_month and emp.mpf_start_month != 'None' else '-' }}</td>
+                                    <td class="text-end pe-4">
+                                        <button class="btn btn-sm btn-outline-primary text-nowrap px-2 me-1" style="min-width: 72px;"
+                                                onclick='openEmpModal({{ emp.id|tojson }}, {{ emp.nick_name|tojson }}, {{ (emp.full_name if emp.full_name and emp.full_name != "None" else "")|tojson }}, {{ emp.hourly_rate|tojson }}, {{ monthly_map.get(emp.nick_name, "")|tojson }}, {{ emp.allowance|tojson }}, {{ emp.commission_rate|tojson }}, {{ monthly_comm_map.get(emp.nick_name, "")|tojson }}, {{ emp.mpf_start_month|tojson }}, "monthly", {{ (emp.monthly_salary or 0)|tojson }})'>
+                                            ✏️ 修改
+                                        </button>
+                                        <form action="/delete_employee/{{ emp.id }}" method="POST" class="d-inline">
+                                            <input type="hidden" name="brand" value="{{ current_brand }}">
+                                            <input type="hidden" name="payroll_month" value="{{ current_month }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger text-nowrap px-2" style="min-width: 72px;" onclick="return confirm('確定刪除員工 {{ emp.nick_name }}？');">🗑️ 刪除</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>{# /tab-content #}
+        </div>{# /card-body #}
+    </div>{# /card #}
 </div>
 
 <div class="modal fade" id="editEmpModal" tabindex="-1" aria-hidden="true">
