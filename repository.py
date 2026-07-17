@@ -896,7 +896,7 @@ def fetch_index_context(current_month, payroll_results, brand_code=DEFAULT_BRAND
         (brand_code,),
     ).fetchall()
     employees_rows = conn.execute(
-        "SELECT nick_name, full_name, hourly_rate, commission_rate FROM Employees WHERE brand_code = ? ORDER BY nick_name",
+        "SELECT nick_name, full_name, hourly_rate, commission_rate, salary_type, monthly_salary FROM Employees WHERE brand_code = ? ORDER BY nick_name",
         (brand_code,),
     ).fetchall()
     monthly_rates_rows = conn.execute(
@@ -942,10 +942,32 @@ def fetch_index_context(current_month, payroll_results, brand_code=DEFAULT_BRAND
         row["nick_name"]: float(row["commission_rate"] or 0.03) for row in employees_rows
     }
 
+    # 建立對照表
+    emp_salary_type_map = {row["nick_name"]: row["salary_type"] or "hourly" for row in employees_rows}
+    emp_monthly_salary_map = {row["nick_name"]: float(row["monthly_salary"] or 0) for row in employees_rows}
+
+    counted_monthly_basic = set()
+    
+    # ...
     for attendance in attendances:
         attendance["full_name"] = emp_full_map.get(attendance.get("nick_name"), "")
         attendance["monthly_hourly_rate"] = monthly_rate_map.get(attendance.get("nick_name"))
         attendance["default_hourly_rate"] = emp_default_hr_map.get(attendance.get("nick_name"), 0)
+        attendance["salary_type"] = emp_salary_type_map.get(attendance.get("nick_name"), "hourly")
+        attendance["monthly_salary"] = emp_monthly_salary_map.get(attendance.get("nick_name"), 0)
+        
+        # 🌟 新增：計算預估底薪
+        s_type = attendance["salary_type"]
+        if s_type == "monthly":
+            nick = attendance.get("nick_name")
+            if nick in counted_monthly_basic:
+                attendance["estimated_basic"] = 0
+            else:
+                attendance["estimated_basic"] = attendance["monthly_salary"]
+                counted_monthly_basic.add(nick)
+        else:
+            eff_hr = attendance["monthly_hourly_rate"] if attendance["monthly_hourly_rate"] is not None else attendance["default_hourly_rate"]
+            attendance["estimated_basic"] = attendance.get("hours", 0) * eff_hr
 
     for summary in staff_summary:
         summary["full_name"] = emp_full_map.get(summary.get("name"), "")

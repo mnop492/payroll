@@ -165,6 +165,86 @@
 </div>
 {% endif %}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{# --- 過濾時薪制與月薪制考勤 --- #}
+{% set hourly_attendances = attendances | selectattr("salary_type", "equalto", "hourly") | list %}
+{% set monthly_attendances = attendances | selectattr("salary_type", "equalto", "monthly") | list %}
+
 <div class="card app-card border-warning mb-4" id="attendance-overview">
     <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
         <h5 class="mb-0 fw-bold">📋 2. 考勤總覽 {{ current_month }}</h5>
@@ -173,62 +253,131 @@
         </button>
     </div>
     <div class="card-body p-0">
-        <div class="table-wrap">
-            <table class="table table-hover text-center align-middle mb-0 data-table">
-                <thead class="table-light">
-                    <tr>
-                        <th style="width: 70px;">ID</th> <th>推廣員</th> <th>全名</th>
-                        <th>本月時薪</th>
-                        <th>地點</th>
-                        <th>日數</th>
-                        <th>工時</th>
-                        <th>OT</th>
-                        <th class="text-success">報銷</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for att in attendances %}
-                    <tr>
-                        <td class="fw-bold">{{ loop.index }}</td> <td class="fw-bold text-primary">{{ att.nick_name }}</td> <td class="fw-bold">{{ att.full_name }}</td>
-                        <td>
-                            {% if att.monthly_hourly_rate is defined and att.monthly_hourly_rate is not none %}
-                                <span class="badge bg-primary fs-6 shadow-sm" data-bs-toggle="tooltip" title="本月專屬時薪">
-                                    ${{ "{:,.2f}".format(att.monthly_hourly_rate) }}
-                                </span>
+        {# --- 頁籤導航 --- #}
+        <ul class="nav nav-tabs px-3 pt-2 bg-light" id="attendanceTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="hourly-tab" data-bs-toggle="tab" data-bs-target="#hourly-attendance" type="button" role="tab" aria-controls="hourly-attendance" aria-selected="true">
+                    🕐 時薪制 <span class="badge bg-info text-dark ms-1">{{ hourly_attendances | length }}</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="monthly-tab" data-bs-toggle="tab" data-bs-target="#monthly-attendance" type="button" role="tab" aria-controls="monthly-attendance" aria-selected="false">
+                    💰 月薪制 <span class="badge bg-warning text-dark ms-1">{{ monthly_attendances | length }}</span>
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            {# === 時薪制頁籤 === #}
+            <div class="tab-pane fade show active" id="hourly-attendance" role="tabpanel" aria-labelledby="hourly-tab">
+                <div class="table-wrap">
+                    <table class="table table-hover text-center align-middle mb-0 data-table">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 70px;">ID</th> <th>推廣員</th> <th>全名</th>
+                                <th>本月時薪</th>
+                                <th>地點</th>
+                                <th>日數</th>
+                                <th>工時</th>
+                                <th>OT</th>
+                                <th class="text-success">報銷</th>
+                                <th class="text-primary fw-bold">預估底薪</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for att in hourly_attendances %}
+                            <tr>
+                                <td class="fw-bold">{{ loop.index }}</td> <td class="fw-bold text-primary">{{ att.nick_name }}</td> <td class="fw-bold">{{ att.full_name }}</td>
+                                <td>
+                                    {% if att.monthly_hourly_rate is defined and att.monthly_hourly_rate is not none %}
+                                        <span class="badge bg-primary fs-6 shadow-sm" data-bs-toggle="tooltip" title="本月專屬時薪">
+                                            ${{ "{:,.2f}".format(att.monthly_hourly_rate) }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-secondary fw-bold">
+                                            ${{ "{:,.2f}".format(att.default_hourly_rate | default(0)) }}
+                                        </span>
+                                        <span class="text-muted small ms-1">(預設)</span>
+                                    {% endif %}
+                                </td>
+                                <td><span class="badge bg-info text-dark">{{ att.location }}</span></td>
+                                <td>{{ att.days_worked }}</td>
+                                <td>{{ "%g" | format(att.hours) }}</td>
+                                <td>{{ att.ot_hours }}</td>
+                                <td class="text-success fw-bold">${{ "{:,.1f}".format(att.expenses) }}</td>
+                                <td class="text-primary fw-bold">${{ "{:,.1f}".format(att.estimated_basic) }}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-primary"
+                                            onclick="editAttendance('{{ att.nick_name }}', '{{ att.location }}', {{ att.days_worked }}, {{ att.hours }}, {{ att.ot_hours }}, {{ att.expenses or 0 }}, {{ att.adjustment or 0 }}, {{ att.attendance_bonus or 0 }}, {{ att.monthly_hourly_rate if att.monthly_hourly_rate is not none else 'null' }}, {{ att.default_hourly_rate }})">
+                                            修改
+                                        </button>
+                                        <form action="/delete_attendance/{{ att.id }}" method="POST" class="m-0" onsubmit="return confirm('確定刪除？')">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm">刪除</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
                             {% else %}
-                                <span class="text-secondary fw-bold">
-                                    ${{ "{:,.2f}".format(att.default_hourly_rate | default(0)) }}
-                                </span>
-                                <span class="text-muted small ms-1">(預設)</span>
-                            {% endif %}
-                        </td>
-                        <td><span class="badge bg-info text-dark">{{ att.location }}</span></td>
-                        <td>{{ att.days_worked }}</td>
-                        <td>{{ "%g" | format(att.hours) }}</td>
-                        <td>{{ att.ot_hours }}</td>
-                        <td class="text-success fw-bold">${{ "{:,.1f}".format(att.expenses) }}</td>
-                        <td>
-                            <div class="btn-group">
-                                <button class="btn btn-sm btn-primary" 
-                                    onclick="editAttendance('{{ att.nick_name }}', '{{ att.location }}', {{ att.days_worked }}, {{ att.hours }}, {{ att.ot_hours }}, {{ att.expenses or 0 }}, {{ att.adjustment or 0 }}, {{ att.attendance_bonus or 0 }}, {{ att.monthly_hourly_rate if att.monthly_hourly_rate is not none else 'null' }}, {{ att.default_hourly_rate }})">
-                                    修改
-                                </button>
-                                <form action="/delete_attendance/{{ att.id }}" method="POST" class="m-0" onsubmit="return confirm('確定刪除？')">
-                                    <button type="submit" class="btn btn-outline-danger btn-sm">刪除</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="9" class="py-4 text-muted fst-italic">
-                            {{ current_month }} 尚未有任何考勤紀錄。
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                            <tr>
+                                <td colspan="10" class="py-4 text-muted fst-italic">
+                                    尚無時薪制人員的考勤紀錄。
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {# === 月薪制頁籤 === #}
+            <div class="tab-pane fade" id="monthly-attendance" role="tabpanel" aria-labelledby="monthly-tab">
+                <div class="table-wrap">
+                    <table class="table table-hover text-center align-middle mb-0 data-table">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 70px;">ID</th> <th>推廣員</th> <th>全名</th>
+                                <th>地點</th>
+                                <th class="text-primary fw-bold">固定月薪</th>
+                                <th class="text-success">報銷</th>
+                                <th>勤工獎</th>
+                                <th>微調</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for att in monthly_attendances %}
+                            <tr>
+                                <td class="fw-bold">{{ loop.index }}</td> <td class="fw-bold text-primary">{{ att.nick_name }}</td> <td class="fw-bold">{{ att.full_name }}</td>
+                                <td><span class="badge bg-info text-dark">{{ att.location }}</span></td>
+                                <td class="text-primary fw-bold fs-5">${{ "{:,.0f}".format(att.monthly_salary) }}</td>
+                                <td class="text-success fw-bold">${{ "{:,.1f}".format(att.expenses) }}</td>
+                                <td>${{ "{:,.1f}".format(att.attendance_bonus or 0) }}</td>
+                                <td>${{ "{:,.1f}".format(att.adjustment or 0) }}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-primary"
+                                            onclick="editAttendance('{{ att.nick_name }}', '{{ att.location }}', {{ att.days_worked }}, {{ att.hours }}, {{ att.ot_hours }}, {{ att.expenses or 0 }}, {{ att.adjustment or 0 }}, {{ att.attendance_bonus or 0 }}, {{ att.monthly_hourly_rate if att.monthly_hourly_rate is not none else 'null' }}, {{ att.default_hourly_rate }})">
+                                            修改
+                                        </button>
+                                        <form action="/delete_attendance/{{ att.id }}" method="POST" class="m-0" onsubmit="return confirm('確定刪除？')">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm">刪除</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="8" class="py-4 text-muted fst-italic">
+                                    尚無月薪制人員的考勤紀錄。
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -276,16 +425,17 @@
                         <td class="fw-bold text-primary">${{ "{:,.2f}".format(staff.total_comm) }}</td>
                         <td>
                             <div class="d-flex justify-content-center gap-1">
-                                <button class="btn btn-sm btn-success fw-bold flex-grow-1 shadow-sm" 
+                                <button class="btn btn-sm btn-primary" 
                                         onclick="openSalesModal('{{ staff.name }}', '{{ staff.main_location }}', {{ staff.monthly_comm if staff.monthly_comm is not none else 'null' }}, {{ staff.default_comm }})">
-                                    🛒 管理
+                                    修改
                                 </button>
                                 <form action="/delete_sales_group" method="POST" class="m-0" 
                                     onsubmit="return confirm('確定要清空 {{ staff.name }} 在 {{ staff.main_location }} 的所有單據嗎？此動作無法復原！');">
                                     <input type="hidden" name="month" value="{{ current_month }}">
                                     <input type="hidden" name="promoter" value="{{ staff.name }}">
                                     <input type="hidden" name="location" value="{{ staff.main_location }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger shadow-sm" title="清空此店單據">🗑️</button>
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" title="清空此店單據">刪除</button>                                    
+                                </form>
                                 </form>
                             </div>
                         </td>

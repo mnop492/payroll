@@ -541,9 +541,15 @@ def update_employee():
     allowance = float(request.form.get("allowance", 0))
     commission_rate = float(request.form.get("commission_rate", 0.03))
     mpf_start_month = request.form.get("mpf_start_month")
+    
+    # 🌟 新增抓取計薪模式與月薪
+    salary_type = request.form.get("salary_type", "hourly")
+    monthly_salary = float(request.form.get("monthly_salary", 0))
+    monthly_hourly_rate = (request.form.get("monthly_hourly_rate", "") or "").strip()
+    monthly_commission_rate = (request.form.get("monthly_commission_rate", "") or "").strip()
+
     payroll_month = request.form.get("payroll_month") or pd.Timestamp.now().strftime("%Y-%m")
-    monthly_hourly_rate = request.form.get("monthly_hourly_rate", "").strip()
-    monthly_commission_rate = request.form.get("monthly_commission_rate", "").strip()
+    # ... (保留原有的 monthly_hourly_rate 等變數) ...
 
     if emp_id:
         conn = get_db_connection()
@@ -554,13 +560,14 @@ def update_employee():
                 return redirect(url_for("settings.settings", month=payroll_month, brand=brand_code))
             old_dict = dict(old) if old else None
             nick_name = old["nick_name"] if old else None
+            # 🌟 更新 SQL，寫入 salary_type 與 monthly_salary
             conn.execute(
                 """
                 UPDATE Employees
-                SET full_name = ?, hourly_rate = ?, allowance = ?, commission_rate = ?, mpf_start_month = ?
+                SET full_name = ?, hourly_rate = ?, allowance = ?, commission_rate = ?, mpf_start_month = ?, salary_type = ?, monthly_salary = ?
                 WHERE id = ? AND brand_code = ?
                 """,
-                (full_name, hourly_rate, allowance, commission_rate, mpf_start_month, emp_id, brand_code),
+                (full_name, hourly_rate, allowance, commission_rate, mpf_start_month, salary_type, monthly_salary, emp_id, brand_code),
             )
             conn.commit()
             if nick_name:
@@ -593,6 +600,119 @@ def update_employee():
             flash(f"⚠️ 更新失敗：{str(exc)}", "danger")
         finally:
             conn.close()
+    return redirect(url_for("settings.settings", month=payroll_month, brand=brand_code))
+
+
+@bp.route("/add_employee", methods=["POST"])
+def add_employee():
+    brand_code = _resolve_brand_code()
+    payroll_month = request.form.get("payroll_month") or pd.Timestamp.now().strftime("%Y-%m")
+
+    nick_name = (request.form.get("nick_name") or "").strip()
+    full_name = (request.form.get("full_name") or "").strip()
+    salary_type = (request.form.get("salary_type") or "hourly").strip().lower()
+    if salary_type not in ("hourly", "monthly"):
+        salary_type = "hourly"
+    mpf_start_month = (request.form.get("mpf_start_month") or "").strip() or None
+    monthly_hourly_rate = (request.form.get("monthly_hourly_rate", "") or "").strip()
+    monthly_commission_rate = (request.form.get("monthly_commission_rate", "") or "").strip()
+
+    if not nick_name:
+        flash("⚠️ 請輸入員工暱稱", "warning")
+        return redirect(url_for("settings.settings", month=payroll_month, brand=brand_code))
+
+    def _to_float(value, default=0.0):
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return float(default)
+
+    hourly_rate = _to_float(request.form.get("hourly_rate", 0), 0)
+    allowance = _to_float(request.form.get("allowance", 0), 0)
+    commission_rate = _to_float(request.form.get("commission_rate", 0.03), 0.03)
+    monthly_salary = _to_float(request.form.get("monthly_salary", 0), 0)
+
+    conn = get_db_connection()
+    try:
+        cursor = conn.execute(
+            """
+            INSERT INTO Employees (brand_code, nick_name, full_name, hourly_rate, allowance, commission_rate, mpf_start_month, salary_type, monthly_salary)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (brand_code, nick_name, full_name, hourly_rate, allowance, commission_rate, mpf_start_month, salary_type, monthly_salary),
+        )
+
+        if monthly_hourly_rate != "" or monthly_commission_rate != "":
+            hr_val = _to_float(monthly_hourly_rate, 0) if monthly_hourly_rate != "" else None
+            comm_val = _to_float(monthly_commission_rate, 0) if monthly_commission_rate != "" else None
+            conn.execute(
+                """
+                INSERT INTO MonthlyRates (brand_code, payroll_month, nick_name, hourly_rate, commission_rate)
+                VALUES (?, ?, ?, ?, ?)
+                ON CONFLICT(brand_code, payroll_month, nick_name) DO UPDATE SET
+                hourly_rate = excluded.hourly_rate,
+                commission_rate = excluded.commission_rate
+                """,
+                (brand_code, payroll_month, nick_name, hr_val, comm_val),
+            )
+
+        conn.commit()
+        try:
+            new = conn.execute("SELECT * FROM Employees WHERE id = ? AND brand_code = ?", (cursor.lastrowid, brand_code)).fetchone()
+            log_audit("create", "Employees", record_id=cursor.lastrowid, new_value=dict(new) if new else None, user=None, ip=request.remote_addr)
+        except Exception:
+            pass
+        flash(f"✅ 已新增員工：{nick_name}", "success")
+    except sqlite3.IntegrityError:
+        flash(f"⚠️ 員工暱稱重複：{nick_name}（同品牌不可重複）", "warning")
+    except Exception as exc:
+        flash(f"⚠️ 新增員工失敗：{str(exc)}", "danger")
+    finally:
+        conn.close()
+
+    return redirect(url_for("settings.settings", month=payroll_month, brand=brand_code))
+
+
+@bp.route("/delete_employee/<int:emp_id>", methods=["POST"])
+def delete_employee(emp_id):
+    brand_code = _resolve_brand_code()
+    payroll_month = request.form.get("payroll_month") or pd.Timestamp.now().strftime("%Y-%m")
+
+    conn = get_db_connection()
+    try:
+        old = conn.execute("SELECT * FROM Employees WHERE id = ? AND brand_code = ?", (emp_id, brand_code)).fetchone()
+        if not old:
+            flash("⚠️ 找不到該品牌下的員工資料", "warning")
+            return redirect(url_for("settings.settings", month=payroll_month, brand=brand_code))
+
+        nick_name = old["nick_name"]
+        has_attendance = conn.execute(
+            "SELECT 1 FROM Attendance WHERE brand_code = ? AND nick_name = ? LIMIT 1",
+            (brand_code, nick_name),
+        ).fetchone()
+        has_sales = conn.execute(
+            "SELECT 1 FROM Sales WHERE brand_code = ? AND promoter_name = ? LIMIT 1",
+            (brand_code, nick_name),
+        ).fetchone()
+
+        if has_attendance or has_sales:
+            flash(f"⚠️ 無法刪除 {nick_name}：已有出勤或銷售資料", "warning")
+            return redirect(url_for("settings.settings", month=payroll_month, brand=brand_code))
+
+        conn.execute("DELETE FROM MonthlyRates WHERE brand_code = ? AND nick_name = ?", (brand_code, nick_name))
+        conn.execute("DELETE FROM Employees WHERE id = ? AND brand_code = ?", (emp_id, brand_code))
+        conn.commit()
+
+        try:
+            log_audit("delete", "Employees", record_id=emp_id, old_value=dict(old), user=None, ip=request.remote_addr)
+        except Exception:
+            pass
+        flash(f"✅ 已刪除員工：{nick_name}", "success")
+    except Exception as exc:
+        flash(f"⚠️ 刪除員工失敗：{str(exc)}", "danger")
+    finally:
+        conn.close()
+
     return redirect(url_for("settings.settings", month=payroll_month, brand=brand_code))
 
 

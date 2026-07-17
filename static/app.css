@@ -89,9 +89,20 @@ h6 {
   font-weight: 700;
 }
 
+#payroll-workflow-panel {
+  max-width: 600px;
+  margin-left: 0;
+  margin-right: auto;
+}
+
 .table-wrap {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+#attendance-overview .data-table,
+#sales-overview .data-table {
+  min-width: 700px;
 }
 
 .data-table thead th {

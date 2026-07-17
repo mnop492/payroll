@@ -15,8 +15,10 @@ def process_payroll_from_db(calc_month, brand_code='century_field', db_path='pay
         """
         SELECT e.nick_name AS Name,
                e.hourly_rate AS hourly_rate,
+               e.salary_type AS salary_type,         -- ✅ 新增
+               e.monthly_salary AS monthly_salary,   -- ✅ 新增
                mr.hourly_rate AS monthly_hourly_rate,
-               mr.commission_rate AS monthly_comm,  -- ✅ 新增這行：把月度佣金撈出來
+               mr.commission_rate AS monthly_comm,
                e.allowance,
                e.commission_rate AS default_comm,
                e.require_mpf,
@@ -179,6 +181,31 @@ def process_payroll_from_db(calc_month, brand_code='century_field', db_path='pay
 
     # 關聯員工時薪等基本資料
     final_df = final_df.merge(emp_df, on='Name', how='left')
+
+    # 月薪制同事：同月份跨多店只計一次月薪/津貼（其餘店鋪列為 0）
+    if not final_df.empty:
+        if 'Location' in final_df.columns:
+            final_df['Location'] = final_df['Location'].fillna('')
+            final_df = final_df.sort_values(['Name', 'Location'], kind='stable').reset_index(drop=True)
+        final_df['_monthly_seq'] = 0
+        monthly_mask = final_df['salary_type'].eq('monthly') if 'salary_type' in final_df.columns else pd.Series(False, index=final_df.index)
+        if monthly_mask.any():
+            final_df.loc[monthly_mask, '_monthly_seq'] = (
+                final_df.loc[monthly_mask].groupby('Name').cumcount()
+            )
+
+    monthly_allow_override_map = {}
+    if 'allowance_override' in final_df.columns and 'salary_type' in final_df.columns:
+        monthly_rows = final_df[final_df['salary_type'].eq('monthly')]
+        for name, grp in monthly_rows.groupby('Name'):
+            override_vals = [
+                float(v)
+                for v in grp['allowance_override']
+                if pd.notna(v) and str(v).strip() not in ['', '0', '0.0']
+            ]
+            if override_vals:
+                monthly_allow_override_map[name] = override_vals[0]
+    
     
     # 如果有月度覆寫時薪，優先使用；否則使用員工預設時薪
     if 'monthly_hourly_rate' in final_df.columns:
@@ -193,19 +220,28 @@ def process_payroll_from_db(calc_month, brand_code='century_field', db_path='pay
     # ==========================================
     # 4. 智能彈性計算邏輯 (把微調金額加進去)
     # ==========================================
-    def calc_basic(row):
-        # 如果有人工覆寫底薪，強制使用覆寫值
-        if 'basic_pay_override' in row and pd.notna(row['basic_pay_override']) and str(row['basic_pay_override']).strip() not in ['', '0', '0.0']:
-            return float(row['basic_pay_override'])
-        return (row['Hours'] + row['OT Hours']) * row['hourly_rate']
+    def calculate_basic_pay(row):
+        # 如果是月薪制，直接返回固定月薪 (無視工時)
+        if row.get('salary_type') == 'monthly':
+            return row.get('monthly_salary', 0)
+            
+        # 否則維持原來的時薪計算邏輯
+        effective_hr = row.get('monthly_hourly_rate') if pd.notna(row.get('monthly_hourly_rate')) else row.get('hourly_rate', 0)
+        return row.get('hours', 0) * effective_hr
+
+    # 應用公式計算底薪 (注意：依據你原本的 DataFrame 欄位名稱可能是 'hours' 或 'Reg.Hrs')
+    final_df['底薪'] = final_df.apply(calculate_basic_pay, axis=1)
     
     def calc_allow(row):
         # 如果有人工覆寫津貼，強制使用覆寫值
         if 'allowance_override' in row and pd.notna(row['allowance_override']) and str(row['allowance_override']).strip() not in ['', '0', '0.0']:
             return float(row['allowance_override'])
+        # 月薪制：津貼視為一筆過，不按日數計算
+        if row.get('salary_type') == 'monthly':
+            return row.get('allowance', 0)
         return row['Days'] * row['allowance']
 
-    final_df['Basic Pay'] = final_df.apply(calc_basic, axis=1)
+    final_df['Basic Pay'] = final_df.apply(calculate_basic_pay, axis=1)
     final_df['Total_Allowance'] = final_df.apply(calc_allow, axis=1)
     
     # 💰 總收入 = 底薪 + 佣金 + 津貼 + 報銷(Expenses) + 微調(Adjustment) + 出勤獎(Attendance Bonus)

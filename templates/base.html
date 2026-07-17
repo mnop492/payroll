@@ -47,7 +47,7 @@
                     <li><a class="dropdown-item py-2" href="/manage_brands">🏷️ 品牌代碼管理</a></li>
                   {% endif %}
                     <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item py-2" href="/manage_locations{% if current_brand %}?brand={{ current_brand }}{% elif request.args.get('brand') %}?brand={{ request.args.get('brand') }}{% endif %}">📍 標準店鋪管理 <span class="d-inline ms-1 badge badge-sm bg-dark">{{ current_brand_name }}</span></a></li>
+                    <li><a class="dropdown-item py-2" href="/manage_locations{% if current_brand %}?brand={{ current_brand }}{% elif request.args.get('brand') %}?brand={{ request.args.get('brand') }}{% endif %}">📍 標準店鋪管理 </a></li>
                 </ul>
             </li>
         </ul>
