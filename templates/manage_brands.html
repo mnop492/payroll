@@ -2,43 +2,43 @@
 {% block content %}
 <div class="space-y-6">
   <div class="flex items-center justify-between">
-    <h2 class="text-2xl font-bold text-gray-800">🏷️ 品牌代碼管理</h2>
-    <a href="/" class="px-4 py-2 text-sm font-semibold text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">← 返回主控台</a>
+    <h2 class="text-2xl font-bold text-slate-100">🏷️ 品牌代碼管理</h2>
+    <a href="/" class="px-4 py-2 text-sm font-semibold text-slate-300 border border-slate-600 rounded-xl hover:bg-slate-700 transition-colors">← 返回主控台</a>
   </div>
 
-  <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+  <div class="bg-slate-800 rounded-2xl shadow-sm border border-slate-700 overflow-hidden">
     <div class="overflow-x-auto">
       <table class="w-full text-sm border-collapse">
         <thead>
-          <tr class="bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-            <th class="px-4 py-3 border-b border-gray-200">品牌代碼</th>
-            <th class="px-4 py-3 border-b border-gray-200">品牌名稱</th>
-            <th class="px-4 py-3 border-b border-gray-200">狀態</th>
-            <th class="px-4 py-3 border-b border-gray-200 text-right pr-6">操作</th>
+          <tr class="bg-slate-700 text-center text-sm font-semibold text-slate-300 uppercase tracking-wider">
+            <th class="px-4 py-3 border-b border-slate-600">品牌代碼</th>
+            <th class="px-4 py-3 border-b border-slate-600">品牌名稱</th>
+            <th class="px-4 py-3 border-b border-slate-600">狀態</th>
+            <th class="px-4 py-3 border-b border-slate-600 text-right pr-6">操作</th>
           </tr>
         </thead>
         <tbody>
-          <tr class="bg-blue-50 border-b border-blue-100">
+          <tr class="bg-slate-700/30 border-b border-slate-600">
             <form id="add-brand-form" action="/add_brand" method="POST" style="display: contents;">
-              <td class="px-2 py-2"><input type="text" name="brand_code" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="samsung_hk" required></td>
-              <td class="px-2 py-2"><input type="text" name="brand_name" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Samsung HK" required></td>
-              <td class="px-2 py-2"><span class="inline-block bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">新增</span></td>
-              <td class="text-right pr-3 py-2"><button type="submit" class="px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors">➕ 新增</button></td>
+              <td class="px-2 py-2"><input type="text" name="brand_code" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="samsung_hk" required></td>
+              <td class="px-2 py-2"><input type="text" name="brand_name" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Samsung HK" required></td>
+              <td class="px-2 py-2"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-green-900/40 text-green-300">新增</span></td>
+              <td class="text-right pr-3 py-2"><button type="submit" class="px-3 py-1.5 text-sm font-semibold text-slate-100 bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors">➕ 新增</button></td>
             </form>
           </tr>
           {% for brand in brands %}
-          <tr class="text-center border-b border-gray-100 hover:bg-gray-50 odd:bg-white even:bg-gray-50/50 transition-colors">
-            <td class="px-4 py-3"><span class="inline-block bg-gray-800 text-white text-xs px-2 py-0.5 rounded-full font-mono">{{ brand.brand_code }}</span></td>
+          <tr class="text-center border-b border-slate-600 hover:bg-slate-700/60 odd:bg-slate-800 even:bg-slate-700/50 transition-colors">
+            <td class="px-4 py-3"><span class="inline-block bg-slate-700 text-slate-100 text-sm px-2 py-0.5 rounded-full font-mono">{{ brand.brand_code }}</span></td>
             <td class="px-4 py-3 font-bold">{{ brand.brand_name }}</td>
             <td class="px-4 py-3">
               {% if brand.is_active %}
-              <span class="inline-block bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">啟用中</span>
+              <span class="inline-block bg-green-900/40 text-green-300 text-sm px-2 py-0.5 rounded-full">啟用中</span>
               {% else %}
-              <span class="inline-block bg-gray-200 text-gray-600 text-xs px-2 py-0.5 rounded-full">停用</span>
+              <span class="inline-block bg-slate-600 text-slate-300 text-sm px-2 py-0.5 rounded-full">停用</span>
               {% endif %}
             </td>
             <td class="text-right pr-5 py-3">
-              <button class="px-3 py-1.5 text-xs font-semibold text-blue-600 border border-blue-300 rounded-xl hover:bg-blue-50 transition-colors" onclick='openBrandModal({{ brand.brand_code|tojson }}, {{ brand.brand_name|tojson }}, {{ ("1" if brand.is_active else "0")|tojson }})'>修改</button>
+              <button class="px-3 py-1.5 text-sm font-semibold text-blue-300 border border-blue-800/40 rounded-xl hover:bg-blue-900/30 transition-colors" onclick='openBrandModal({{ brand.brand_code|tojson }}, {{ brand.brand_name|tojson }}, {{ ("1" if brand.is_active else "0")|tojson }})'>修改</button>
             </td>
           </tr>
           {% endfor %}
@@ -50,32 +50,32 @@
 
 <div class="fixed inset-0 z-50 items-center justify-center hidden modal" id="editBrandModal">
   <div class="absolute inset-0 bg-black/40" onclick="this.parentElement.classList.add('hidden');this.parentElement.classList.remove('flex')"></div>
-  <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden z-10">
-    <div class="px-5 py-4 bg-blue-600 text-white font-bold text-lg flex items-center justify-between">
+  <div class="relative bg-slate-800 rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden z-10">
+    <div class="px-5 py-4 bg-blue-600 text-slate-100 font-bold text-lg flex items-center justify-between">
       ✏️ 修改品牌設定
-      <button class="text-white/70 hover:text-white text-xl leading-none" onclick="closeModal(this)">&times;</button>
+      <button class="text-slate-100/70 hover:text-slate-100 text-xl leading-none" onclick="closeModal(this)">&times;</button>
     </div>
     <form action="/update_brand" method="POST">
       <div class="p-5 space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">品牌代碼</label>
-          <input type="text" name="brand_code" id="edit_brand_code" class="w-full px-3 py-2.5 border border-gray-300 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none" readonly>
+          <label class="block text-sm font-medium text-slate-200 mb-1">品牌代碼</label>
+          <input type="text" name="brand_code" id="edit_brand_code" class="text-slate-200 w-full px-3 py-2.5 border border-slate-600 rounded-xl bg-slate-700 focus:ring-2 focus:ring-blue-500 outline-none" readonly>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">品牌名稱</label>
-          <input type="text" name="brand_name" id="edit_brand_name" class="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required>
+          <label class="block text-sm font-medium text-slate-200 mb-1">品牌名稱</label>
+          <input type="text" name="brand_name" id="edit_brand_name" class="text-slate-200 bg-slate-800 w-full px-3 py-2.5 border border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">狀態</label>
-          <select name="is_active" id="edit_brand_active" class="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+          <label class="block text-sm font-medium text-slate-200 mb-1">狀態</label>
+          <select name="is_active" id="edit_brand_active" class="text-slate-200 bg-slate-800 w-full px-3 py-2.5 border border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
             <option value="1">啟用</option>
             <option value="0">停用</option>
           </select>
         </div>
       </div>
-      <div class="px-5 py-4 bg-gray-50 flex justify-end gap-2 rounded-b-2xl">
-        <button type="button" class="px-4 py-2 text-sm font-semibold text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors" onclick="closeModal(this)">取消</button>
-        <button type="submit" class="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors">儲存</button>
+      <div class="px-5 py-4 bg-slate-700 flex justify-end gap-2 rounded-b-2xl">
+        <button type="button" class="px-4 py-2 text-sm font-semibold text-slate-300 border border-slate-600 rounded-xl hover:bg-slate-700 transition-colors" onclick="closeModal(this)">取消</button>
+        <button type="submit" class="px-4 py-2 text-sm font-semibold text-slate-100 bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors">儲存</button>
       </div>
     </form>
   </div>
