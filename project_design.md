@@ -34,33 +34,29 @@
 
 ---
 
-## 4. 品牌側欄 (Brand Sidebar) — 多品牌/多分站情境
+## 4. 品牌切換器 (Brand Switcher) — 多品牌/多分站情境
 
-當系統需要同時管理多個品牌或分公司時，增加一層品牌切換側欄：
+當系統需要同時管理多個品牌或分公司時，在頂部狀態列加入精緻的下拉選單，取代獨立的品牌側欄。
 
-視覺特點： 白色卡片風格，位於主內容區左側、與主側欄垂直並列；每個品牌以獨立卡片呈現，包含品牌名稱與代碼。
+視覺特點： 位於頂部標題旁，一個輕量的圓角按鈕，展開後為附有搜尋框的下拉面板。
 
 功能配置：
-- 上方標題列與搜尋框，支援快速過濾品牌列表
-- 預設僅顯示頂部 N 個品牌，超出部分以「顯示更多」按鈕展開
-- 作用中品牌以深色反白（`bg-gray-900 text-white`）標示
+- 按鈕顯示當前品牌名稱，右側帶有 `▼` 圖示
+- 點擊展開下拉面板，內含搜尋框與品牌列表
+- 輸入文字可即時過濾品牌名稱與代碼
+- 點擊品牌選項立即導向該品牌的對應頁面
+- 作用中品牌以淺藍色背景（`bg-blue-50 text-blue-700`）標示
 
-計薪應用： 切換品牌時，不重新整理整個頁面，僅更新所屬員工、考勤、佣金設定與薪資結算結果。
+計薪應用： 切換品牌時，重新導向當前頁面並帶上 `?brand=<code>` 參數，所有數據自動更新。
 
-斷點行為： 在窄螢幕（< 1024px）可考慮隱藏品牌側欄，改為下拉選單或 Modal 選取。
+斷點行為： 下拉選單在所有螢幕尺寸皆可用，無需額外斷點處理。
 
----
-
-## 5. 響應式斷點策略 (Responsive Breakpoints)
-
-建議 Tailwind 預設斷點為基礎，針對後台場景微調：
-
-| 斷點 | 寬度 | Sidebar | Brand Sidebar | 表格 |
+| 斷點 | 寬度 | Sidebar | Brand Switcher | 表格 |
 |------|------|---------|---------------|------|
-| `sm` | ≥ 640px | 維持展開 | 隱藏（改下拉） | 水平捲動 |
-| `md` | ≥ 768px | 維持展開 | 隱藏（改下拉） | 水平捲動 |
-| `lg` | ≥ 1024px | 維持展開 | 可選展開/收起 | 正常顯示 |
-| `xl` | ≥ 1280px | 維持展開 | 展開 | 正常顯示 |
+| `sm` | ≥ 640px | 維持展開 | 下拉選單 | 水平捲動 |
+| `md` | ≥ 768px | 維持展開 | 下拉選單 | 水平捲動 |
+| `lg` | ≥ 1024px | 維持展開 | 下拉選單 | 正常顯示 |
+| `xl` | ≥ 1280px | 維持展開 | 下拉選單 | 正常顯示 |
 
 手機端（< 640px）可將側欄改為 overlay draw（`fixed inset-0 z-50` 覆蓋層）。
 
@@ -82,22 +78,79 @@ Chart Empty: 📊 本月無時薪制員工資料，無法產生圖表
 
 ---
 
-## 7. 互動元件統一風格 (UI Components)
+## 7. 互動元件統一風格 (UI Components) — 企業級 SaaS 標準 (v2)
 
-| 元件 | Tailwind 樣式規範 |
-|------|------------------|
-| **按鈕 (Button)** | `rounded-xl px-4 py-2 text-sm font-bold transition-colors` |
-| **主要按鈕** | `bg-blue-600 text-white hover:bg-blue-700` |
-| **次要按鈕** | `border border-gray-300 text-gray-600 hover:bg-gray-50` |
-| **危險按鈕** | `bg-red-600 text-white hover:bg-red-700` |
-| **成功按鈕** | `bg-green-600 text-white hover:bg-green-700` |
-| **卡片 (Card)** | `bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden` |
-| **表格標題** | `bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider` |
-| **表格行** | `border-b border-gray-100 hover:bg-gray-50 odd:bg-white even:bg-gray-50/50 transition-colors` |
-| **標籤 (Badge)** | `inline-block text-xs px-2.5 py-0.5 rounded-full font-semibold` |
-| **輸入框** | `px-3 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none` |
-| **Modal** | `fixed inset-0 z-50 items-center justify-center hidden modal` + `bg-black/40` 遮罩 |
-| **Toast / Flash** | `flex items-center justify-between px-4 py-3 rounded-xl border` + 顏色映射 |
+### 基礎色系
+- **背景**：主內容區 `bg-slate-50`
+- **卡片**：`bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6`（無彩色邊框）
+- **文字主色**：`text-slate-800`（標題）、`text-slate-500`（次要）、`text-slate-700`（內文）
+
+### 卡片內部標題與操作區
+```html
+<div class="flex justify-between items-center mb-5">
+  <h3 class="text-lg font-semibold text-slate-800">📋 標題文字</h3>
+  <button class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors shadow-sm">動作按鈕</button>
+</div>
+```
+
+### 按鈕 (Button)
+| 類型 | Tailwind 類別 |
+|------|--------------|
+| **主要按鈕** | `bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors shadow-sm` |
+| **次要按鈕** | `border border-slate-300 text-slate-600 hover:bg-slate-50 text-sm font-medium py-2 px-4 rounded-lg transition-colors` |
+| **危險按鈕** | `bg-red-600 hover:bg-red-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors shadow-sm` |
+| **危險邊框** | `border border-red-300 text-red-600 hover:bg-red-50 text-sm font-medium py-2 px-4 rounded-lg transition-colors` |
+
+### 數據表格 (Data Tables)
+```html
+<table class="w-full text-left border-collapse">
+  <thead>
+    <tr class="bg-slate-50 border-y border-slate-200">
+      <th class="text-xs font-semibold text-slate-500 uppercase tracking-wider py-3 px-4">欄位</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+      <td class="py-3 px-4 text-sm text-slate-700">內容</td>
+    </tr>
+  </tbody>
+</table>
+```
+
+### 狀態標籤 (Pill Badges)
+```html
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
+```
+| 情境 | 顏色 |
+|------|------|
+| 嚴重錯誤/缺資料 | `bg-red-100 text-red-800` |
+| 警告/未錄入 | `bg-amber-100 text-amber-800` |
+| 正常/時薪制 | `bg-blue-100 text-blue-800` |
+| 一般資訊/月薪制 | `bg-purple-100 text-purple-800` |
+| 成功/一致 | `bg-green-100 text-green-800` |
+
+### 頁籤切換 (Tabs) — Segmented Control 樣式
+採用底部底線或分段控制器，避免氣泡框風格：
+```html
+<div class="flex border-b border-slate-200 gap-0" role="tablist">
+  <button class="px-4 py-2.5 text-sm font-medium text-slate-700 border-b-2 border-transparent hover:text-slate-900 hover:border-slate-300 transition-colors" data-tab="hourly" role="tab">時薪制</button>
+  <button class="px-4 py-2.5 text-sm font-medium text-slate-700 border-b-2 border-blue-600 text-blue-600" data-tab="monthly" role="tab">月薪制</button>
+</div>
+```
+
+### 卡片 (Card)
+`bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6`
+（**禁止**使用彩色邊框如 `border-blue-200`、`border-amber-200`、`border-green-200`）
+
+### 舊版 (v1) 元件速查 — 保留向後相容
+| 元件 | 舊樣式 | 新樣式 (v2) |
+|------|--------|------------|
+| 卡片外框 | `rounded-2xl border-gray-200` | `rounded-xl border-slate-200` |
+| 表格標題背景 | `bg-gray-100` | `bg-slate-50 border-y border-slate-200` |
+| 表格標題文字 | `text-gray-600` | `text-slate-500` |
+| 表格儲存格 | `px-3 py-2.5` | `py-3 px-4` |
+| Badge 基礎 | `inline-block rounded-full` | `inline-flex items-center rounded-full` |
+| 輸入框邊框 | `border-gray-300` | `border-slate-300` |
 
 ---
 

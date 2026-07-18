@@ -1,20 +1,81 @@
 /* 沿用 Tailwind 設計語意的自訂樣式 */
 :root {
-  --app-text-main: #1f2937;
-  --app-text-muted: #6b7280;
-  --app-border: #e5e7eb;
-  --app-surface: #ffffff;
-  --app-surface-soft: #f8fafc;
-  --app-shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
+  --app-text-main: #e2e8f0;
+  --app-text-muted: #94a3b8;
+  --app-border: #334155;
+  --app-surface: #1e293b;
+  --app-surface-soft: #0f172a;
+  --app-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  color-scheme: dark;
 }
 
-body {
-  color: var(--app-text-main);
+/* 全域背景確保無白底 */
+html {
+  background: #0f172a;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   line-height: 1.25;
+}
+
+/* 全域輸入框暗色修正 */
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]),
+select,
+textarea {
+  color-scheme: dark;
+  background-color: #1e293b !important;
+  color: #e2e8f0 !important;
+}
+
+/* Chrome 自動填入覆寫 */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #1e293b inset !important;
+  -webkit-text-fill-color: #e2e8f0 !important;
+  caret-color: #e2e8f0 !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+input[type="date"],
+input[type="time"],
+input[type="month"],
+input[type="datetime-local"] {
+  color-scheme: dark;
+}
+
+/* Chrome/Safari 日曆圖示反色 */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator,
+input[type="month"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.85);
+  cursor: pointer;
+}
+
+/* Select 與其選項 */
+select option {
+  background-color: #1e293b;
+  color: #e2e8f0;
+}
+
+/* datalist 下拉選單 */
+datalist {
+  background-color: #1e293b;
+}
+
+/* Firefox select */
+@-moz-document url-prefix() {
+  select {
+    background-color: #1e293b !important;
+    color: #e2e8f0 !important;
+  }
+  select option {
+    background-color: #1e293b;
+    color: #e2e8f0;
+  }
 }
 
 .quick-action-bar {
@@ -32,8 +93,8 @@ h1, h2, h3, h4, h5, h6 {
   padding: 0.9rem 1rem;
   border: 1px solid var(--app-border);
   border-radius: 0.85rem;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+  background: rgba(30, 41, 59, 0.96);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(10px);
 }
 
@@ -52,12 +113,6 @@ h1, h2, h3, h4, h5, h6 {
   max-width: 600px;
   margin-left: 0;
   margin-right: auto;
-}
-
-/* 品牌側欄折疊/搜尋 */
-.brand-sidebar-item.is-collapsed-hidden,
-.brand-sidebar-item.is-search-hidden {
-  display: none;
 }
 
 /* 表格容器 */
@@ -88,7 +143,5 @@ input[type="month"] {
   .quick-action-buttons .btn,
   .quick-action-buttons form {
     width: 100%;
-  }
-}
   }
 }

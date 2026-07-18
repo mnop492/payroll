@@ -2,75 +2,63 @@
 {% block content %}
 <div class="space-y-6">
   <div class="flex items-center justify-between flex-wrap gap-2">
-    <h2 class="text-2xl font-bold text-gray-800">🔍 深度校對報告 (Excel vs 系統)</h2>
+    <h2 class="text-2xl font-bold text-slate-100">🔍 深度校對報告 (Excel vs 系統)</h2>
     <div class="flex gap-2 flex-wrap">
-      <a href="/download_validation?month={{ current_month }}&brand={{ current_brand }}" class="px-4 py-2 text-sm font-bold text-white bg-green-600 rounded-xl hover:bg-green-700 transition-colors">📥 下載比對結果 (Excel)</a>
-      <a href="/?month={{ current_month }}&brand={{ current_brand }}" class="px-4 py-2 text-sm font-semibold text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">← 返回主控台</a>
-    </div>
-  </div>
-
-  <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-    <div class="p-4">
-      <form id="validationFilterForm" class="flex items-end gap-4" method="GET" action="/validate">
-        <input type="hidden" name="brand" value="{{ current_brand }}">
-        <div>
-          <label class="block text-sm font-bold text-gray-700 mb-1">校對月份</label>
-          <input type="month" name="month" class="px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" value="{{ current_month }}" onchange="document.getElementById('validationFilterForm').submit()">
-        </div>
-      </form>
+      <a href="/download_validation?month={{ current_month }}&brand={{ current_brand }}" class="px-4 py-2 text-sm font-bold text-slate-100 bg-green-600 rounded-xl hover:bg-green-700 transition-colors">📥 下載比對結果 (Excel)</a>
+      <a href="/?month={{ current_month }}&brand={{ current_brand }}" class="px-4 py-2 text-sm font-semibold text-slate-300 border border-slate-600 rounded-xl hover:bg-slate-700 transition-colors">← 返回主控台</a>
     </div>
   </div>
 
   <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 text-center">
-      <div class="text-xs text-gray-500">總筆數</div>
-      <div class="text-xl font-bold text-gray-800">{{ summary.total }}</div>
+    <div class="bg-slate-800 rounded-2xl shadow-sm border border-slate-700 p-4 text-center">
+      <div class="text-sm text-slate-400">總筆數</div>
+      <div class="text-xl font-bold text-slate-100">{{ summary.total }}</div>
     </div>
-    <div class="bg-white rounded-2xl shadow-sm border border-green-200 p-4 text-center">
-      <div class="text-xs text-gray-500">匹配</div>
-      <div class="text-xl font-bold text-green-700">{{ summary.matched }}</div>
+    <div class="bg-slate-800 rounded-2xl shadow-sm border border-green-800/40 p-4 text-center">
+      <div class="text-sm text-slate-400">匹配</div>
+      <div class="text-xl font-bold text-green-300">{{ summary.matched }}</div>
     </div>
-    <div class="bg-white rounded-2xl shadow-sm border border-red-200 p-4 text-center">
-      <div class="text-xs text-gray-500">不匹配</div>
-      <div class="text-xl font-bold text-red-700">{{ summary.mismatched }}</div>
+    <div class="bg-slate-800 rounded-2xl shadow-sm border border-red-800/40 p-4 text-center">
+      <div class="text-sm text-slate-400">不匹配</div>
+      <div class="text-xl font-bold text-red-300">{{ summary.mismatched }}</div>
     </div>
-    <div class="bg-white rounded-2xl shadow-sm border border-amber-200 p-4 text-center">
-      <div class="text-xs text-gray-500">缺數據</div>
-      <div class="text-xl font-bold text-amber-700">{{ summary.missing }}</div>
+    <div class="bg-slate-800 rounded-2xl shadow-sm border border-amber-800/40 p-4 text-center">
+      <div class="text-sm text-slate-400">缺數據</div>
+      <div class="text-xl font-bold text-amber-300">{{ summary.missing }}</div>
     </div>
   </div>
 
   {# View controls #}
   <div class="flex items-center gap-4 mb-3 flex-wrap">
-    <label class="flex items-center gap-2 text-sm font-semibold text-gray-700 cursor-pointer"><input type="checkbox" id="showMismatchOnly" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"> 只顯示有差異的行</label>
-    <label class="flex items-center gap-2 text-sm font-semibold text-gray-700 cursor-pointer"><input type="checkbox" id="showDetailCols" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"> 顯示系統明細欄位</label>
+    <label class="flex items-center gap-2 text-sm font-semibold text-slate-200 cursor-pointer"><input type="checkbox" id="showMismatchOnly" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"> 只顯示有差異的行</label>
+    <label class="flex items-center gap-2 text-sm font-semibold text-slate-200 cursor-pointer"><input type="checkbox" id="showDetailCols" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"> 顯示系統明細欄位</label>
   </div>
 
-  <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+  <div class="bg-slate-800 rounded-2xl shadow-sm border border-slate-700 overflow-hidden">
     <div class="overflow-x-auto">
       <table id="valTable" class="w-full text-sm border-collapse">
         <thead>
-          <tr class="text-center text-xs font-semibold uppercase tracking-wider">
-            <th rowspan="2" class="px-3 py-3 border-b border-gray-200 bg-gray-50">員工</th>
-            <th rowspan="2" class="px-3 py-3 border-b border-gray-200 bg-gray-50">地點</th>
-            <th colspan="2" class="px-3 py-3 border-b border-gray-200 bg-gray-100">底薪</th>
-            <th colspan="2" class="px-3 py-3 border-b border-gray-200 bg-gray-100">佣金</th>
-            <th colspan="2" class="px-3 py-3 border-b border-gray-200 bg-gray-100">津貼</th>
-            <th colspan="2" class="px-3 py-3 border-b border-gray-200 bg-gray-100">MPF</th>
-            <th colspan="2" class="px-3 py-3 border-b border-gray-200 bg-blue-100">實發</th>
+          <tr class="text-center text-sm font-semibold uppercase tracking-wider">
+            <th rowspan="2" class="px-3 py-3 border-b border-slate-600 bg-slate-700">員工</th>
+            <th rowspan="2" class="px-3 py-3 border-b border-slate-600 bg-slate-700">地點</th>
+            <th colspan="2" class="px-3 py-3 border-b border-slate-600 bg-slate-700">底薪</th>
+            <th colspan="2" class="px-3 py-3 border-b border-slate-600 bg-slate-700">佣金</th>
+            <th colspan="2" class="px-3 py-3 border-b border-slate-600 bg-slate-700">津貼</th>
+            <th colspan="2" class="px-3 py-3 border-b border-slate-600 bg-slate-700">MPF</th>
+            <th colspan="2" class="px-3 py-3 border-b border-slate-600 bg-blue-900/20">實發</th>
                             {# Result columns #}
                             <th rowspan="2" class="align-middle">差異欄位</th>
                             <th rowspan="2" class="align-middle">根因提示</th>
                             <th rowspan="2" class="align-middle">差異 ($)</th>
                             <th rowspan="2" class="align-middle">狀態</th>
                             {# System detail columns (toggleable) #}
-                            <th colspan="3" class="detail-col bg-cyan-50">工時明細 (Excel/系統)</th>
-                            <th colspan="3" class="detail-col bg-cyan-50">微調明細</th>
-                            <th colspan="2" class="detail-col bg-cyan-50">銷售明細</th>
-                            <th colspan="2" class="detail-col bg-cyan-50">時薪設定</th>
-                            <th colspan="2" class="detail-col bg-cyan-50">佣金率設定</th>
+                            <th colspan="3" class="detail-col bg-cyan-900/20">工時明細 (Excel/系統)</th>
+                            <th colspan="3" class="detail-col bg-cyan-900/20">微調明細</th>
+                            <th colspan="2" class="detail-col bg-cyan-900/20">銷售明細</th>
+                            <th colspan="2" class="detail-col bg-cyan-900/20">時薪設定</th>
+                            <th colspan="2" class="detail-col bg-cyan-900/20">佣金率設定</th>
                         </tr>
-                        <tr class="bg-gray-100 text-center">
+                        <tr class="bg-slate-700 text-center">
                             <th>Ex</th><th>系</th>
                             <th>Ex</th><th>系</th>
                             <th>Ex</th><th>系</th>
@@ -92,72 +80,72 @@
                     </thead>
                     <tbody>
                         {% for item in results %}
-                        <tr class="text-center border-b border-gray-100 hover:bg-gray-50 even:bg-gray-50/50 transition-colors {{ 'val-row-mismatch bg-red-50' if '❌' in item.status or '❓' in item.status else 'val-row-match' }}">
+                        <tr class="text-center border-b border-slate-700 hover:bg-slate-700 even:bg-slate-700/50 transition-colors {{ 'val-row-mismatch bg-red-900/20' if '❌' in item.status or '❓' in item.status else 'val-row-match' }}">
                             <td class="px-3 py-2 font-bold text-sm">{{ item.name }}</td>
-                            <td class="px-3 py-2 text-xs">{{ item.location }}</td>
+                            <td class="px-3 py-2 text-sm">{{ item.location }}</td>
                             <td class="px-2 py-2">{{ item.ex_basic }}</td>
-                            <td class="px-2 py-2 {{ 'text-red-600 font-bold' if item.ex_basic != item.sys_basic else 'text-gray-400' }}">{{ item.sys_basic }}</td>
+                            <td class="px-2 py-2 {{ 'text-red-400 font-bold' if item.ex_basic != item.sys_basic else 'text-slate-500' }}">{{ item.sys_basic }}</td>
                             <td class="px-2 py-2">{{ item.ex_comm }}</td>
-                            <td class="px-2 py-2 {{ 'text-red-600 font-bold' if item.ex_comm != item.sys_comm else 'text-gray-400' }}">{{ item.sys_comm }}</td>
+                            <td class="px-2 py-2 {{ 'text-red-400 font-bold' if item.ex_comm != item.sys_comm else 'text-slate-500' }}">{{ item.sys_comm }}</td>
                             <td class="px-2 py-2">{{ item.ex_allow }}</td>
-                            <td class="px-2 py-2 {{ 'text-red-600 font-bold' if item.ex_allow != item.sys_allow else 'text-gray-400' }}">{{ item.sys_allow }}</td>
+                            <td class="px-2 py-2 {{ 'text-red-400 font-bold' if item.ex_allow != item.sys_allow else 'text-slate-500' }}">{{ item.sys_allow }}</td>
                             <td class="px-2 py-2">{{ item.ex_mpf }}</td>
-                            <td class="px-2 py-2 {{ 'text-red-600 font-bold' if item.ex_mpf != item.sys_mpf else 'text-gray-400' }}">{{ item.sys_mpf }}</td>
-                            <td class="px-2 py-2 font-bold bg-blue-50">{{ item.ex_net }}</td>
-                            <td class="px-2 py-2 font-bold bg-blue-50 {{ 'text-red-600' if '❌' in item.status else '' }}">{{ item.sys_net }}</td>
+                            <td class="px-2 py-2 {{ 'text-red-400 font-bold' if item.ex_mpf != item.sys_mpf else 'text-slate-500' }}">{{ item.sys_mpf }}</td>
+                            <td class="px-2 py-2 font-bold bg-blue-900/20">{{ item.ex_net }}</td>
+                            <td class="px-2 py-2 font-bold bg-blue-900/20 {{ 'text-red-400' if '❌' in item.status else '' }}">{{ item.sys_net }}</td>
                             <td class="text-left px-2 py-2">
                                 {% if item.mismatch_fields %}
                                     {% for field in item.mismatch_fields %}
-                                        <span class="inline-block bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded-full me-1">{{ field }}</span>
+                                        <span class="inline-block bg-red-900/40 text-red-300 text-sm px-2 py-0.5 rounded-full me-1">{{ field }}</span>
                                     {% endfor %}
                                 {% elif '❓' in item.status %}
-                                    <span class="inline-block bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full">系統無資料</span>
+                                    <span class="inline-block bg-amber-900/40 text-amber-300 text-sm px-2 py-0.5 rounded-full">系統無資料</span>
                                 {% else %}
-                                    <span class="inline-block bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">一致</span>
+                                    <span class="inline-block bg-green-900/40 text-green-300 text-sm px-2 py-0.5 rounded-full">一致</span>
                                 {% endif %}
                             </td>
                             <td class="text-left px-2 py-2">
                                 {% if item.root_cause %}
                                     {% for hint in item.root_cause %}
-                                        <span class="inline-block bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded-full me-1">{{ hint }}</span>
+                                        <span class="inline-block bg-amber-900/40 text-amber-300 text-sm px-2 py-0.5 rounded-full me-1">{{ hint }}</span>
                                     {% endfor %}
                                 {% else %}
-                                    <span class="text-gray-400">—</span>
+                                    <span class="text-slate-500">—</span>
                                 {% endif %}
                             </td>
-                            <td class="px-2 py-2 font-bold {{ 'text-red-600' if item.diff|float < -1 else ('text-green-600' if item.diff|float > 1 else 'text-gray-400') }}">{{ item.diff }}</td>
+                            <td class="px-2 py-2 font-bold {{ 'text-red-400' if item.diff|float < -1 else ('text-green-300' if item.diff|float > 1 else 'text-slate-500') }}">{{ item.diff }}</td>
                             <td class="px-2 py-2">{{ item.status }}</td>
-                            <td class="detail-col px-2 py-2 {{ 'text-red-600 font-bold' if item.ex_days != item.sys_days else 'text-gray-400' }}">{{ item.ex_days }} / {{ item.sys_days }}</td>
-                            <td class="detail-col px-2 py-2 {{ 'text-red-600 font-bold' if item.ex_hours != item.sys_hours else 'text-gray-400' }}">{{ item.ex_hours }} / {{ item.sys_hours }}</td>
-                            <td class="detail-col px-2 py-2 {{ 'text-red-600 font-bold' if item.ex_ot != item.sys_ot else 'text-gray-400' }}">{{ item.ex_ot }} / {{ item.sys_ot }}</td>
-                            <td class="detail-col px-2 py-2 text-gray-400 text-xs">{{ item.sys_expenses }}</td>
-                            <td class="detail-col px-2 py-2 text-gray-400 text-xs">{{ item.sys_adjustment }}</td>
-                            <td class="detail-col px-2 py-2 text-gray-400 text-xs">{{ item.sys_bonus }}</td>
-                            <td class="detail-col px-2 py-2 text-gray-400 text-xs">{{ item.sys_sales_entries }}</td>
-                            <td class="detail-col px-2 py-2 text-gray-400 text-xs">${{ item.sys_sales_amount }}</td>
+                            <td class="detail-col px-2 py-2 {{ 'text-red-400 font-bold' if item.ex_days != item.sys_days else 'text-slate-500' }}">{{ item.ex_days }} / {{ item.sys_days }}</td>
+                            <td class="detail-col px-2 py-2 {{ 'text-red-400 font-bold' if item.ex_hours != item.sys_hours else 'text-slate-500' }}">{{ item.ex_hours }} / {{ item.sys_hours }}</td>
+                            <td class="detail-col px-2 py-2 {{ 'text-red-400 font-bold' if item.ex_ot != item.sys_ot else 'text-slate-500' }}">{{ item.ex_ot }} / {{ item.sys_ot }}</td>
+                            <td class="detail-col px-2 py-2 text-slate-500 text-sm">{{ item.sys_expenses }}</td>
+                            <td class="detail-col px-2 py-2 text-slate-500 text-sm">{{ item.sys_adjustment }}</td>
+                            <td class="detail-col px-2 py-2 text-slate-500 text-sm">{{ item.sys_bonus }}</td>
+                            <td class="detail-col px-2 py-2 text-slate-500 text-sm">{{ item.sys_sales_entries }}</td>
+                            <td class="detail-col px-2 py-2 text-slate-500 text-sm">${{ item.sys_sales_amount }}</td>
                             <td class="detail-col px-2 py-2">
-                                <span class="{{ 'text-blue-700 font-bold' if item.hr_overridden else 'text-gray-400' }}">${{ item.effective_hr }}{% if item.hr_overridden %} *{% endif %}</span>
+                                <span class="{{ 'text-blue-300 font-bold' if item.hr_overridden else 'text-slate-500' }}">${{ item.effective_hr }}{% if item.hr_overridden %} *{% endif %}</span>
                             </td>
                             <td class="detail-col px-2 py-2">
                                 {% if item.hr_overridden %}
-                                    <span class="inline-block bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">覆寫</span>
+                                    <span class="inline-block bg-blue-900/40 text-blue-300 text-sm px-2 py-0.5 rounded-full">覆寫</span>
                                 {% else %}
-                                    <span class="text-gray-400 text-xs">預設</span>
+                                    <span class="text-slate-500 text-sm">預設</span>
                                 {% endif %}
                             </td>
                             <td class="detail-col px-2 py-2">
-                                <span class="{{ 'text-blue-700 font-bold' if item.comm_overridden else 'text-gray-400' }}">{{ item.effective_comm_pct }}%{% if item.comm_overridden %} *{% endif %}</span>
+                                <span class="{{ 'text-blue-300 font-bold' if item.comm_overridden else 'text-slate-500' }}">{{ item.effective_comm_pct }}%{% if item.comm_overridden %} *{% endif %}</span>
                             </td>
                             <td class="detail-col px-2 py-2">
                                 {% if item.comm_overridden %}
-                                    <span class="inline-block bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">覆寫</span>
+                                    <span class="inline-block bg-blue-900/40 text-blue-300 text-sm px-2 py-0.5 rounded-full">覆寫</span>
                                 {% else %}
-                                    <span class="text-gray-400 text-xs">預設</span>
+                                    <span class="text-slate-500 text-sm">預設</span>
                                 {% endif %}
                             </td>
                         </tr>
                         {% else %}
-                        <tr><td colspan="29" class="text-center text-gray-400 py-6 italic">本月無校對資料（請先匯入 Excel）</td></tr>
+                        <tr><td colspan="29" class="text-center text-slate-500 py-6 italic">本月無校對資料（請先匯入 Excel）</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>

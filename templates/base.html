@@ -6,10 +6,23 @@
     <title>Sharpsing計糧系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+      /* 暗色模式安全網 — 強制移除所有白色背景 */
+      html, body, main, section, div, article, aside, header, footer, nav,
+      table, thead, tbody, tr, th, td,
+      form, fieldset,
+      input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+      select, textarea, button,
+      datalist, option, optgroup {
+        color-scheme: dark;
+      }
+      html { background: #0f172a !important; }
+      body { background: #0f172a !important; min-height: 100vh; }
+    </style>
     <link href="{{ url_for('static', filename='app.css') }}" rel="stylesheet">
   {% block head_extra %}{% endblock %}
 </head>
-<body class="flex h-screen bg-gray-50 text-gray-800 antialiased">
+<body class="flex h-screen bg-slate-900 text-slate-100 antialiased">
 
   {# ========== 左側深色導航欄 ========== #}
   <aside class="w-64 bg-slate-900 text-white flex flex-col shrink-0 shadow-xl">
@@ -17,9 +30,7 @@
       <a href="/" class="text-xl font-bold tracking-tight hover:text-white">📋 糧單管理系統</a>
     </div>
     <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-      <a href="/" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-700/70 transition-colors {% if request.path == '/' %}bg-slate-700/70 font-semibold{% endif %}">
-        <span>🏠</span> <span>主控台</span>
-      </a>
+      {% if session.get('user') %}
       <a href="/settings{% if current_brand %}?brand={{ current_brand }}{% endif %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-700/70 transition-colors {% if request.path == '/settings' %}bg-slate-700/70 font-semibold{% endif %}">
         <span>👤</span> <span>人事設定</span>
       </a>
@@ -31,7 +42,7 @@
       </a>
       <div class="border-t border-slate-700 my-3"></div>
       <a href="/validate{% if request.args.get('month') %}?month={{ request.args.get('month') }}{% endif %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-700/70 transition-colors">
-        <span>🔍</span> <span>校對</span>
+        <span>🔍</span> <span>校對(Excel vs 系統)</span>
       </a>
       {% if session.get('is_admin') %}
       <a href="/audit_logs" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-700/70 transition-colors">
@@ -47,15 +58,16 @@
         <span>🏷️</span> <span>品牌管理</span>
       </a>
       {% endif %}
+      {% endif %}
     </nav>
     <div class="px-4 py-4 border-t border-slate-700 space-y-2">
       {% if session.get('user') %}
-      <div class="flex items-center gap-2 text-sm text-slate-300">
+      <div class="flex items-center gap-2 text-sm text-slate-400">
         <span>👤</span> <span>{{ session.get('user') }}</span>
       </div>
-      <a href="/logout" class="block text-sm text-slate-400 hover:text-white transition-colors px-3 py-1.5 rounded-xl hover:bg-slate-700">登出</a>
+      <a href="/logout" class="block text-sm text-slate-500 hover:text-white transition-colors px-3 py-1.5 rounded-xl hover:bg-slate-700">登出</a>
       {% else %}
-      <a href="/login?next={{ request.path }}" class="block text-sm text-slate-300 hover:text-white px-3 py-1.5 rounded-xl hover:bg-slate-700">登入</a>
+      <a href="/login?next={{ request.path }}" class="block text-sm text-slate-400 hover:text-white px-3 py-1.5 rounded-xl hover:bg-slate-700">登入</a>
       {% endif %}
     </div>
   </aside>
@@ -63,26 +75,57 @@
   {# ========== 右側主內容區 ========== #}
   <div class="flex-1 flex flex-col min-w-0">
     {# ========== 頂部狀態列 ========== #}
-    <header class="shrink-0 px-4 md:px-6 lg:px-8 py-3 bg-white border-b border-gray-200 shadow-sm flex items-center justify-between gap-4">
+    <header class="shrink-0 px-4 md:px-6 lg:px-8 py-3 bg-slate-800 border-b border-slate-700 shadow-sm flex items-center justify-between gap-4">
       <div class="flex items-center gap-3 min-w-0">
-        <h1 class="text-base md:text-lg font-bold text-gray-800 truncate">
+        <h1 class="text-base md:text-lg font-bold text-slate-100 truncate">
           {% block page_title %}主控台{% endblock %}
         </h1>
-        {% if current_brand_name %}
-        <span class="shrink-0 inline-flex items-center gap-1 text-xs font-semibold bg-blue-100 text-blue-700 px-2.5 py-1 rounded-full">
-          🏷️ {{ current_brand_name }}
-        </span>
+        {% set _active_brand = current_brand if current_brand is defined and current_brand else request.args.get('brand') %}
+        {% set _no_brand_ui_paths = ['/login', '/manage_users'] %}
+        {% set _show_brand_dropdown = available_brands is defined and available_brands and request.path not in _no_brand_ui_paths %}
+        {% if _show_brand_dropdown %}
+        <!-- 品牌切換下拉 -->
+        <div class="relative shrink-0" data-brand-dropdown>
+          <button class="inline-flex items-center gap-1.5 text-sm font-semibold bg-slate-800 border border-slate-600 hover:border-slate-500 text-slate-200 px-3 py-1.5 rounded-lg transition-colors" data-brand-toggle-btn aria-expanded="false">
+            <span>🏷️</span>
+            <span data-brand-current>{{ current_brand_name or '選擇品牌' }}</span>
+            <svg class="w-3.5 h-3.5 text-slate-500 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="absolute left-0 top-full mt-1 w-72 bg-slate-800 rounded-xl shadow-lg border border-slate-700 z-50 hidden" data-brand-menu>
+            <div class="p-2">
+              <input type="search" class="text-slate-200 bg-slate-800 w-full px-3 py-2 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="搜尋品牌名稱/代碼" data-brand-search>
+            </div>
+            <div class="max-h-64 overflow-y-auto p-1" data-brand-list>
+              {% for brand in available_brands %}
+              {% set _is_active = (_active_brand == brand.brand_code) %}
+              <button class="w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center justify-between hover:bg-slate-900 transition-colors {% if _is_active %}bg-blue-900/30 text-blue-300 font-semibold{% else %}text-slate-200{% endif %}"
+                data-brand-option="{{ brand.brand_code }}"
+                data-brand-text="{{ (brand.brand_name ~ ' ' ~ brand.brand_code)|lower }}">
+                <span class="font-medium">{{ brand.brand_name }}</span>
+                <span class="text-sm text-slate-500">{{ brand.brand_code }}</span>
+              </button>
+              {% endfor %}
+            </div>
+            <div class="hidden p-3 text-center text-sm text-slate-500" data-brand-empty>找不到符合的品牌。</div>
+          </div>
+        </div>
+        {% endif %}
+        {% if current_month is defined and current_month %}
+        <input class="px-3 py-1.5 text-sm font-medium bg-slate-800 border border-slate-600 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" type="month"
+               value="{{ current_month }}"
+               onchange="var p=new URLSearchParams(location.search);p.set('month',this.value);location.href=location.pathname+'?'+p.toString()"
+               title="切換月份">
         {% endif %}
       </div>
       <div class="flex items-center gap-3 shrink-0">
         {% if session.get('user') %}
-        <div class="hidden sm:flex items-center gap-2 text-sm text-gray-500">
-          <span class="w-7 h-7 rounded-full bg-slate-800 text-white flex items-center justify-center text-xs font-bold">U</span>
+        <div class="hidden sm:flex items-center gap-2 text-sm text-slate-500">
+          <span class="w-7 h-7 rounded-full bg-slate-800 text-white flex items-center justify-center text-sm font-bold">U</span>
           <span class="font-medium">{{ session.get('user') }}</span>
         </div>
-        <a href="/logout" class="px-3 py-1.5 text-xs font-semibold text-gray-500 border border-gray-300 rounded-xl hover:bg-gray-50 hover:text-gray-700 transition-colors">登出</a>
+        <a href="/logout" class="px-3 py-1.5 text-sm font-semibold text-slate-500 border border-slate-600 rounded-xl hover:bg-slate-900 hover:text-slate-200 transition-colors">登出</a>
         {% else %}
-        <a href="/login?next={{ request.path }}" class="px-3 py-1.5 text-xs font-semibold text-blue-600 border border-blue-300 rounded-xl hover:bg-blue-50 transition-colors">登入</a>
+        <a href="/login?next={{ request.path }}" class="px-3 py-1.5 text-sm font-semibold text-blue-300 border border-blue-800/50 rounded-xl hover:bg-blue-900/30 transition-colors">登入</a>
         {% endif %}
       </div>
     </header>
@@ -92,8 +135,8 @@
       {% if messages %}
         <div class="space-y-2 mb-4">
         {% for category, message in messages %}
-          {% set cat_map = {'success': 'bg-green-100 text-green-800 border-green-200', 'danger': 'bg-red-100 text-red-800 border-red-200', 'warning': 'bg-yellow-100 text-yellow-800 border-yellow-200', 'info': 'bg-blue-100 text-blue-800 border-blue-200'} %}
-          <div class="flex items-center justify-between px-4 py-3 rounded-xl border {{ cat_map.get(category, 'bg-gray-100 text-gray-800 border-gray-200') }}" role="alert">
+          {% set cat_map = {'success': 'bg-green-900/40 text-green-300 border-green-200', 'danger': 'bg-red-900/40 text-red-300 border-red-200', 'warning': 'bg-yellow-900/40 text-yellow-300 border-yellow-800', 'info': 'bg-blue-900/40 text-blue-300 border-blue-200'} %}
+          <div class="flex items-center justify-between px-4 py-3 rounded-xl border {{ cat_map.get(category, 'bg-slate-700 text-slate-100 border-slate-700') }}" role="alert">
             <span>{{ message }}</span>
             <button type="button" class="text-lg leading-none opacity-60 hover:opacity-100" onclick="this.parentElement.remove()">&times;</button>
           </div>
@@ -103,45 +146,8 @@
     {% endwith %}
 
     {% set _active_brand = current_brand if current_brand is defined and current_brand else request.args.get('brand') %}
-    {% set _no_brand_ui_paths = ['/login', '/manage_users'] %}
-    {% set _show_brand_sidebar = available_brands is defined and available_brands and request.path not in _no_brand_ui_paths %}
-    {% set _brand_initial_limit = 8 %}
 
-    <div class="{% if _show_brand_sidebar %}flex gap-4 items-start{% endif %}" data-active-brand="{{ _active_brand or '' }}" data-enable-title-brand="{{ '1' if request.path not in _no_brand_ui_paths else '0' }}">
-      {% if _show_brand_sidebar %}
-      <aside class="w-64 shrink-0 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden sticky top-0 hidden lg:block">
-        <div class="px-4 py-3 border-b border-gray-200 bg-gradient-to-br from-gray-50 to-white">
-          <div class="font-extrabold text-sm tracking-tight">品牌分頁</div>
-          <div class="text-xs text-gray-400 mt-0.5">切換目前頁面品牌</div>
-        </div>
-        <div class="px-3 pt-2">
-          <input type="search" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="搜尋品牌名稱/代碼" data-brand-search aria-label="搜尋品牌">
-        </div>
-        {% set ns = namespace(overflow_count=0) %}
-        <div class="flex flex-col gap-1.5 p-3 max-h-[calc(100vh-14rem)] overflow-y-auto" role="tablist" aria-label="品牌切換" data-brand-list>
-          {% for brand in available_brands %}
-          {% set _is_active_item = (_active_brand == brand.brand_code) %}
-          {% set _is_overflow_item = (loop.index0 >= _brand_initial_limit and not _is_active_item) %}
-          {% if _is_overflow_item %}
-          {% set ns.overflow_count = ns.overflow_count + 1 %}
-          {% endif %}
-          <a class="flex flex-col gap-0.5 px-3 py-2.5 border border-gray-200 rounded-xl bg-white text-gray-800 no-underline transition-all hover:-translate-y-0.5 hover:shadow-md hover:border-gray-400 {% if _is_active_item %}border-gray-900 bg-gradient-to-br from-gray-900 to-gray-700 text-white shadow-lg{% endif %} {% if _is_overflow_item %}is-collapsed-hidden{% endif %}"
-            href="{{ request.path }}?brand={{ brand.brand_code }}{% if request.args.get('month') %}&month={{ request.args.get('month') }}{% endif %}"
-            data-brand-switch="{{ brand.brand_code }}" data-brand-item data-overflow="{{ '1' if _is_overflow_item else '0' }}"
-            data-brand-text="{{ (brand.brand_name ~ ' ' ~ brand.brand_code)|lower }}">
-            <span class="font-bold leading-tight">{{ brand.brand_name }}</span>
-            <span class="text-xs opacity-70 leading-tight">{{ brand.brand_code }}</span>
-          </a>
-          {% endfor %}
-          <div class="hidden border border-dashed border-gray-300 rounded-xl p-3 text-center text-sm text-gray-400 bg-gray-50" data-brand-empty>找不到符合的品牌。</div>
-        </div>
-        {% if ns.overflow_count > 0 %}
-        <div class="px-3 pb-3 pt-1 border-t border-gray-200">
-          <button type="button" class="w-full px-3 py-2 text-sm font-medium text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors" data-brand-toggle data-default-label="顯示更多 ({{ ns.overflow_count }})" aria-expanded="false">顯示更多 ({{ ns.overflow_count }})</button>
-        </div>
-        {% endif %}
-      </aside>
-      {% endif %}
+    <div data-active-brand="{{ _active_brand or '' }}">
 
       <main class="flex-1 min-w-0">
         {% block content %}{% endblock %}
@@ -152,75 +158,69 @@
 
   <script>
     (function() {
-      const switchers = document.querySelectorAll('[data-brand-switch]');
-      if (!switchers.length) return;
-      switchers.forEach((el) => {
-        el.addEventListener('click', function(event) {
-          const targetBrand = this.getAttribute('data-brand-switch');
-          if (!targetBrand) return;
-          event.preventDefault();
-          const url = new URL(window.location.href);
-          url.searchParams.set('brand', targetBrand);
-          window.location.href = url.toString();
+      // === 品牌下拉切換 ===
+      const dropdown = document.querySelector('[data-brand-dropdown]');
+      if (dropdown) {
+        const btn = dropdown.querySelector('[data-brand-toggle-btn]');
+        const menu = dropdown.querySelector('[data-brand-menu]');
+        const searchInput = dropdown.querySelector('[data-brand-search]');
+        const list = dropdown.querySelector('[data-brand-list]');
+        const emptyState = dropdown.querySelector('[data-brand-empty]');
+        const currentLabel = dropdown.querySelector('[data-brand-current]');
+        const options = Array.from(list.querySelectorAll('[data-brand-option]'));
+        const activeBrand = dropdown.closest('[data-active-brand]')?.getAttribute('data-active-brand') || '';
+
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const isOpen = !menu.classList.contains('hidden');
+          menu.classList.toggle('hidden', isOpen);
+          btn.setAttribute('aria-expanded', !isOpen);
+          if (!isOpen) { searchInput.value = ''; applyFilter(); searchInput.focus(); }
         });
+
+        document.addEventListener('click', function(e) {
+          if (!dropdown.contains(e.target)) {
+            menu.classList.add('hidden');
+            btn.setAttribute('aria-expanded', 'false');
+          }
+        });
+
+        options.forEach(opt => {
+          opt.addEventListener('click', function() {
+            const code = this.getAttribute('data-brand-option');
+            if (code === activeBrand) { menu.classList.add('hidden'); btn.setAttribute('aria-expanded', 'false'); return; }
+            const url = new URL(window.location.href);
+            url.searchParams.set('brand', code);
+            window.location.href = url.toString();
+          });
+        });
+
+        function applyFilter() {
+          const query = searchInput.value.trim().toLowerCase();
+          let visible = 0;
+          options.forEach(opt => {
+            const text = opt.getAttribute('data-brand-text') || '';
+            const matches = !query || text.includes(query);
+            opt.classList.toggle('hidden', !matches);
+            if (matches) visible += 1;
+          });
+          if (emptyState) emptyState.classList.toggle('hidden', visible > 0 || !query);
+        }
+        searchInput.addEventListener('input', applyFilter);
+        menu.addEventListener('click', function(e) { e.stopPropagation(); });
+      }
+
+      // === 表單按鈕 disabled 保護 ===
+      document.addEventListener('submit', function(e) {
+        const btn = e.target.querySelector('[type="submit"]');
+        if (!btn || btn.disabled) return;
+        setTimeout(function() {
+          btn.disabled = true;
+          btn._origText = btn._origText || btn.textContent;
+          btn.textContent = '⏳ 處理中…';
+        }, 10);
       });
-
-      const sidebar = document.querySelector('[data-brand-list]');
-      if (!sidebar) return;
-      const container = sidebar.closest('aside');
-      const searchInput = container.querySelector('[data-brand-search]');
-      const toggleBtn = container.querySelector('[data-brand-toggle]');
-      const emptyState = container.querySelector('[data-brand-empty]');
-      const brandItems = Array.from(sidebar.querySelectorAll('[data-brand-item]'));
-      let expanded = false;
-      const hasOverflow = brandItems.some((item) => item.getAttribute('data-overflow') === '1');
-
-      function applyCollapsed() {
-        brandItems.forEach((item) => {
-          const shouldCollapse = item.getAttribute('data-overflow') === '1';
-          item.classList.toggle('is-collapsed-hidden', shouldCollapse && !expanded);
-        });
-      }
-      function applySearch() {
-        const query = (searchInput && searchInput.value ? searchInput.value : '').trim().toLowerCase();
-        let visible = 0;
-        brandItems.forEach((item) => {
-          const text = item.getAttribute('data-brand-text') || '';
-          const matches = !query || text.includes(query);
-          item.classList.toggle('is-search-hidden', !matches);
-          if (matches) visible += 1;
-        });
-        const searching = Boolean(query);
-        if (searching) brandItems.forEach((item) => item.classList.remove('is-collapsed-hidden'));
-        else applyCollapsed();
-        if (toggleBtn) toggleBtn.classList.toggle('hidden', searching || !hasOverflow);
-        if (emptyState) emptyState.classList.toggle('hidden', visible > 0 || !query);
-      }
-
-      if (searchInput) searchInput.addEventListener('input', applySearch);
-      if (toggleBtn && hasOverflow) {
-        const defaultLabel = toggleBtn.getAttribute('data-default-label') || '顯示更多';
-        toggleBtn.addEventListener('click', function() {
-          expanded = !expanded;
-          this.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-          this.textContent = expanded ? '收起清單' : defaultLabel;
-          applySearch();
-        });
-      }
-      applySearch();
     })();
-
-    // === 表單按鈕 disabled 保護 ===
-    document.addEventListener('submit', function(e) {
-      const btn = e.target.querySelector('[type="submit"]');
-      if (!btn || btn.disabled) return;
-      setTimeout(function() {
-        btn.disabled = true;
-        btn._origText = btn._origText || btn.textContent;
-        btn.textContent = '⏳ 處理中…';
-      }, 10);
-    });
-
   </script>
   {% block scripts_extra %}{% endblock %}
 </body>

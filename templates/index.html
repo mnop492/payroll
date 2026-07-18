@@ -24,195 +24,221 @@
   {% set estimated_total_salary.sum = estimated_total_salary.sum + (staff.total_comm | default(0) | float) %}
 {% endfor %}
 
-<div class="space-y-6">
+<div class="space-y-8 mb-8">
     {# === KPI 摘要卡片 === #}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 flex items-center gap-4 hover:shadow-md transition-shadow">
-            <div class="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center text-2xl shrink-0">💰</div>
+        <div class="bg-slate-800 rounded-xl shadow-m border border-slate-700 p-5 flex items-center gap-4 hover:shadow-md transition-shadow">
+            <div class="w-12 h-12 rounded-xl bg-emerald-900/40 flex items-center justify-center text-2xl shrink-0">💰</div>
             <div class="min-w-0">
-                <div class="text-xs text-gray-400 font-semibold uppercase tracking-wider">本月預估薪資總額</div>
-                <div class="text-xl font-extrabold text-gray-800">${{ "{:,.0f}".format(estimated_total_salary.sum) }}</div>
-                <div class="text-xs text-gray-400 mt-0.5">{{ current_month }}</div>
+                <div class="text-sm text-slate-500 font-semibold uppercase tracking-wider">本月預估薪資總額</div>
+                <div class="text-xl font-extrabold text-slate-100">${{ "{:,.0f}".format(estimated_total_salary.sum) }}</div>
+                <div class="text-sm text-slate-500 mt-0.5">{{ current_month }}</div>
             </div>
         </div>
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 flex items-center gap-4 hover:shadow-md transition-shadow">
+        <div class="bg-slate-800 rounded-xl shadow-sm border border-slate-700 p-5 flex items-center gap-4 hover:shadow-md transition-shadow">
             <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-2xl shrink-0">👥</div>
             <div class="min-w-0">
-                <div class="text-xs text-gray-400 font-semibold uppercase tracking-wider">本月出勤人數</div>
-                <div class="text-xl font-extrabold text-gray-800">{{ total_attendance }} <span class="text-sm font-normal text-gray-400">/ {{ total_employees }} 人</span></div>
-                <div class="text-xs text-gray-400 mt-0.5">已錄入考勤記錄</div>
+                <div class="text-sm text-slate-500 font-semibold uppercase tracking-wider">本月出勤人數</div>
+                <div class="text-xl font-extrabold text-slate-100">{{ total_attendance }} <span class="text-sm font-normal text-slate-500">/ {{ total_employees }} 人</span></div>
+                <div class="text-sm text-slate-500 mt-0.5">已錄入考勤記錄</div>
             </div>
         </div>
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 flex items-center gap-4 hover:shadow-md transition-shadow">
-            <div class="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center text-2xl shrink-0">📋</div>
+        <div class="bg-slate-800 rounded-xl shadow-sm border border-slate-700 p-5 flex items-center gap-4 hover:shadow-md transition-shadow">
+            <div class="w-12 h-12 rounded-xl bg-amber-900/40 flex items-center justify-center text-2xl shrink-0">📋</div>
             <div class="min-w-0">
-                <div class="text-xs text-gray-400 font-semibold uppercase tracking-wider">待處理事項</div>
-                <div class="text-xl font-extrabold text-gray-800">{{ pending_employees.count }} <span class="text-sm font-normal text-gray-400">項</span></div>
-                <div class="text-xs text-gray-400 mt-0.5">尚未匯入考勤之員工</div>
+                <div class="text-sm text-slate-500 font-semibold uppercase tracking-wider">待處理事項</div>
+                <div class="text-xl font-extrabold text-slate-100">{{ pending_employees.count }} <span class="text-sm font-normal text-slate-500">項</span></div>
+                <div class="text-sm text-slate-500 mt-0.5">尚未匯入考勤之員工</div>
             </div>
         </div>
     </div>
 
     {# === Chart.js 圖表區 === #}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden" id="chart-section">
-        <div class="px-5 py-3.5 bg-gradient-to-r from-indigo-50 to-blue-50 border-b border-gray-200 flex items-center justify-between">
-            <h5 class="font-bold text-gray-700">📈 薪資與出勤趨勢概覽</h5>
-            <span class="text-xs text-gray-400">{{ current_month }}</span>
+    <div class="bg-slate-800 rounded-xl shadow-sm border border-slate-700 p-0 overflow-hidden mb-6" id="chart-section">
+        <div class="flex justify-between items-center px-5 py-3.5 border-b border-slate-700">
+            <h5 class="text-lg font-semibold text-slate-100">📈 薪資與出勤趨勢概覽</h5>
+            <span class="text-sm text-slate-500">{{ current_month }}</span>
         </div>
         <div class="p-5">
             {% set hourly_data = attendances | selectattr("salary_type", "equalto", "hourly") | list %}
             {% if hourly_data %}
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div>
-                    <h6 class="text-sm font-bold text-gray-500 mb-3">時薪制員工工時分佈</h6>
+                    <h6 class="text-sm font-bold text-slate-500 mb-3">時薪制員工工時分佈</h6>
                     <div class="relative" style="height: 260px;">
                         <canvas id="hoursChart"></canvas>
                     </div>
                 </div>
                 <div>
-                    <h6 class="text-sm font-bold text-gray-500 mb-3">各員工預估薪資比較</h6>
+                    <h6 class="text-sm font-bold text-slate-500 mb-3">各員工預估薪資比較</h6>
                     <div class="relative" style="height: 260px;">
                         <canvas id="salaryChart"></canvas>
                     </div>
                 </div>
             </div>
             {% else %}
-            <div class="py-10 text-center text-gray-400">
+            <div class="py-10 text-center text-slate-500">
                 <div class="text-5xl mb-3">📊</div>
                 <p class="text-sm font-semibold">本月無時薪制員工資料</p>
-                <p class="text-xs mt-1">匯入考勤或切換品牌後圖表將自動顯示</p>
+                <p class="text-sm mt-1">匯入考勤或切換品牌後圖表將自動顯示</p>
             </div>
             {% endif %}
         </div>
     </div>
 
-    {# === 薪資結算主控台 === #}
-    <div class="bg-white rounded-2xl shadow-sm border border-blue-200 overflow-hidden max-w-2xl" id="payroll-workflow-panel">
-        <div class="px-5 py-4 bg-blue-600 text-white font-bold text-lg flex items-center gap-2">
-            ⚙️ 1. 薪資結算主控台
-            <span class="ml-auto text-xs bg-white text-blue-700 px-2.5 py-0.5 rounded-full font-bold">{{ current_brand_name }}</span>
+    {# === 薪資結算工作流 === #}
+    <div class="bg-slate-800 rounded-xl shadow-sm border border-slate-700 overflow-hidden mb-6" id="payroll-workflow-panel">
+
+        {# --- State A: 無數據 --- #}
+        {% if not attendances and not staff_summary %}
+        <div class="px-6 py-5 border-b border-slate-700 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <h3 class="text-lg font-semibold text-slate-100">
+                    <svg class="w-5 h-5 inline-block text-slate-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    薪資結算
+                </h3>
+            </div>
         </div>
-        <div class="p-5 space-y-5">
-            <div>
-                <label class="block text-sm font-bold text-blue-700 mb-1.5">1. 選擇結算月份</label>
-                <input class="w-full px-3 py-2.5 border border-blue-300 bg-gray-50 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" type="month"
-                       value="{{ current_month }}"
-                       onchange="window.location.href='/?month=' + this.value + '&brand={{ current_brand }}'" required>
-            </div>
+        <div class="p-6">
+            <p class="text-sm text-slate-500 mb-6">本月尚無任何考勤或銷售數據，請先選擇一種方式建立資料。</p>
 
-            {% if attendances or staff_summary %}
-
-            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 shadow-sm">
-                <h6 class="font-bold text-blue-800 mb-2 text-base">✅ 已載入 {{ current_month }} 的資料</h6>
-                <p class="mb-3 text-sm text-gray-600">系統偵測到本月已匯入考勤與銷售紀錄。為了避免重複作業，您可以直接進行結算。</p>
-                <form action="/calculate_payroll" method="POST">
-                    <input type="hidden" name="calc_month" value="{{ current_month }}">
-                    <input type="hidden" name="brand" value="{{ current_brand }}">
-                    <button type="submit" class="w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-sm transition-colors">
-                        🚀 2. 進行薪資結算 (下一步)
-                    </button>
-                </form>
-            </div>
-
-            <div>
-                <label class="block text-sm font-bold text-blue-700 mb-1.5">補充或修正資料方式</label>
-                <div class="mb-3">
-                    <select id="inputModeSelect" class="w-full px-3 py-2.5 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white" aria-label="請選擇輸入方式">
-                        <option value="excel" {% if month_input_source != 'web' %}selected{% endif %}>Excel 匯入</option>
-                        <option value="web" {% if month_input_source == 'web' %}selected{% endif %}>網頁輸入</option>
-                    </select>
-                </div>
-
-                <div id="excelInputPanel" class="border-2 border-red-200 rounded-xl p-4 bg-gray-50 mb-3">
-                    <div class="font-bold text-red-600 mb-2">A. Excel 匯入</div>
-                    <p class="text-sm text-gray-500 mb-3">如需用新的 Excel 覆蓋本月資料，可在這裡重新匯入。</p>
-                    <form action="/upload_and_import" method="POST" enctype="multipart/form-data">
-                        <input type="hidden" name="calc_month" value="{{ current_month }}">
-                        <input type="hidden" name="brand" value="{{ current_brand }}">
-                        <input class="w-full px-3 py-2 text-sm border border-red-300 rounded-xl mb-2 js-brand-file-input" type="file" name="excel_file" accept=".xlsx, .xls" required>
-                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2 text-xs mb-2 hidden js-brand-file-warning"></div>
-                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2 text-xs mb-2 hidden js-month-file-warning"></div>
-                        <button type="submit" class="w-full py-2 bg-red-600 text-white text-sm font-bold rounded-xl hover:bg-red-700 mb-2 transition-colors">
-                            ⚠️ 確認覆蓋並重新匯入
-                        </button>
-                        <label class="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-gray-200 cursor-pointer">
-                            <input type="checkbox" name="update_emp" checked class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500">
-                            <span class="text-sm font-bold text-blue-700">🔄 同步本月時薪與津貼 (MonthlyRates)</span>
-                        </label>
-                    </form>
-                    <a href="/validate?month={{ current_month }}&brand={{ current_brand }}" class="block w-full text-center px-3 py-2 text-sm font-bold text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors mt-2">🔍 歷史數據自動校對</a>
-                </div>
-
-                <div id="webInputPanel" class="border-2 border-green-200 rounded-xl p-4 bg-gray-50 mb-3" style="display: none;">
-                    <div class="font-bold text-green-700 mb-2">B. 網頁輸入</div>
-                    <p class="text-sm text-gray-500 mb-3">如需直接在系統補資料或修正，請使用以下入口。</p>
-                    <div class="space-y-2">
-                        <button class="w-full text-left px-4 py-2.5 text-sm font-bold text-amber-700 border border-amber-300 rounded-xl hover:bg-amber-50 transition-colors" type="button" onclick="openModal('newAttendanceGroupModal')">新增考勤人員 / 打卡資料</button>
-                        <button class="w-full text-left px-4 py-2.5 text-sm font-bold text-green-700 border border-green-300 rounded-xl hover:bg-green-50 transition-colors" type="button" onclick="clearAttendanceModal(); openModal('newSalesGroupModal')">新增銷售據點 / 單據資料</button>
-                        <a class="block w-full text-left px-4 py-2.5 text-sm font-bold text-blue-700 border border-blue-300 rounded-xl hover:bg-blue-50 transition-colors" href="/settings?month={{ current_month }}&brand={{ current_brand }}">設定本月時薪 / 佣金覆寫</a>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+                <!-- Excel 匯入路徑 -->
+                <div class="border border-slate-700 rounded-lg p-5 hover:border-slate-600 transition-colors">
+                    <div class="flex items-center gap-2 mb-3">
+                        <svg class="w-5 h-5 text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <span class="font-semibold text-slate-100 text-sm">Excel 匯入</span>
                     </div>
-                </div>
-
-            {% else %}
-
-                <label class="block text-sm font-bold text-blue-700 mb-1.5">2. 選擇輸入方式</label>
-                <div class="mb-3">
-                    <select id="inputModeSelect" class="w-full px-3 py-2.5 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white" aria-label="請選擇輸入方式">
-                        <option value="excel" {% if month_input_source != 'web' %}selected{% endif %}>Excel 匯入</option>
-                        <option value="web" {% if month_input_source == 'web' %}selected{% endif %}>網頁輸入</option>
-                    </select>
-                </div>
-
-                <div id="excelInputPanel" class="border-2 border-green-200 rounded-xl p-4 bg-gray-50 mb-3">
-                    <div class="font-bold text-green-700 mb-2">A. Excel 匯入</div>
-                    <p class="text-sm text-gray-500 mb-3">適合仍以 Excel 為主的月份作業。匯入後再回到系統內覆核與修正。</p>
+                    <p class="text-sm text-slate-500 mb-4">上傳 Excel 檔案，系統自動解析考勤與銷售數據</p>
                     <form action="/upload_and_import" method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="calc_month" value="{{ current_month }}">
                         <input type="hidden" name="brand" value="{{ current_brand }}">
-                        <input class="w-full px-3 py-2 text-sm border border-green-300 rounded-xl mb-2 js-brand-file-input" type="file" name="excel_file" accept=".xlsx, .xls" required>
-                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2 text-xs mb-2 hidden js-brand-file-warning"></div>
-                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2 text-xs mb-2 hidden js-month-file-warning"></div>
-                        <label class="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-gray-200 cursor-pointer mb-2">
+                        <label class="block border-2 border-dashed border-slate-700 rounded-lg bg-slate-900 p-3 text-center hover:bg-slate-700 transition cursor-pointer mb-3">
+                            <input class="hidden js-brand-file-input" type="file" name="excel_file" accept=".xlsx, .xls" required>
+                            <svg class="w-6 h-6 mx-auto text-slate-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                            <span class="text-sm text-blue-600 font-medium"><span class="default-upload-text">點擊選擇 Excel 檔案</span><span class="file-name-text hidden"></span></span>
+                        </label>
+                        <div class="bg-yellow-900/30 border border-yellow-800 rounded-lg px-3 py-2 text-sm mb-2 hidden js-brand-file-warning"></div>
+                        <div class="bg-yellow-900/30 border border-yellow-800 rounded-lg px-3 py-2 text-sm mb-2 hidden js-month-file-warning"></div>
+                        <label class="flex items-center gap-2 cursor-pointer mb-3">
                             <input type="checkbox" name="update_emp" id="updateEmpCheck" checked class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500">
-                            <span class="text-sm font-bold text-blue-700">🔄 同步本月時薪與津貼 (MonthlyRates)</span>
+                            <span class="text-sm text-slate-400">同步本月時薪與津貼</span>
                         </label>
-                        <button type="submit" class="w-full py-2.5 bg-green-600 text-white text-sm font-bold rounded-xl hover:bg-green-700 transition-colors shadow-sm">📤 匯入 {{ current_month }} 資料</button>
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm py-2 rounded-lg shadow-sm transition">
+                            匯入並開始結算
+                        </button>
                     </form>
-                    <a href="/validate?month={{ current_month }}&brand={{ current_brand }}" class="block w-full text-center px-3 py-2 text-sm font-bold text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors mt-2">🔍 歷史數據自動校對</a>
                 </div>
 
-                <div id="webInputPanel" class="border-2 border-blue-200 rounded-xl p-4 bg-gray-50 mb-3" style="display: none;">
-                    <div class="font-bold text-blue-700 mb-2">B. 網頁輸入</div>
-                    <p class="text-sm text-gray-500 mb-3">適合直接在系統建立本月資料，不必先準備 Excel。</p>
+                <!-- 網頁輸入路徑 -->
+                <div class="border border-slate-700 rounded-lg p-5 hover:border-slate-600 transition-colors">
+                    <div class="flex items-center gap-2 mb-3">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                        <span class="font-semibold text-slate-100 text-sm">網頁直接輸入</span>
+                    </div>
+                    <p class="text-sm text-slate-500 mb-4">直接在系統中建立考勤與銷售資料</p>
                     <div class="space-y-2">
-                        <button class="w-full text-left px-4 py-2.5 text-sm font-bold text-amber-700 border border-amber-300 rounded-xl hover:bg-amber-50 transition-colors" type="button" onclick="openModal('newAttendanceGroupModal')">新增考勤人員 / 打卡資料</button>
-                        <button class="w-full text-left px-4 py-2.5 text-sm font-bold text-green-700 border border-green-300 rounded-xl hover:bg-green-50 transition-colors" type="button" onclick="clearAttendanceModal(); openModal('newSalesGroupModal')">新增銷售據點 / 單據資料</button>
-                        <a class="block w-full text-left px-4 py-2.5 text-sm font-bold text-blue-700 border border-blue-300 rounded-xl hover:bg-blue-50 transition-colors" href="/settings?month={{ current_month }}&brand={{ current_brand }}">設定本月時薪 / 佣金覆寫</a>
-                        <a class="block w-full text-left px-4 py-2.5 text-sm font-bold text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors" href="/manage_locations?brand={{ current_brand }}">維護標準店鋪與人事主檔</a>
+                        <button class="w-full text-left px-3 py-2 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" type="button" onclick="openModal('newAttendanceGroupModal')">新增考勤人員 / 打卡資料</button>
+                        <button class="w-full text-left px-3 py-2 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" type="button" onclick="clearAttendanceModal(); openModal('newSalesGroupModal')">新增銷售據點 / 單據資料</button>
+                        <a class="block w-full text-left px-3 py-2 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" href="/settings?month={{ current_month }}&brand={{ current_brand }}">設定時薪與佣金覆寫</a>
                     </div>
                 </div>
+            </div>
 
-                <button class="w-full py-2.5 bg-gray-400 text-white text-sm font-bold rounded-xl cursor-not-allowed mb-3" disabled>🚀 3. 開始結算 (請先建立或匯入資料)</button>
-
-                {% endif %}
+            <div class="border-t border-slate-700 pt-4 flex items-center justify-between">
+                <span class="text-sm text-slate-500">完成資料建立後即可進行薪資結算</span>
+                <a href="/manage_locations?brand={{ current_brand }}" class="text-sm text-slate-500 hover:text-slate-200 transition-colors">維護標準店鋪</a>
             </div>
         </div>
+
+        {# --- State B: 有數據 --- #}
+        {% else %}
+        <div class="px-6 py-5 border-b border-slate-700 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <h3 class="text-lg font-semibold text-slate-100">
+                    <svg class="w-5 h-5 inline-block text-slate-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    薪資結算
+                </h3>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-900/40 text-green-300 text-sm font-medium">
+                    <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span> 資料已就緒
+                </span>
+            </div>
+            <form action="/calculate_payroll" method="POST">
+                <input type="hidden" name="calc_month" value="{{ current_month }}">
+                <input type="hidden" name="brand" value="{{ current_brand }}">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm py-2.5 px-6 rounded-lg shadow-sm transition">
+                    進行薪資結算
+                </button>
+            </form>
+        </div>
+
+        <div class="p-6">
+            <div class="flex flex-wrap items-center gap-3">
+                <span class="text-sm text-slate-500">資料管理：</span>
+                <div class="flex flex-wrap gap-2">
+                    <select id="inputModeSelect" class="text-sm bg-slate-800 border border-slate-600 rounded-lg px-3 py-1.5 text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" aria-label="輸入方式" onchange="toggleInputMode()">
+                        <option value="excel" {% if month_input_source != 'web' %}selected{% endif %}>Excel 覆蓋匯入</option>
+                        <option value="web" {% if month_input_source == 'web' %}selected{% endif %}>網頁補充</option>
+                    </select>
+                    <a href="/validate?month={{ current_month }}&brand={{ current_brand }}" class="px-3 py-1.5 text-sm font-medium text-slate-400 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors">自動校對</a>
+                    <a href="/settings?month={{ current_month }}&brand={{ current_brand }}" class="px-3 py-1.5 text-sm font-medium text-slate-400 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors">時薪覆寫</a>
+                </div>
+            </div>
+
+            <!-- 可展開的 Excel 覆蓋區 -->
+            <div id="excelInputPanel" class="mt-4 {% if month_input_source == 'web' %}hidden{% endif %}">
+                <div class="bg-slate-900 border border-slate-700 rounded-lg p-4">
+                    <div class="flex items-center gap-2 mb-3">
+                        <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                        <span class="text-sm font-medium text-slate-200">重新上傳 Excel 覆蓋本月資料</span>
+                    </div>
+                    <form action="/upload_and_import" method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="calc_month" value="{{ current_month }}">
+                        <input type="hidden" name="brand" value="{{ current_brand }}">
+                        <label class="block border-2 border-dashed border-slate-700 rounded-lg bg-slate-800 p-3 text-center hover:bg-slate-900 transition cursor-pointer mb-3">
+                            <input class="hidden js-brand-file-input" type="file" name="excel_file" accept=".xlsx, .xls" required>
+                            <svg class="w-6 h-6 mx-auto text-slate-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                            <span class="text-sm text-blue-600 font-medium"><span class="default-upload-text">點擊選擇 Excel 檔案</span><span class="file-name-text hidden"></span></span>
+                        </label>
+                        <div class="bg-yellow-900/30 border border-yellow-800 rounded-lg px-3 py-2 text-sm mb-2 hidden js-brand-file-warning"></div>
+                        <div class="bg-yellow-900/30 border border-yellow-800 rounded-lg px-3 py-2 text-sm mb-2 hidden js-month-file-warning"></div>
+                        <label class="flex items-center gap-2 cursor-pointer mb-2">
+                            <input type="checkbox" name="update_emp" checked class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500">
+                            <span class="text-sm text-slate-400">同步本月時薪與津貼</span>
+                        </label>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm py-2 px-4 rounded-lg shadow-sm transition">
+                            確認覆蓋並重新匯入
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 可展開的網頁補充區 -->
+            <div id="webInputPanel" class="mt-4 {% if month_input_source != 'web' %}hidden{% endif %}">
+                <div class="space-y-2">
+                    <button class="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" type="button" onclick="openModal('newAttendanceGroupModal')">新增考勤人員 / 打卡資料</button>
+                    <button class="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" type="button" onclick="clearAttendanceModal(); openModal('newSalesGroupModal')">新增銷售據點 / 單據資料</button>
+                    <a class="block w-full text-left px-4 py-2.5 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" href="/settings?month={{ current_month }}&brand={{ current_brand }}">設定本月時薪 / 佣金覆寫</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 
 {% if attendances or staff_summary %}
 <div class="sticky bottom-4 z-50 mt-4">
-    <div class="flex items-center justify-between gap-4 px-4 py-3 rounded-xl border border-gray-200 bg-white/95 shadow-lg backdrop-blur">
+    <div class="flex items-center justify-between gap-4 px-4 py-3 rounded-xl border border-slate-700 bg-slate-800/95 shadow-lg backdrop-blur">
         <div class="min-w-0">
-            <div class="text-xs text-gray-500 font-semibold">⚡ 快速重算流程</div>
-            <div class="font-bold text-sm">已完成修正後，可直接校對或重算 {{ current_month }} 薪資</div>
+            <div class="text-sm text-slate-500 font-semibold">快速重算流程</div>
+            <div class="font-medium text-sm">已完成修正後，可直接校對或重算 {{ current_month }} 薪資</div>
         </div>
         <div class="flex gap-2 flex-wrap justify-end">
-            <a href="/settings?month={{ current_month }}&brand={{ current_brand }}" class="px-3 py-1.5 text-sm font-semibold text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">檢查本月覆寫</a>
+            <a href="/settings?month={{ current_month }}&brand={{ current_brand }}" class="px-3 py-1.5 text-sm font-medium text-slate-400 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors">檢查本月覆寫</a>
             <form action="/calculate_payroll" method="POST" class="m-0">
                 <input type="hidden" name="calc_month" value="{{ current_month }}">
                 <input type="hidden" name="brand" value="{{ current_brand }}">
-                <button type="submit" class="px-4 py-1.5 text-sm font-bold text-white bg-green-600 rounded-xl hover:bg-green-700 transition-colors">立即重新計算薪資</button>
+                <button type="submit" class="px-4 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">重新計算薪資</button>
             </form>
         </div>
     </div>
@@ -223,19 +249,19 @@
 {% set hourly_attendances = attendances | selectattr("salary_type", "equalto", "hourly") | list %}
 {% set monthly_attendances = attendances | selectattr("salary_type", "equalto", "monthly") | list %}
 
-<div class="bg-white rounded-2xl shadow-sm border border-amber-200 overflow-hidden" id="attendance-overview">
-    <div class="px-5 py-3.5 bg-amber-50 text-amber-800 font-bold text-base flex items-center justify-between border-b border-amber-200">
-        <h5 class="font-bold">📋 2. 考勤總覽 {{ current_month }}</h5>
-        <button class="px-3 py-1.5 text-xs font-semibold text-white bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors" onclick="openModal('newAttendanceGroupModal')">+ 新增考勤人員</button>
+<div class="bg-slate-800 rounded-xl shadow-sm border border-slate-700 p-0 overflow-hidden mb-6" id="attendance-overview">
+    <div class="flex justify-between items-center px-5 py-3.5 border-b border-slate-700">
+        <h5 class="text-lg font-semibold text-slate-100">📋 考勤總覽 {{ current_month }}</h5>
+        <button class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors shadow-sm" onclick="openModal('newAttendanceGroupModal')">+ 新增考勤人員</button>
     </div>
     <div class="p-0">
         {# --- 頁籤導航 --- #}
-        <div class="flex border-b border-gray-200 px-4 pt-2 bg-gray-50 gap-1" id="attendanceTabs" role="tablist">
-            <button class="att-tab-btn px-4 py-2 text-sm font-semibold rounded-t-xl border border-b-0 border-gray-200 -mb-px bg-white text-gray-700" data-tab="hourly-att" role="tab">
-                🕐 時薪制 <span class="ml-1.5 inline-block bg-cyan-100 text-cyan-700 text-xs px-2 py-0.5 rounded-full">{{ hourly_attendances | length }}</span>
+        <div class="flex border-b border-slate-700 gap-0 px-5 pt-2" id="attendanceTabs" role="tablist">
+            <button class="att-tab-btn px-4 py-2.5 text-sm font-medium text-slate-200 border-b-2 border-blue-600 text-blue-600 transition-colors" data-tab="hourly-att" role="tab">
+                🕐 時薪制 <span class="ml-1.5 inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-blue-900/40 text-blue-300">{{ hourly_attendances | length }}</span>
             </button>
-            <button class="att-tab-btn px-4 py-2 text-sm font-semibold rounded-t-xl border border-b-0 border-gray-200 -mb-px bg-gray-50 text-gray-500" data-tab="monthly-att" role="tab">
-                💰 月薪制 <span class="ml-1.5 inline-block bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full">{{ monthly_attendances | length }}</span>
+            <button class="att-tab-btn px-4 py-2.5 text-sm font-medium text-slate-500 border-b-2 border-transparent hover:text-slate-100 hover:border-slate-600 transition-colors" data-tab="monthly-att" role="tab">
+                💰 月薪制 <span class="ml-1.5 inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-amber-900/40 text-amber-300">{{ monthly_attendances | length }}</span>
             </button>
         </div>
 
@@ -245,50 +271,50 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm border-collapse">
                         <thead>
-                            <tr class="bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                <th class="px-3 py-3 border-b border-gray-200 w-[70px]">ID</th>
-                                <th class="px-3 py-3 border-b border-gray-200">推廣員</th>
-                                <th class="px-3 py-3 border-b border-gray-200">全名</th>
-                                <th class="px-3 py-3 border-b border-gray-200">本月時薪</th>
-                                <th class="px-3 py-3 border-b border-gray-200">地點</th>
-                                <th class="px-3 py-3 border-b border-gray-200">日數</th>
-                                <th class="px-3 py-3 border-b border-gray-200">工時</th>
-                                <th class="px-3 py-3 border-b border-gray-200">OT</th>
-                                <th class="px-3 py-3 border-b border-gray-200 text-green-700">報銷</th>
-                                <th class="px-3 py-3 border-b border-gray-200 text-blue-700 font-bold">預估底薪</th>
-                                <th class="px-3 py-3 border-b border-gray-200">操作</th>
+                            <tr class="bg-slate-900 border-y border-slate-700 text-sm font-semibold text-slate-500 uppercase tracking-wider text-center">
+                                <th class="py-3 px-4 border-b border-slate-600 w-[70px]">ID</th>
+                                <th class="py-3 px-4 border-b border-slate-600">推廣員</th>
+                                <th class="py-3 px-4 border-b border-slate-600">全名</th>
+                                <th class="py-3 px-4 border-b border-slate-600">本月時薪</th>
+                                <th class="py-3 px-4 border-b border-slate-600">地點</th>
+                                <th class="py-3 px-4 border-b border-slate-600">日數</th>
+                                <th class="py-3 px-4 border-b border-slate-600">工時</th>
+                                <th class="py-3 px-4 border-b border-slate-600">OT</th>
+                                <th class="py-3 px-4 border-b border-slate-600 text-green-300">報銷</th>
+                                <th class="py-3 px-4 border-b border-slate-600 text-blue-300 font-semibold">預估底薪</th>
+                                <th class="py-3 px-4 border-b border-slate-600">操作</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for att in hourly_attendances %}
-                            <tr class="text-center border-b border-gray-100 hover:bg-gray-50 odd:bg-white even:bg-gray-50/50 transition-colors">
-                                <td class="px-3 py-2.5 font-bold">{{ loop.index }}</td>
-                                <td class="px-3 py-2.5 font-bold text-blue-700">{{ att.nick_name }}</td>
-                                <td class="px-3 py-2.5 font-semibold">{{ att.full_name }}</td>
-                                <td class="px-3 py-2.5">
+                            <tr class="text-center border-b border-slate-600 hover:bg-slate-700/60 transition-colors">
+                                <td class="py-3 px-4 text-sm text-slate-200 font-bold">{{ loop.index }}</td>
+                                <td class="py-3 px-4 text-sm text-slate-200 font-bold text-blue-300">{{ att.nick_name }}</td>
+                                <td class="py-3 px-4 text-sm text-slate-200 font-semibold">{{ att.full_name }}</td>
+                                <td class="py-3 px-4 text-sm text-slate-200">
                                     {% if att.monthly_hourly_rate is defined and att.monthly_hourly_rate is not none %}
-                                        <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full font-bold shadow-sm">${{ "{:,.2f}".format(att.monthly_hourly_rate) }}</span>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-blue-900/40 text-blue-300">${{ "{:,.2f}".format(att.monthly_hourly_rate) }}</span>
                                     {% else %}
-                                        <span class="font-bold text-gray-500">${{ "{:,.2f}".format(att.default_hourly_rate | default(0)) }}</span>
-                                        <span class="text-gray-400 text-xs ms-1">(預設)</span>
+                                        <span class="font-bold text-slate-500">${{ "{:,.2f}".format(att.default_hourly_rate | default(0)) }}</span>
+                                        <span class="text-slate-500 text-sm ms-1">(預設)</span>
                                     {% endif %}
                                 </td>
-                                <td class="px-3 py-2.5"><span class="inline-block bg-cyan-100 text-cyan-800 text-xs px-2 py-0.5 rounded-full">{{ att.location }}</span></td>
-                                <td class="px-3 py-2.5">{{ att.days_worked }}</td>
-                                <td class="px-3 py-2.5">{{ "%g" | format(att.hours) }}</td>
-                                <td class="px-3 py-2.5">{{ att.ot_hours }}</td>
-                                <td class="px-3 py-2.5 font-bold text-green-700">${{ "{:,.1f}".format(att.expenses) }}</td>
-                                <td class="px-3 py-2.5 font-bold text-blue-700">${{ "{:,.1f}".format(att.estimated_basic) }}</td>
-                                <td class="px-3 py-2.5 whitespace-nowrap">
-                                    <button class="px-2.5 py-1 text-xs font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                                <td class="py-3 px-4 text-sm text-slate-200"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-cyan-900/40 text-cyan-300">{{ att.location }}</span></td>
+                                <td class="py-3 px-4 text-sm text-slate-200">{{ att.days_worked }}</td>
+                                <td class="py-3 px-4 text-sm text-slate-200">{{ "%g" | format(att.hours) }}</td>
+                                <td class="py-3 px-4 text-sm text-slate-200">{{ att.ot_hours }}</td>
+                                <td class="py-3 px-4 text-sm text-slate-200 font-bold text-green-300">${{ "{:,.1f}".format(att.expenses) }}</td>
+                                <td class="py-3 px-4 text-sm text-slate-200 font-bold text-blue-300">${{ "{:,.1f}".format(att.estimated_basic) }}</td>
+                                <td class="py-3 px-4 text-sm text-slate-200 whitespace-nowrap">
+                                    <button class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-1.5 px-3 rounded-lg transition-colors shadow-sm text-sm"
                                         onclick="editAttendance('{{ att.nick_name }}', '{{ att.location }}', {{ att.days_worked }}, {{ att.hours }}, {{ att.ot_hours }}, {{ att.expenses or 0 }}, {{ att.adjustment or 0 }}, {{ att.attendance_bonus or 0 }}, {{ att.monthly_hourly_rate if att.monthly_hourly_rate is not none else 'null' }}, {{ att.default_hourly_rate }})">修改</button>
                                     <form action="/delete_attendance/{{ att.id }}" method="POST" class="inline" onsubmit="return confirm('確定刪除？')">
-                                        <button type="submit" class="px-2.5 py-1 text-xs font-semibold text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors">刪除</button>
+                                        <button type="submit" class="border border-red-800/50 text-red-400 hover:bg-red-900/30 text-sm font-medium py-1.5 px-3 rounded-lg transition-colors text-sm">刪除</button>
                                     </form>
                                 </td>
                             </tr>
                             {% else %}
-                            <tr><td colspan="11" class="text-center text-gray-400 py-8 italic">尚無時薪制人員的考勤紀錄。</td></tr>
+                            <tr><td colspan="11" class="text-center text-slate-500 py-8 italic">尚無時薪制人員的考勤紀錄。</td></tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -300,45 +326,45 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm border-collapse">
                         <thead>
-                            <tr class="bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                <th class="px-3 py-3 border-b border-gray-200 w-[70px]">ID</th>
-                                <th class="px-3 py-3 border-b border-gray-200">推廣員</th>
-                                <th class="px-3 py-3 border-b border-gray-200">全名</th>
-                                <th class="px-3 py-3 border-b border-gray-200">服務地點</th>
-                                <th class="px-3 py-3 border-b border-gray-200 text-blue-700 font-bold">固定月薪</th>
-                                <th class="px-3 py-3 border-b border-gray-200 text-green-700">報銷</th>
-                                <th class="px-3 py-3 border-b border-gray-200">勤工獎</th>
-                                <th class="px-3 py-3 border-b border-gray-200">微調</th>
-                                <th class="px-3 py-3 border-b border-gray-200">操作</th>
+                            <tr class="bg-slate-900 border-y border-slate-700 text-sm font-semibold text-slate-500 uppercase tracking-wider text-center">
+                                <th class="py-3 px-4 border-b border-slate-600 w-[70px]">ID</th>
+                                <th class="py-3 px-4 border-b border-slate-600">推廣員</th>
+                                <th class="py-3 px-4 border-b border-slate-600">全名</th>
+                                <th class="py-3 px-4 border-b border-slate-600">服務地點</th>
+                                <th class="py-3 px-4 border-b border-slate-600 text-blue-300 font-semibold">固定月薪</th>
+                                <th class="py-3 px-4 border-b border-slate-600 text-green-300">報銷</th>
+                                <th class="py-3 px-4 border-b border-slate-600">勤工獎</th>
+                                <th class="py-3 px-4 border-b border-slate-600">微調</th>
+                                <th class="py-3 px-4 border-b border-slate-600">操作</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for att in monthly_attendances %}
-                            <tr class="text-center border-b border-gray-100 hover:bg-gray-50 odd:bg-white even:bg-gray-50/50 transition-colors">
-                                <td class="px-3 py-2.5 font-bold">{{ loop.index }}</td>
-                                <td class="px-3 py-2.5 font-bold text-blue-700">{{ att.nick_name }}</td>
-                                <td class="px-3 py-2.5 font-semibold">{{ att.full_name }}</td>
-                                <td class="px-3 py-2.5">
+                            <tr class="text-center border-b border-slate-600 hover:bg-slate-700/60 transition-colors">
+                                <td class="py-3 px-4 text-sm text-slate-200 font-bold">{{ loop.index }}</td>
+                                <td class="py-3 px-4 text-sm text-slate-200 font-bold text-blue-300">{{ att.nick_name }}</td>
+                                <td class="py-3 px-4 text-sm text-slate-200 font-semibold">{{ att.full_name }}</td>
+                                <td class="py-3 px-4 text-sm text-slate-200">
                                     {% set locs = att.location.split("、") %}
                                     {% if locs | length > 1 %}
-                                        <span class="inline-block bg-gray-500 text-white text-xs px-2 py-0.5 rounded-full me-1">{{ locs | length }} 個地點</span>
+                                        <span class="inline-block bg-slate-600 text-slate-200 text-sm px-2 py-0.5 rounded-full me-1">{{ locs | length }} 個地點</span>
                                     {% endif %}
-                                    <span class="inline-block bg-cyan-100 text-cyan-800 text-xs px-2 py-0.5 rounded-full">{{ att.location }}</span>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-cyan-900/40 text-cyan-300">{{ att.location }}</span>
                                 </td>
-                                <td class="px-3 py-2.5 font-bold text-lg text-blue-700">${{ "{:,.0f}".format(att.monthly_salary) }}</td>
-                                <td class="px-3 py-2.5 font-bold text-green-700">${{ "{:,.1f}".format(att.expenses) }}</td>
-                                <td class="px-3 py-2.5">${{ "{:,.1f}".format(att.attendance_bonus or 0) }}</td>
-                                <td class="px-3 py-2.5">${{ "{:,.1f}".format(att.adjustment or 0) }}</td>
-                                <td class="px-3 py-2.5 whitespace-nowrap">
-                                    <button class="px-2.5 py-1 text-xs font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                                <td class="py-3 px-4 text-sm text-slate-200 font-bold text-lg text-blue-300">${{ "{:,.0f}".format(att.monthly_salary) }}</td>
+                                <td class="py-3 px-4 text-sm text-slate-200 font-bold text-green-300">${{ "{:,.1f}".format(att.expenses) }}</td>
+                                <td class="py-3 px-4 text-sm text-slate-200">${{ "{:,.1f}".format(att.attendance_bonus or 0) }}</td>
+                                <td class="py-3 px-4 text-sm text-slate-200">${{ "{:,.1f}".format(att.adjustment or 0) }}</td>
+                                <td class="py-3 px-4 text-sm text-slate-200 whitespace-nowrap">
+                                    <button class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-1.5 px-3 rounded-lg transition-colors shadow-sm text-sm"
                                         onclick="editAttendance('{{ att.nick_name }}', '{{ att.location.split('、')[0] }}', {{ att.days_worked }}, {{ att.hours }}, {{ att.ot_hours }}, {{ att.expenses or 0 }}, {{ att.adjustment or 0 }}, {{ att.attendance_bonus or 0 }}, {{ att.monthly_hourly_rate if att.monthly_hourly_rate is not none else 'null' }}, {{ att.default_hourly_rate }})">修改</button>
                                     <form action="/delete_attendance/{{ att.id }}" method="POST" class="inline" onsubmit="return confirm('確定刪除？')">
-                                        <button type="submit" class="px-2.5 py-1 text-xs font-semibold text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors">刪除</button>
+                                        <button type="submit" class="border border-red-800/50 text-red-400 hover:bg-red-900/30 text-sm font-medium py-1.5 px-3 rounded-lg transition-colors text-sm">刪除</button>
                                     </form>
                                 </td>
                             </tr>
                             {% else %}
-                            <tr><td colspan="9" class="text-center text-gray-400 py-8 italic">尚無月薪制人員的考勤紀錄。</td></tr>
+                            <tr><td colspan="9" class="text-center text-slate-500 py-8 italic">尚無月薪制人員的考勤紀錄。</td></tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -348,61 +374,61 @@
     </div>
 </div>
 
-<div class="bg-white rounded-2xl shadow-sm border border-green-200 overflow-hidden" id="sales-overview">
-    <div class="px-5 py-3.5 bg-green-50 text-green-800 font-bold text-base flex items-center justify-between border-b border-green-200">
-        <h5 class="font-bold">📊 3. 銷售管理中心 {{ current_month }}</h5>
-        <button class="px-3 py-1.5 text-xs font-semibold text-white bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors" onclick="clearAttendanceModal(); openModal('newSalesGroupModal')">+ 新增 {{ current_month }} 銷售據點</button>
+<div class="bg-slate-800 rounded-xl shadow-sm border border-slate-700 p-0 overflow-hidden mb-6" id="sales-overview">
+    <div class="flex justify-between items-center px-5 py-3.5 border-b border-slate-700">
+        <h5 class="text-lg font-semibold text-slate-100">📊 銷售管理中心 {{ current_month }}</h5>
+        <button class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors shadow-sm" onclick="clearAttendanceModal(); openModal('newSalesGroupModal')">+ 新增 {{ current_month }} 銷售據點</button>
     </div>
     <div class="p-0">
         <div class="overflow-x-auto">
             <table class="w-full text-sm border-collapse">
                 <thead>
-                    <tr class="bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        <th class="px-3 py-3 border-b border-gray-200 w-[70px]">ID</th>
-                        <th class="px-3 py-3 border-b border-gray-200">推廣員</th>
-                        <th class="px-3 py-3 border-b border-gray-200">全名</th>
-                        <th class="px-3 py-3 border-b border-gray-200">地點</th>
-                        <th class="px-3 py-3 border-b border-gray-200 w-[12%]">本月佣金</th>
-                        <th class="px-3 py-3 border-b border-gray-200">單據數量</th>
-                        <th class="px-3 py-3 border-b border-gray-200">當月總銷額</th>
-                        <th class="px-3 py-3 border-b border-gray-200">當月總佣金</th>
-                        <th class="px-3 py-3 border-b border-gray-200 w-[180px]">操作</th>
+                    <tr class="bg-slate-900 border-y border-slate-700 text-sm font-semibold text-slate-500 uppercase tracking-wider text-center">
+                        <th class="py-3 px-4 border-b border-slate-600 w-[70px]">ID</th>
+                        <th class="py-3 px-4 border-b border-slate-600">推廣員</th>
+                        <th class="py-3 px-4 border-b border-slate-600">全名</th>
+                        <th class="py-3 px-4 border-b border-slate-600">地點</th>
+                        <th class="py-3 px-4 border-b border-slate-600 w-[12%]">本月佣金</th>
+                        <th class="py-3 px-4 border-b border-slate-600">單據數量</th>
+                        <th class="py-3 px-4 border-b border-slate-600">當月總銷額</th>
+                        <th class="py-3 px-4 border-b border-slate-600">當月總佣金</th>
+                        <th class="py-3 px-4 border-b border-slate-600 w-[180px]">操作</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for staff in staff_summary %}
-                    <tr class="text-center border-b border-gray-100 hover:bg-gray-50 odd:bg-white even:bg-gray-50/50 transition-colors">
-                        <td class="px-3 py-2.5 font-bold">{{ loop.index }}</td>
-                        <td class="px-3 py-2.5 font-bold text-blue-700">{{ staff.name }}</td>
-                        <td class="px-3 py-2.5 font-semibold">{{ staff.full_name }}</td>
-                        <td class="px-3 py-2.5"><span class="inline-block bg-cyan-100 text-cyan-800 text-xs px-2 py-0.5 rounded-full">{{ staff.main_location }}</span></td>
-                        <td class="px-3 py-2.5">
+                    <tr class="text-center border-b border-slate-600 hover:bg-slate-700/60 transition-colors">
+                        <td class="py-3 px-4 text-sm text-slate-200 font-bold">{{ loop.index }}</td>
+                        <td class="py-3 px-4 text-sm text-slate-200 font-bold text-blue-300">{{ staff.name }}</td>
+                        <td class="py-3 px-4 text-sm text-slate-200 font-semibold">{{ staff.full_name }}</td>
+                        <td class="py-3 px-4 text-sm text-slate-200"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-cyan-900/40 text-cyan-300">{{ staff.main_location }}</span></td>
+                        <td class="py-3 px-4 text-sm text-slate-200">
                             {% if staff.monthly_comm is not none %}
-                                <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full font-bold shadow-sm">{{ (staff.monthly_comm * 100) | int }}%</span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-blue-900/40 text-blue-300">{{ (staff.monthly_comm * 100) | int }}%</span>
                             {% else %}
-                                <span class="font-bold text-gray-500">{{ (staff.default_comm * 100) | int }}%</span>
-                                <span class="text-gray-400 text-xs ms-1">(預設)</span>
+                                <span class="font-bold text-slate-500">{{ (staff.default_comm * 100) | int }}%</span>
+                                <span class="text-slate-500 text-sm ms-1">(預設)</span>
                             {% endif %}
                         </td>
-                        <td class="px-3 py-2.5">{{ staff.total_entries }} 筆</td>
-                        <td class="px-3 py-2.5 font-bold text-green-700">${{ "{:,.2f}".format(staff.total_amount) }}</td>
-                        <td class="px-3 py-2.5 font-bold text-blue-700">${{ "{:,.2f}".format(staff.total_comm) }}</td>
-                        <td class="px-3 py-2.5 whitespace-nowrap">
+                        <td class="py-3 px-4 text-sm text-slate-200">{{ staff.total_entries }} 筆</td>
+                        <td class="py-3 px-4 text-sm text-slate-200 font-bold text-green-300">${{ "{:,.2f}".format(staff.total_amount) }}</td>
+                        <td class="py-3 px-4 text-sm text-slate-200 font-bold text-blue-300">${{ "{:,.2f}".format(staff.total_comm) }}</td>
+                        <td class="py-3 px-4 text-sm text-slate-200 whitespace-nowrap">
                             <div class="flex justify-center gap-1">
-                                <button class="px-2.5 py-1 text-xs font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                                <button class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-1.5 px-3 rounded-lg transition-colors shadow-sm text-sm"
                                         onclick="openSalesModal('{{ staff.name }}', '{{ staff.main_location }}', {{ staff.monthly_comm if staff.monthly_comm is not none else 'null' }}, {{ staff.default_comm }})">修改</button>
                                 <form action="/delete_sales_group" method="POST" class="inline"
                                     onsubmit="return confirm('確定要清空 {{ staff.name }} 在 {{ staff.main_location }} 的所有單據嗎？此動作無法復原！');">
                                     <input type="hidden" name="month" value="{{ current_month }}">
                                     <input type="hidden" name="promoter" value="{{ staff.name }}">
                                     <input type="hidden" name="location" value="{{ staff.main_location }}">
-                                    <button type="submit" class="px-2.5 py-1 text-xs font-semibold text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors" title="清空此店單據">刪除</button>
+                                    <button type="submit" class="border border-red-800/50 text-red-400 hover:bg-red-900/30 text-sm font-medium py-1.5 px-3 rounded-lg transition-colors text-sm" title="清空此店單據">刪除</button>
                                 </form>
                             </div>
                         </td>
                     </tr>
                     {% else %}
-                    <tr><td colspan="9" class="text-center text-gray-400 py-8 italic">{{ current_month }} 尚未有任何匯入數據。</td></tr>
+                    <tr><td colspan="9" class="text-center text-slate-500 py-8 italic">{{ current_month }} 尚未有任何匯入數據。</td></tr>
                     {% endfor %}
                 </tbody>
             </table>
@@ -412,22 +438,22 @@
 
 {# === 員工薪資狀態彙總表 === #}
 {% if employees %}
-<div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-    <div class="px-5 py-3.5 bg-gradient-to-r from-slate-50 to-gray-50 border-b border-gray-200 flex items-center justify-between">
-        <h5 class="font-bold text-gray-700">📊 員工薪資狀態總覽</h5>
-        <span class="text-xs bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full">{{ employees | length }} 位員工</span>
+<div class="bg-slate-800 rounded-xl shadow-sm border border-slate-700 p-0 overflow-hidden">
+    <div class="flex justify-between items-center px-5 py-3.5 border-b border-slate-700">
+        <h5 class="text-lg font-semibold text-slate-100">📊 員工薪資狀態總覽</h5>
+        <span class="text-sm bg-slate-700 text-slate-500 px-2.5 py-1 rounded-full">{{ employees | length }} 位員工</span>
     </div>
     <div class="overflow-x-auto">
         <table class="w-full text-sm border-collapse">
             <thead>
-                <tr class="bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    <th class="px-3 py-3 border-b border-gray-200">員工</th>
-                    <th class="px-3 py-3 border-b border-gray-200">類型</th>
-                    <th class="px-3 py-3 border-b border-gray-200">時薪/月薪</th>
-                    <th class="px-3 py-3 border-b border-gray-200">佣金率</th>
-                    <th class="px-3 py-3 border-b border-gray-200">考勤狀態</th>
-                    <th class="px-3 py-3 border-b border-gray-200">預估薪資</th>
-                    <th class="px-3 py-3 border-b border-gray-200">結算狀態</th>
+                <tr class="bg-slate-900 border-y border-slate-700 text-sm font-semibold text-slate-500 uppercase tracking-wider text-center">
+                    <th class="py-3 px-4 border-b border-slate-600">員工</th>
+                    <th class="py-3 px-4 border-b border-slate-600">類型</th>
+                    <th class="py-3 px-4 border-b border-slate-600">時薪/月薪</th>
+                    <th class="py-3 px-4 border-b border-slate-600">佣金率</th>
+                    <th class="py-3 px-4 border-b border-slate-600">考勤狀態</th>
+                    <th class="py-3 px-4 border-b border-slate-600">預估薪資</th>
+                    <th class="py-3 px-4 border-b border-slate-600">結算狀態</th>
                 </tr>
             </thead>
             <tbody>
@@ -440,62 +466,62 @@
                 {% for staff in staff_summary %}
                     {% if staff.name == emp.nick_name %}{% set emp_sales.total = emp_sales.total + (staff.total_comm | default(0) | float) %}{% endif %}
                 {% endfor %}
-                <tr class="text-center border-b border-gray-100 hover:bg-gray-50 odd:bg-white even:bg-gray-50/50 transition-colors">
+                <tr class="text-center border-b border-slate-600 hover:bg-slate-700/60 transition-colors">
                     <td class="px-3 py-3">
-                        <div class="font-bold text-blue-700">{{ emp.nick_name }}</div>
-                        <div class="text-xs text-gray-400">{{ emp.full_name }}</div>
+                        <div class="font-bold text-blue-300">{{ emp.nick_name }}</div>
+                        <div class="text-sm text-slate-500">{{ emp.full_name }}</div>
                     </td>
                     <td class="px-3 py-3">
                         {% if emp.salary_type == 'monthly' %}
-                            <span class="inline-block bg-purple-100 text-purple-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">月薪制</span>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-purple-900/40 text-purple-300">月薪制</span>
                         {% else %}
-                            <span class="inline-block bg-cyan-100 text-cyan-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">時薪制</span>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-cyan-900/40 text-cyan-300">時薪制</span>
                         {% endif %}
                     </td>
                     <td class="px-3 py-3">
                         {% if emp.salary_type == 'monthly' %}
-                            <span class="font-bold text-purple-700">${{ "{:,.0f}".format(emp.monthly_salary | default(0)) }}</span>
+                            <span class="font-bold text-purple-300">${{ "{:,.0f}".format(emp.monthly_salary | default(0)) }}</span>
                         {% else %}
                             <span class="font-bold">${{ "{:,.1f}".format(emp.hourly_rate | default(0)) }}</span>
                             {% if emp_att.found and emp_att.found.monthly_hourly_rate is not none %}
-                                <span class="inline-block bg-blue-100 text-blue-700 text-xs px-1.5 py-0.5 rounded-full ml-1">本月 ${{ "{:,.1f}".format(emp_att.found.monthly_hourly_rate) }}</span>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-sm font-medium bg-blue-900/40 text-blue-300 ml-1">本月 ${{ "{:,.1f}".format(emp_att.found.monthly_hourly_rate) }}</span>
                             {% endif %}
                         {% endif %}
                     </td>
                     <td class="px-3 py-3">
-                        <span class="font-bold text-gray-700">{{ "{:.1f}".format((emp.commission_rate | default(0.03)) * 100) }}%</span>
+                        <span class="font-bold text-slate-200">{{ "{:.1f}".format((emp.commission_rate | default(0.03)) * 100) }}%</span>
                     </td>
                     <td class="px-3 py-3">
                         {% if emp_att.found %}
                             {% if emp.salary_type == 'monthly' %}
-                                <span class="inline-block bg-green-100 text-green-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">{{ emp_att.found.location }}</span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-green-900/40 text-green-300">{{ emp_att.found.location }}</span>
                             {% else %}
-                                <span class="inline-block bg-green-100 text-green-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">{{ emp_att.found.days_worked }}天 / {{ "%g" | format(emp_att.found.hours) }}h</span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-green-900/40 text-green-300">{{ emp_att.found.days_worked }}天 / {{ "%g" | format(emp_att.found.hours) }}h</span>
                             {% endif %}
                         {% else %}
-                            <span class="inline-block bg-red-100 text-red-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">未錄入</span>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-red-900/40 text-red-300">未錄入</span>
                         {% endif %}
                     </td>
                     <td class="px-3 py-3">
                         {% if emp_att.found %}
                             {% set emp_basic = emp_att.found.estimated_basic | default(0) | float %}
-                            <span class="font-bold text-emerald-700">${{ "{:,.1f}".format(emp_basic + emp_sales.total) }}</span>
+                            <span class="font-bold text-emerald-300">${{ "{:,.1f}".format(emp_basic + emp_sales.total) }}</span>
                         {% else %}
-                            <span class="text-gray-400">—</span>
+                            <span class="text-slate-500">—</span>
                         {% endif %}
                     </td>
                     <td class="px-3 py-3">
                         {% if emp_att.found and emp_att.found.estimated_basic is defined %}
-                            <span class="inline-flex items-center gap-1 bg-green-100 text-green-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">
-                                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> 可結算
+                            <span class="inline-flex items-center gap-1 bg-green-900/40 text-green-300 text-sm px-2.5 py-0.5 rounded-full font-semibold">
+                                <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span> 可結算
                             </span>
                         {% elif emp_att.found %}
-                            <span class="inline-flex items-center gap-1 bg-amber-100 text-amber-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">
-                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> 待確認
+                            <span class="inline-flex items-center gap-1 bg-amber-900/40 text-amber-300 text-sm px-2.5 py-0.5 rounded-full font-semibold">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> 待確認
                             </span>
                         {% else %}
-                            <span class="inline-flex items-center gap-1 bg-red-100 text-red-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">
-                                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> 缺資料
+                            <span class="inline-flex items-center gap-1 bg-red-900/40 text-red-300 text-sm px-2.5 py-0.5 rounded-full font-semibold">
+                                <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span> 缺資料
                             </span>
                         {% endif %}
                     </td>
@@ -505,7 +531,7 @@
         </table>
     </div>
     {% if not attendances %}
-    <div class="px-5 py-8 text-center text-gray-400">
+    <div class="px-5 py-8 text-center text-slate-500">
         <div class="text-4xl mb-2">📭</div>
         <p class="text-sm">尚無任何考勤數據，請先匯入或手動新增本月資料</p>
     </div>
@@ -515,42 +541,42 @@
 
 <div class="fixed inset-0 z-50 items-start justify-center py-8 hidden modal overflow-y-auto" id="attendanceModal">
   <div class="absolute inset-0 bg-black/40" onclick="closeModal(this)"></div>
-  <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-4xl mx-4 z-10">
-    <div class="sticky top-0 z-10 px-5 py-4 bg-amber-50 text-amber-800 font-bold text-lg flex items-center justify-between rounded-t-2xl border-b border-amber-200">
-      <span>📅 編輯考勤明細：<span id="att_name_display" class="text-blue-700"></span> <span class="text-sm text-gray-500 ms-2">📍 <span id="att_loc_display"></span></span></span>
-      <button class="text-amber-800/50 hover:text-amber-800 text-2xl leading-none" onclick="closeModal(this)">&times;</button>
+  <div class="relative bg-slate-800 rounded-2xl shadow-xl w-full max-w-4xl mx-4 z-10">
+    <div class="sticky top-0 z-10 px-5 py-4 bg-slate-900 text-slate-100 font-semibold text-lg flex items-center justify-between rounded-t-2xl border-b border-slate-700">
+      <span>📅 編輯考勤明細：<span id="att_name_display" class="text-blue-300"></span> <span class="text-sm text-slate-500">📍 <span id="att_loc_display"></span></span></span>
+      <button class="text-slate-500 hover:text-slate-400 text-2xl leading-none" onclick="closeModal(this)">&times;</button>
     </div>
     <div class="p-0">
       <div class="overflow-x-auto">
         <table class="w-full text-sm border-collapse">
           <thead class="sticky top-0 z-10">
-            <tr class="bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-              <th class="px-2 py-3 border-b border-gray-200 w-[8%]">ID</th>
-              <th class="px-2 py-3 border-b border-gray-200 w-[12%]">日期</th>
-              <th class="px-2 py-3 border-b border-gray-200 w-[18%]">地點</th>
-              <th class="px-2 py-3 border-b border-gray-200 w-[12%]">簽到</th>
-              <th class="px-2 py-3 border-b border-gray-200 w-[12%]">簽退</th>
-              <th class="px-2 py-3 border-b border-gray-200 w-[10%]">常規</th>
-              <th class="px-2 py-3 border-b border-gray-200 w-[10%]">實際</th>
-              <th class="px-2 py-3 border-b border-gray-200 w-[10%]">OT</th>
-              <th class="px-2 py-3 border-b border-gray-200 w-[16%]">操作</th>
+            <tr class="bg-slate-900 border-y border-slate-700 text-sm font-semibold text-slate-500 uppercase tracking-wider text-center">
+              <th class="px-2 py-3 border-b border-slate-600 w-[8%]">ID</th>
+              <th class="px-2 py-3 border-b border-slate-600 w-[12%]">日期</th>
+              <th class="px-2 py-3 border-b border-slate-600 w-[18%]">地點</th>
+              <th class="px-2 py-3 border-b border-slate-600 w-[12%]">簽到</th>
+              <th class="px-2 py-3 border-b border-slate-600 w-[12%]">簽退</th>
+              <th class="px-2 py-3 border-b border-slate-600 w-[10%]">常規</th>
+              <th class="px-2 py-3 border-b border-slate-600 w-[10%]">實際</th>
+              <th class="px-2 py-3 border-b border-slate-600 w-[10%]">OT</th>
+              <th class="px-2 py-3 border-b border-slate-600 w-[16%]">操作</th>
             </tr>
           </thead>
-          <tbody id="daily_records_body"><tr><td colspan="9" class="text-center text-gray-400 py-6">尚無紀錄。</td></tr></tbody>
+          <tbody id="daily_records_body"><tr><td colspan="9" class="text-center text-slate-500 py-6">尚無紀錄。</td></tr></tbody>
           <tfoot>
-            <tr class="bg-blue-50">
+            <tr class="bg-blue-900/20">
               <td></td>
-              <td class="px-1 py-1.5"><input type="date" id="new_date" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></td>
-              <td class="px-1 py-1.5"><input type="text" id="new_loc" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg bg-gray-100 text-gray-500" readonly></td>
-              <td class="px-1 py-1.5"><input type="time" id="new_in" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" value="12:00"></td>
-              <td class="px-1 py-1.5"><input type="time" id="new_out" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" value="20:00"></td>
-              <td class="px-1 py-1.5"><input type="number" step="0.5" id="new_normal" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" value="8.0"></td>
-              <td colspan="3" class="px-1 py-1.5"><button class="w-full px-2 py-1.5 text-xs font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors" onclick="addNewRecordFromUI()">➕ 新增紀錄</button></td>
+              <td class="px-1 py-1.5"><input type="date" id="new_date" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></td>
+              <td class="px-1 py-1.5"><input type="text" id="new_loc" class="w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg bg-slate-700 text-slate-500" readonly></td>
+              <td class="px-1 py-1.5"><input type="time" id="new_in" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" value="12:00"></td>
+              <td class="px-1 py-1.5"><input type="time" id="new_out" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" value="20:00"></td>
+              <td class="px-1 py-1.5"><input type="number" step="0.5" id="new_normal" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" value="8.0"></td>
+              <td colspan="3" class="px-1 py-1.5"><button class="w-full px-2 py-1.5 text-sm font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors" onclick="addNewRecordFromUI()">➕ 新增紀錄</button></td>
             </tr>
           </tfoot>
         </table>
       </div>
-      <div class="p-4 bg-gray-50 border-t border-gray-200">
+      <div class="p-4 bg-slate-900 border-t border-slate-700">
         <h6 class="font-bold text-sm mb-3">💰 月結微調項目 (Monthly Adjustment)</h6>
         <form id="adjustmentForm" action="/update_attendance" method="POST">
           <input type="hidden" name="calc_month" value="{{ current_month }}">
@@ -558,84 +584,84 @@
           <input type="hidden" name="location" id="att_loc_hidden">
           <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div>
-              <label class="block text-xs font-bold text-blue-700 mb-1">本月專屬時薪</label>
-              <div class="flex"><span class="inline-flex items-center px-2 bg-gray-100 border border-r-0 border-gray-300 rounded-l-lg text-sm">$</span><input type="number" step="0.1" name="monthly_hourly_rate" id="att_monthly_hr" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
-              <div class="text-xs text-gray-400 mt-1" id="att_hr_hint"></div>
+              <label class="block text-sm font-bold text-blue-300 mb-1">本月專屬時薪</label>
+              <div class="flex"><span class="inline-flex items-center px-2 bg-slate-700 border border-r-0 border-slate-600 rounded-l-lg text-sm">$</span><input type="number" step="0.1" name="monthly_hourly_rate" id="att_monthly_hr" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-r-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
+              <div class="text-sm text-slate-500 mt-1" id="att_hr_hint"></div>
             </div>
             <div>
-              <label class="block text-xs font-bold text-gray-700 mb-1">實報實銷</label>
-              <div class="flex"><span class="inline-flex items-center px-2 bg-gray-100 border border-r-0 border-gray-300 rounded-l-lg text-sm">$</span><input type="number" step="0.1" name="expenses" id="att_exp" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
+              <label class="block text-sm font-bold text-slate-200 mb-1">實報實銷</label>
+              <div class="flex"><span class="inline-flex items-center px-2 bg-slate-700 border border-r-0 border-slate-600 rounded-l-lg text-sm">$</span><input type="number" step="0.1" name="expenses" id="att_exp" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-r-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
             </div>
             <div>
-              <label class="block text-xs font-bold text-gray-700 mb-1">勤工獎</label>
-              <div class="flex"><span class="inline-flex items-center px-2 bg-gray-100 border border-r-0 border-gray-300 rounded-l-lg text-sm">$</span><input type="number" step="0.1" name="attendance_bonus" id="att_bonus" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
+              <label class="block text-sm font-bold text-slate-200 mb-1">勤工獎</label>
+              <div class="flex"><span class="inline-flex items-center px-2 bg-slate-700 border border-r-0 border-slate-600 rounded-l-lg text-sm">$</span><input type="number" step="0.1" name="attendance_bonus" id="att_bonus" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-r-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
             </div>
             <div>
-              <label class="block text-xs font-bold text-gray-700 mb-1">其他調整</label>
-              <div class="flex"><span class="inline-flex items-center px-2 bg-gray-100 border border-r-0 border-gray-300 rounded-l-lg text-sm">$</span><input type="number" step="0.1" name="adjustment" id="att_adj" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
+              <label class="block text-sm font-bold text-slate-200 mb-1">其他調整</label>
+              <div class="flex"><span class="inline-flex items-center px-2 bg-slate-700 border border-r-0 border-slate-600 rounded-l-lg text-sm">$</span><input type="number" step="0.1" name="adjustment" id="att_adj" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-r-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
             </div>
           </div>
           <div class="mt-3 flex items-center justify-between">
-            <span class="text-xs text-gray-500">時薪若留空，系統將自動使用該員工的預設時薪。</span>
-            <button type="submit" class="px-4 py-2 text-xs font-bold text-amber-800 bg-amber-100 rounded-xl hover:bg-amber-200 transition-colors">儲存月結微調與時薪</button>
+            <span class="text-sm text-slate-500">時薪若留空，系統將自動使用該員工的預設時薪。</span>
+            <button type="submit" class="px-4 py-2 text-sm font-bold text-amber-200 bg-amber-900/40 rounded-xl hover:bg-amber-800/40 transition-colors">儲存月結微調與時薪</button>
           </div>
         </form>
       </div>
     </div>
-    <div class="px-5 py-3 bg-gray-100 flex justify-end rounded-b-2xl">
-      <button class="px-4 py-2 text-sm font-semibold text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors" onclick="closeModal(this)">關閉</button>
+    <div class="px-5 py-3 bg-slate-700 flex justify-end rounded-b-2xl">
+      <button class="px-4 py-2 text-sm font-semibold text-slate-400 border border-slate-600 rounded-xl hover:bg-slate-900 transition-colors" onclick="closeModal(this)">關閉</button>
     </div>
   </div>
 </div>
 
 <div class="fixed inset-0 z-50 items-start justify-center py-8 hidden modal overflow-y-auto" id="salesModal">
   <div class="absolute inset-0 bg-black/40" onclick="closeModal(this)"></div>
-  <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-5xl mx-4 z-10">
-    <div class="sticky top-0 z-10 px-5 py-4 bg-green-50 text-green-800 font-bold text-lg flex items-center justify-between rounded-t-2xl border-b border-green-200">
-      <span>🛒 編輯銷售明細：<span id="sales_name_display" class="text-amber-600"></span> <span class="text-sm opacity-75">📍 <span id="sales_loc_display"></span></span></span>
-      <button class="text-green-800/50 hover:text-green-800 text-2xl leading-none" onclick="closeModal(this)">&times;</button>
+  <div class="relative bg-slate-800 rounded-2xl shadow-xl w-full max-w-5xl mx-4 z-10">
+    <div class="sticky top-0 z-10 px-5 py-4 bg-slate-900 text-slate-100 font-semibold text-lg flex items-center justify-between rounded-t-2xl border-b border-slate-700">
+      <span>🛒 編輯銷售明細：<span id="sales_name_display" class="text-slate-500"></span> <span class="text-sm text-slate-500">📍 <span id="sales_loc_display"></span></span></span>
+      <button class="text-slate-500 hover:text-slate-400 text-2xl leading-none" onclick="closeModal(this)">&times;</button>
     </div>
     <div class="p-0">
       <div class="overflow-x-auto">
         <table class="w-full text-sm border-collapse">
           <thead class="sticky top-0 z-10">
-            <tr class="bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-              <th class="px-2 py-3 border-b border-gray-200 w-[70px]">ID</th>
-              <th class="px-2 py-3 border-b border-gray-200 w-[15%]">銷售日期</th>
-              <th class="px-2 py-3 border-b border-gray-200 w-[20%]">售出地點</th>
-              <th class="px-2 py-3 border-b border-gray-200 w-[25%]">產品型號</th>
-              <th class="px-2 py-3 border-b border-gray-200 w-[10%]">數量</th>
-              <th class="px-2 py-3 border-b border-gray-200 w-[15%]">單價</th>
-              <th class="px-2 py-3 border-b border-gray-200 w-[15%]">操作</th>
+            <tr class="bg-slate-900 border-y border-slate-700 text-sm font-semibold text-slate-500 uppercase tracking-wider text-center">
+              <th class="px-2 py-3 border-b border-slate-600 w-[70px]">ID</th>
+              <th class="px-2 py-3 border-b border-slate-600 w-[15%]">銷售日期</th>
+              <th class="px-2 py-3 border-b border-slate-600 w-[20%]">售出地點</th>
+              <th class="px-2 py-3 border-b border-slate-600 w-[25%]">產品型號</th>
+              <th class="px-2 py-3 border-b border-slate-600 w-[10%]">數量</th>
+              <th class="px-2 py-3 border-b border-slate-600 w-[15%]">單價</th>
+              <th class="px-2 py-3 border-b border-slate-600 w-[15%]">操作</th>
             </tr>
           </thead>
-          <tbody id="sales_records_body"><tr><td colspan="7" class="py-4 text-center text-gray-400">正在載入數據...</td></tr></tbody>
+          <tbody id="sales_records_body"><tr><td colspan="7" class="py-4 text-center text-slate-500">正在載入數據...</td></tr></tbody>
           <tfoot>
-            <tr class="bg-green-50">
+            <tr class="bg-green-900/30">
               <td></td>
-              <td class="px-1 py-1.5"><input type="date" id="new_sales_date" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></td>
-              <td class="px-1 py-1.5"><select id="new_sales_loc" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"><option value="">-- 選擇店鋪 --</option>{% for loc in locations %}<option value="{{ loc.name }}">{{ loc.name }}</option>{% endfor %}</select></td>
-              <td class="px-1 py-1.5"><input list="productModels" id="new_sales_model" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="輸入或選擇型號"><datalist id="productModels">{% for p in products %}<option value="{{ p.model }}">{% endfor %}</datalist></td>
-              <td class="px-1 py-1.5"><input type="number" id="new_sales_qty" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" value="1" min="1"></td>
-              <td class="px-1 py-1.5"><input type="number" step="0.1" id="new_sales_price" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="單價"></td>
-              <td class="px-1 py-1.5"><button class="w-full px-2 py-1.5 text-xs font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors" onclick="addNewSalesRecordFromUI()">➕ 新增單據</button></td>
+              <td class="px-1 py-1.5"><input type="date" id="new_sales_date" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></td>
+              <td class="px-1 py-1.5"><select id="new_sales_loc" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"><option value="">-- 選擇店鋪 --</option>{% for loc in locations %}<option value="{{ loc.name }}">{{ loc.name }}</option>{% endfor %}</select></td>
+              <td class="px-1 py-1.5"><input list="productModels" id="new_sales_model" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="輸入或選擇型號"><datalist id="productModels">{% for p in products %}<option value="{{ p.model }}">{% endfor %}</datalist></td>
+              <td class="px-1 py-1.5"><input type="number" id="new_sales_qty" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" value="1" min="1"></td>
+              <td class="px-1 py-1.5"><input type="number" step="0.1" id="new_sales_price" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="單價"></td>
+              <td class="px-1 py-1.5"><button class="w-full px-2 py-1.5 text-sm font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors" onclick="addNewSalesRecordFromUI()">➕ 新增單據</button></td>
             </tr>
           </tfoot>
         </table>
       </div>
-      <div class="px-4 py-3 bg-gray-50 border-t border-gray-200 flex flex-wrap items-center justify-between gap-2">
+      <div class="px-4 py-3 bg-slate-900 border-t border-slate-700 flex flex-wrap items-center justify-between gap-2">
         <div class="flex items-center gap-2">
-          <span class="text-xs font-bold">📊 月結佣金微調</span>
-          <label class="text-xs font-bold text-blue-700">本月專屬佣金</label>
-          <input type="number" step="0.001" id="sales_monthly_comm_input" class="w-28 px-2 py-1.5 text-xs border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="預設">
-          <span id="sales_comm_hint" class="text-xs text-gray-400"></span>
+          <span class="text-sm font-bold">📊 月結佣金微調</span>
+          <label class="text-sm font-bold text-blue-300">本月專屬佣金</label>
+          <input type="number" step="0.001" id="sales_monthly_comm_input" class="text-slate-200 bg-slate-800 w-28 px-2 py-1.5 text-sm border border-blue-800/50 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="預設">
+          <span id="sales_comm_hint" class="text-sm text-slate-500"></span>
         </div>
-        <button class="px-4 py-1.5 text-xs font-bold text-amber-800 bg-amber-100 rounded-xl hover:bg-amber-200 transition-colors" onclick="saveSalesComm()">儲存佣金設定</button>
+        <button class="px-4 py-1.5 text-sm font-bold text-amber-200 bg-amber-900/40 rounded-xl hover:bg-amber-800/40 transition-colors" onclick="saveSalesComm()">儲存佣金設定</button>
       </div>
     </div>
-    <div class="px-5 py-3 bg-gray-100 flex items-center justify-between rounded-b-2xl">
-      <span class="text-xs text-gray-500">💡 系統會自動將未知的新型號加入產品目錄中。修改後請重新結算薪資。</span>
-      <button class="px-4 py-2 text-sm font-semibold text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors" onclick="closeModal(this)">關閉</button>
+    <div class="px-5 py-3 bg-slate-700 flex items-center justify-between rounded-b-2xl">
+      <span class="text-sm text-slate-500">💡 系統會自動將未知的新型號加入產品目錄中。修改後請重新結算薪資。</span>
+      <button class="px-4 py-2 text-sm font-semibold text-slate-400 border border-slate-600 rounded-xl hover:bg-slate-900 transition-colors" onclick="closeModal(this)">關閉</button>
     </div>
   </div>
 </div>
@@ -643,29 +669,29 @@
 {# 新增考勤 Modal #}
 <div class="fixed inset-0 z-50 items-center justify-center hidden modal" id="newAttendanceGroupModal">
   <div class="absolute inset-0 bg-black/40" onclick="closeModal(this)"></div>
-  <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 z-10">
-    <div class="px-5 py-4 bg-amber-50 text-amber-800 font-bold text-lg flex items-center justify-between rounded-t-2xl border-b border-amber-200">
+  <div class="relative bg-slate-800 rounded-2xl shadow-xl w-full max-w-md mx-4 z-10">
+    <div class="px-5 py-4 bg-slate-900 text-slate-100 font-semibold text-lg flex items-center justify-between rounded-t-2xl border-b border-slate-700">
       ➕ 新增考勤人員與據點
-      <button class="text-amber-800/50 hover:text-amber-800 text-2xl leading-none" onclick="closeModal(this)">&times;</button>
+      <button class="text-slate-500 hover:text-slate-400 text-2xl leading-none" onclick="closeModal(this)">&times;</button>
     </div>
     <div class="p-5 space-y-4">
       <div>
-        <label class="block text-sm font-bold text-gray-700 mb-1">1. 選擇推廣員</label>
-        <select id="init_att_promoter" class="w-full px-3 py-2.5 border border-amber-300 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none"><option value="">-- 請選擇系統員工 --</option>{% for emp in employees %}<option value="{{ emp.nick_name }}">{{ emp.nick_name }}</option>{% endfor %}</select>
+        <label class="block text-sm font-medium text-slate-200 mb-1">1. 選擇推廣員</label>
+        <select id="init_att_promoter" class="text-slate-200 bg-slate-800 w-full px-3 py-2.5 border border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"><option value="">-- 請選擇系統員工 --</option>{% for emp in employees %}<option value="{{ emp.nick_name }}">{{ emp.nick_name }}</option>{% endfor %}</select>
       </div>
       <div>
-        <label class="block text-sm font-bold text-gray-700 mb-1">2. 選擇地點</label>
-        <select id="init_att_loc" class="w-full px-3 py-2.5 border border-amber-300 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none"><option value="">-- 請選地點 --</option>{% for loc in locations %}<option value="{{ loc.name }}">{{ loc.name }}</option>{% endfor %}</select>
+        <label class="block text-sm font-medium text-slate-200 mb-1">2. 選擇地點</label>
+        <select id="init_att_loc" class="text-slate-200 bg-slate-800 w-full px-3 py-2.5 border border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"><option value="">-- 請選地點 --</option>{% for loc in locations %}<option value="{{ loc.name }}">{{ loc.name }}</option>{% endfor %}</select>
       </div>
       <div>
-        <label class="block text-sm font-bold text-blue-700 mb-1">3. 本月專屬時薪 (選填)</label>
-        <div class="flex shadow-sm rounded-xl overflow-hidden border border-amber-300"><span class="inline-flex items-center px-3 bg-gray-100 text-sm">$</span><input type="number" step="0.1" id="init_att_monthly_hr" class="w-full px-3 py-2.5 outline-none" placeholder="若留空則使用系統預設時薪"></div>
-        <div class="text-xs text-gray-400 mt-1" id="init_att_hr_hint">請先選擇推廣員以檢視預設時薪</div>
+        <label class="block text-sm font-medium text-blue-300 mb-1">3. 本月專屬時薪 (選填)</label>
+        <div class="flex shadow-sm rounded-xl overflow-hidden border border-slate-600"><span class="inline-flex items-center px-3 bg-slate-700 text-sm">$</span><input type="number" step="0.1" id="init_att_monthly_hr" class="text-slate-200 bg-slate-800 w-full px-3 py-2.5 outline-none" placeholder="若留空則使用系統預設時薪"></div>
+        <div class="text-sm text-slate-500 mt-1" id="init_att_hr_hint">請先選擇推廣員以檢視預設時薪</div>
       </div>
     </div>
-    <div class="px-5 py-4 bg-gray-50 flex justify-end gap-2 rounded-b-2xl">
-      <button class="px-4 py-2 text-sm font-semibold text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors" onclick="closeModal(this)">取消</button>
-      <button class="px-4 py-2 text-sm font-bold text-amber-800 bg-amber-100 rounded-xl hover:bg-amber-200 transition-colors" onclick="startNewAttendanceGroup()">🚀 開始打卡</button>
+    <div class="px-5 py-4 bg-slate-900 flex justify-end gap-2 rounded-b-2xl">
+      <button class="px-4 py-2 text-sm font-medium text-slate-400 border border-slate-600 rounded-xl hover:bg-slate-900 transition-colors" onclick="closeModal(this)">取消</button>
+      <button class="px-4 py-2 text-sm font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors" onclick="startNewAttendanceGroup()">🚀 開始打卡</button>
     </div>
   </div>
 </div>
@@ -673,29 +699,29 @@
 {# 新增銷售 Modal #}
 <div class="fixed inset-0 z-50 items-center justify-center hidden modal" id="newSalesGroupModal">
   <div class="absolute inset-0 bg-black/40" onclick="closeModal(this)"></div>
-  <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 z-10">
-    <div class="px-5 py-4 bg-green-50 text-green-800 font-bold text-lg flex items-center justify-between rounded-t-2xl border-b border-green-200">
+  <div class="relative bg-slate-800 rounded-2xl shadow-xl w-full max-w-md mx-4 z-10">
+    <div class="px-5 py-4 bg-slate-900 text-slate-100 font-semibold text-lg flex items-center justify-between rounded-t-2xl border-b border-slate-700">
       ➕ 開啟新銷售據點
-      <button class="text-green-800/50 hover:text-green-800 text-2xl leading-none" onclick="closeModal(this)">&times;</button>
+      <button class="text-slate-500 hover:text-slate-400 text-2xl leading-none" onclick="closeModal(this)">&times;</button>
     </div>
     <div class="p-5 space-y-4">
       <div>
-        <label class="block text-sm font-bold text-gray-700 mb-1">1. 選擇推廣員</label>
-        <select id="init_sales_promoter" class="w-full px-3 py-2.5 border border-green-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" onchange="updateInitSalesDefaultComm()"><option value="" data-comm="">-- 請選擇系統員工 --</option>{% for emp in employees %}<option value="{{ emp.nick_name }}" data-comm="{{ emp.commission_rate }}">{{ emp.nick_name }}</option>{% endfor %}</select>
+        <label class="block text-sm font-medium text-slate-200 mb-1">1. 選擇推廣員</label>
+        <select id="init_sales_promoter" class="text-slate-200 bg-slate-800 w-full px-3 py-2.5 border border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" onchange="updateInitSalesDefaultComm()"><option value="" data-comm="">-- 請選擇系統員工 --</option>{% for emp in employees %}<option value="{{ emp.nick_name }}" data-comm="{{ emp.commission_rate }}">{{ emp.nick_name }}</option>{% endfor %}</select>
       </div>
       <div>
-        <label class="block text-sm font-bold text-blue-700 mb-1">3. 本月專屬佣金 (選填)</label>
-        <div class="flex shadow-sm rounded-xl overflow-hidden border border-green-300"><input type="number" step="0.001" id="init_sales_monthly_comm" class="w-full px-3 py-2.5 outline-none" placeholder="留空則使用預設"></div>
-        <div class="text-xs text-gray-400 mt-1">請先選擇推廣員，小數表示 (例: 3% 輸入 0.03)</div>
+        <label class="block text-sm font-medium text-blue-300 mb-1">3. 本月專屬佣金 (選填)</label>
+        <div class="flex shadow-sm rounded-xl overflow-hidden border border-slate-600"><input type="number" step="0.001" id="init_sales_monthly_comm" class="text-slate-200 bg-slate-800 w-full px-3 py-2.5 outline-none" placeholder="留空則使用預設"></div>
+        <div class="text-sm text-slate-500 mt-1">請先選擇推廣員，小數表示 (例: 3% 輸入 0.03)</div>
       </div>
       <div>
-        <label class="block text-sm font-bold text-gray-700 mb-1">2. 選擇主戰場</label>
-        <select id="init_sales_loc" class="w-full px-3 py-2.5 border border-green-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none"><option value="">-- 請選擇標準店鋪 --</option>{% for loc in locations %}<option value="{{ loc.name }}">{{ loc.name }}</option>{% endfor %}</select>
+        <label class="block text-sm font-medium text-slate-200 mb-1">2. 選擇主戰場</label>
+        <select id="init_sales_loc" class="text-slate-200 bg-slate-800 w-full px-3 py-2.5 border border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"><option value="">-- 請選擇標準店鋪 --</option>{% for loc in locations %}<option value="{{ loc.name }}">{{ loc.name }}</option>{% endfor %}</select>
       </div>
-      <div class="bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2 text-xs text-yellow-800">選擇後將自動開啟明細表，您可直接開始輸入單據。</div>
+      <div class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-400">選擇後將自動開啟明細表，您可直接開始輸入單據。</div>
     </div>
-    <div class="px-5 py-4 bg-gray-50 flex justify-end gap-2 rounded-b-2xl">
-      <button class="px-4 py-2 text-sm font-semibold text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors" onclick="closeModal(this)">取消</button>
+    <div class="px-5 py-4 bg-slate-900 flex justify-end gap-2 rounded-b-2xl">
+      <button class="px-4 py-2 text-sm font-semibold text-slate-400 border border-slate-600 rounded-xl hover:bg-slate-900 transition-colors" onclick="closeModal(this)">取消</button>
       <button class="px-4 py-2 text-sm font-bold text-white bg-green-600 rounded-xl hover:bg-green-700 transition-colors" onclick="startNewSalesGroup()">🚀 開始輸入單據</button>
     </div>
   </div>
@@ -705,30 +731,7 @@
 <script id="brand-list-data" type="application/json">{{ available_brands | tojson }}</script>
 <script src="{{ url_for('static', filename='index.js') }}"></script>
 <script>
-    (function() {
-        const modeSelect = document.getElementById('inputModeSelect');
-        const excelPanel = document.getElementById('excelInputPanel');
-        const webPanel = document.getElementById('webInputPanel');
-
-        if (!modeSelect || !excelPanel || !webPanel) {
-            return;
-        }
-
-        function updateMode() {
-            const mode = modeSelect.value;
-            if (mode === 'web') {
-                excelPanel.style.display = 'none';
-                webPanel.style.display = '';
-            } else {
-                excelPanel.style.display = '';
-                webPanel.style.display = 'none';
-            }
-        }
-
-        modeSelect.addEventListener('change', updateMode);
-        updateMode();
-    })();
-
+    // === 品牌關鍵字偵測與上傳區檔名顯示 ===
     (function() {
         const pageDataEl = document.getElementById('index-page-data');
         const brandDataEl = document.getElementById('brand-list-data');
@@ -837,6 +840,14 @@
             input.addEventListener('change', function() {
                 updateBrandWarning(this);
                 updateMonthWarning(this);
+                // Update upload zone label with filename
+                const label = this.closest('label');
+                if (label && this.files && this.files[0]) {
+                    const textSpan = label.querySelector('.file-name-text');
+                    const defaultSpan = label.querySelector('.default-upload-text');
+                    if (textSpan) textSpan.textContent = this.files[0].name;
+                    if (defaultSpan) defaultSpan.classList.add('hidden');
+                }
             });
         });
     })();
@@ -844,7 +855,16 @@
 
 {% block scripts_extra %}
 <script>
-// === 通用 Modal (取代 Bootstrap modal) ===
+    function toggleInputMode() {
+      const sel = document.getElementById('inputModeSelect');
+      const excel = document.getElementById('excelInputPanel');
+      const web = document.getElementById('webInputPanel');
+      if (!sel || !excel || !web) return;
+      if (sel.value === 'web') { excel.classList.add('hidden'); web.classList.remove('hidden'); }
+      else { excel.classList.remove('hidden'); web.classList.add('hidden'); }
+    }
+
+    // === 通用 Modal ===
 function openModal(id) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -868,8 +888,8 @@ document.querySelectorAll('.att-tab-btn').forEach(btn => {
     document.querySelectorAll('.att-tab-btn').forEach(b => {
       const active = b.getAttribute('data-tab') === tab;
       b.className = active
-        ? 'att-tab-btn px-4 py-2 text-sm font-semibold rounded-t-xl border border-b-0 border-gray-200 -mb-px bg-white text-gray-700'
-        : 'att-tab-btn px-4 py-2 text-sm font-semibold rounded-t-xl border border-b-0 border-gray-200 -mb-px bg-gray-50 text-gray-500';
+        ? 'att-tab-btn px-4 py-2.5 text-sm font-medium text-slate-200 border-b-2 border-blue-600 text-blue-600 transition-colors'
+        : 'att-tab-btn px-4 py-2.5 text-sm font-medium text-slate-500 border-b-2 border-transparent hover:text-slate-100 hover:border-slate-600 transition-colors';
     });
     document.querySelectorAll('.att-tab-pane').forEach(p => {
       p.classList.toggle('hidden', p.id !== 'tab-' + tab);
