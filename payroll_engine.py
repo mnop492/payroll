@@ -223,6 +223,9 @@ def process_payroll_from_db(calc_month, brand_code='century_field', db_path='pay
     def calculate_basic_pay(row):
         # 如果是月薪制，直接返回固定月薪 (無視工時)
         if row.get('salary_type') == 'monthly':
+            # 跨多店只計一次月薪，其餘店鋪歸零
+            if row.get('_monthly_seq', 0) > 0:
+                return 0
             return row.get('monthly_salary', 0)
             
         # 否則維持原來的時薪計算邏輯
@@ -236,8 +239,10 @@ def process_payroll_from_db(calc_month, brand_code='century_field', db_path='pay
         # 如果有人工覆寫津貼，強制使用覆寫值
         if 'allowance_override' in row and pd.notna(row['allowance_override']) and str(row['allowance_override']).strip() not in ['', '0', '0.0']:
             return float(row['allowance_override'])
-        # 月薪制：津貼視為一筆過，不按日數計算
+        # 月薪制：津貼視為一筆過，不按日數計算；跨多店只計一次
         if row.get('salary_type') == 'monthly':
+            if row.get('_monthly_seq', 0) > 0:
+                return 0
             return row.get('allowance', 0)
         return row['Days'] * row['allowance']
 
@@ -284,8 +289,26 @@ def process_payroll_from_db(calc_month, brand_code='century_field', db_path='pay
     # 6. 整理最終輸出格式
     # ==========================================
     # 把新加入的微調欄位送到前端顯示
-    display_df = final_df[['Name', 'full_name', 'Hours', 'OT Hours', 'Basic Pay', 'Calc_Comm', 'Total_Allowance', 'expenses', 'adjustment', 'attendance_bonus', 'Gross Pay', 'MPF', 'MPF狀態', 'Net Pay', 'Location']]
-    display_df.columns = ['員工','全名', '工時', 'OT工時', '底薪', '總佣金', '津貼', '報銷', '微調', '出勤獎', '總收入', 'MPF扣除', 'MPF狀態', '實發薪資', '地點']
+    display_df = final_df[['Name', 'full_name', 'salary_type', '_monthly_seq', 'Hours', 'OT Hours', 'Basic Pay', 'Calc_Comm', 'Total_Allowance', 'expenses', 'adjustment', 'attendance_bonus', 'Gross Pay', 'MPF', 'MPF狀態', 'Net Pay', 'Location']].copy()
+
+    # 🌟 月薪制：合併跨多店的記錄，只輸出一條
+    if not display_df.empty and 'salary_type' in display_df.columns:
+        monthly_mask = display_df['salary_type'].eq('monthly')
+        if monthly_mask.any():
+            monthly_df = display_df[monthly_mask]
+            # 建立地點對照：每個員工的所有地點串聯
+            loc_map = monthly_df.groupby('Name')['Location'].apply(
+                lambda x: '、'.join(x.dropna().replace('', pd.NA).dropna().unique())
+            )
+            # 只保留每個員工的第一筆 (_monthly_seq == 0)，並更新地點
+            monthly_merged = monthly_df[monthly_df['_monthly_seq'] == 0].copy()
+            monthly_merged['Location'] = monthly_merged['Name'].map(loc_map).fillna(monthly_merged['Location'])
+            # 合併時薪制與月薪制
+            display_df = pd.concat([display_df[~monthly_mask], monthly_merged], ignore_index=True)
+
+    # 只保留需要的欄位輸出
+    display_df = display_df[['Name', 'full_name', 'salary_type', 'Hours', 'OT Hours', 'Basic Pay', 'Calc_Comm', 'Total_Allowance', 'expenses', 'adjustment', 'attendance_bonus', 'Gross Pay', 'MPF', 'MPF狀態', 'Net Pay', 'Location']]
+    display_df.columns = ['員工','全名', 'salary_type', '工時', 'OT工時', '底薪', '總佣金', '津貼', '報銷', '微調', '出勤獎', '總收入', 'MPF扣除', 'MPF狀態', '實發薪資', '地點']
 
     numeric_cols = ['工時', 'OT工時', '底薪', '總佣金', '津貼', '報銷', '微調', '出勤獎', '總收入', 'MPF扣除', '實發薪資']
     display_df[numeric_cols] = display_df[numeric_cols].fillna(0).round(2)
