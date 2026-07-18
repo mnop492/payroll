@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sharpsing計糧系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <link href="{{ url_for('static', filename='app.css') }}" rel="stylesheet">
   {% block head_extra %}{% endblock %}
 </head>
@@ -60,6 +61,32 @@
   </aside>
 
   {# ========== 右側主內容區 ========== #}
+  <div class="flex-1 flex flex-col min-w-0">
+    {# ========== 頂部狀態列 ========== #}
+    <header class="shrink-0 px-4 md:px-6 lg:px-8 py-3 bg-white border-b border-gray-200 shadow-sm flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3 min-w-0">
+        <h1 class="text-base md:text-lg font-bold text-gray-800 truncate">
+          {% block page_title %}主控台{% endblock %}
+        </h1>
+        {% if current_brand_name %}
+        <span class="shrink-0 inline-flex items-center gap-1 text-xs font-semibold bg-blue-100 text-blue-700 px-2.5 py-1 rounded-full">
+          🏷️ {{ current_brand_name }}
+        </span>
+        {% endif %}
+      </div>
+      <div class="flex items-center gap-3 shrink-0">
+        {% if session.get('user') %}
+        <div class="hidden sm:flex items-center gap-2 text-sm text-gray-500">
+          <span class="w-7 h-7 rounded-full bg-slate-800 text-white flex items-center justify-center text-xs font-bold">U</span>
+          <span class="font-medium">{{ session.get('user') }}</span>
+        </div>
+        <a href="/logout" class="px-3 py-1.5 text-xs font-semibold text-gray-500 border border-gray-300 rounded-xl hover:bg-gray-50 hover:text-gray-700 transition-colors">登出</a>
+        {% else %}
+        <a href="/login?next={{ request.path }}" class="px-3 py-1.5 text-xs font-semibold text-blue-600 border border-blue-300 rounded-xl hover:bg-blue-50 transition-colors">登入</a>
+        {% endif %}
+      </div>
+    </header>
+
   <main class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
@@ -82,7 +109,7 @@
 
     <div class="{% if _show_brand_sidebar %}flex gap-4 items-start{% endif %}" data-active-brand="{{ _active_brand or '' }}" data-enable-title-brand="{{ '1' if request.path not in _no_brand_ui_paths else '0' }}">
       {% if _show_brand_sidebar %}
-      <aside class="w-64 shrink-0 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden sticky top-0">
+      <aside class="w-64 shrink-0 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden sticky top-0 hidden lg:block">
         <div class="px-4 py-3 border-b border-gray-200 bg-gradient-to-br from-gray-50 to-white">
           <div class="font-extrabold text-sm tracking-tight">品牌分頁</div>
           <div class="text-xs text-gray-400 mt-0.5">切換目前頁面品牌</div>
@@ -121,6 +148,7 @@
       </main>
     </div>
   </main>
+  </div>{# /.flex-1 flex-col #}
 
   <script>
     (function() {
@@ -181,6 +209,18 @@
       }
       applySearch();
     })();
+
+    // === 表單按鈕 disabled 保護 ===
+    document.addEventListener('submit', function(e) {
+      const btn = e.target.querySelector('[type="submit"]');
+      if (!btn || btn.disabled) return;
+      setTimeout(function() {
+        btn.disabled = true;
+        btn._origText = btn._origText || btn.textContent;
+        btn.textContent = '⏳ 處理中…';
+      }, 10);
+    });
+
   </script>
   {% block scripts_extra %}{% endblock %}
 </body>

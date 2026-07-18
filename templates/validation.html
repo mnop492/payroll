@@ -39,21 +39,8 @@
       <div class="text-xl font-bold text-amber-700">{{ summary.missing }}</div>
     </div>
   </div>
-                    <div class="h4 mb-0 text-success">{{ summary.matched }}</div>
-                </div>
-            </div>
-        </div>
-        <div class="bg-white rounded-2xl shadow-sm border border-red-200 p-3 text-center">
-          <div class="text-xs text-gray-500">不匹配</div>
-          <div class="text-xl font-bold text-red-600">{{ summary.mismatched }}</div>
-        </div>
-        <div class="bg-white rounded-2xl shadow-sm border border-amber-200 p-3 text-center">
-          <div class="text-xs text-gray-500">系統找不到</div>
-          <div class="text-xl font-bold text-amber-600">{{ summary.missing }}</div>
-        </div>
-    </div>
 
-    {# View controls #}
+  {# View controls #}
   <div class="flex items-center gap-4 mb-3 flex-wrap">
     <label class="flex items-center gap-2 text-sm font-semibold text-gray-700 cursor-pointer"><input type="checkbox" id="showMismatchOnly" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"> 只顯示有差異的行</label>
     <label class="flex items-center gap-2 text-sm font-semibold text-gray-700 cursor-pointer"><input type="checkbox" id="showDetailCols" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"> 顯示系統明細欄位</label>
@@ -105,7 +92,7 @@
                     </thead>
                     <tbody>
                         {% for item in results %}
-                        <tr class="text-center border-b border-gray-100 hover:bg-gray-50 even:bg-gray-50/50 transition-colors {{ 'bg-red-50' if '❌' in item.status or '❓' in item.status else '' }}">
+                        <tr class="text-center border-b border-gray-100 hover:bg-gray-50 even:bg-gray-50/50 transition-colors {{ 'val-row-mismatch bg-red-50' if '❌' in item.status or '❓' in item.status else 'val-row-match' }}">
                             <td class="px-3 py-2 font-bold text-sm">{{ item.name }}</td>
                             <td class="px-3 py-2 text-xs">{{ item.location }}</td>
                             <td class="px-2 py-2">{{ item.ex_basic }}</td>
@@ -182,23 +169,27 @@
 (function() {
     // Toggle: show mismatch rows only
     const mismatchToggle = document.getElementById('showMismatchOnly');
-    mismatchToggle.addEventListener('change', function() {
-        document.querySelectorAll('#valTable tbody .row-match').forEach(function(row) {
-            row.style.display = mismatchToggle.checked ? 'none' : '';
+    if (mismatchToggle) {
+      mismatchToggle.addEventListener('change', function() {
+        document.querySelectorAll('#valTable tbody .val-row-match').forEach(function(row) {
+          row.style.display = mismatchToggle.checked ? 'none' : '';
         });
-    });
+      });
+    }
 
     // Toggle: show/hide detail columns
     const detailToggle = document.getElementById('showDetailCols');
-    detailToggle.addEventListener('change', function() {
+    if (detailToggle) {
+      detailToggle.addEventListener('change', function() {
         document.querySelectorAll('.detail-col').forEach(function(el) {
-            el.style.display = detailToggle.checked ? '' : 'none';
+          el.style.display = detailToggle.checked ? '' : 'none';
         });
-    });
+      });
+    }
 
     // Hide detail cols by default
     document.querySelectorAll('.detail-col').forEach(function(el) {
-        el.style.display = 'none';
+      el.style.display = 'none';
     });
 })();
 </script>

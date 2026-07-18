@@ -1,9 +1,91 @@
 {% extends 'base.html' %}
 
+{% block page_title %}📋 主控台{% endblock %}
+
 {% block content %}
 {% set has_month_data = attendances or staff_summary %}
 
+{# === KPI 數據計算 === #}
+{% set total_attendance = attendances | length %}
+{% set total_employees = employees | length %}
+{% set pending_employees = namespace(count=0) %}
+{% for emp in employees %}
+  {% set has_record = namespace(found=false) %}
+  {% for att in attendances %}
+    {% if att.nick_name == emp.nick_name %}{% set has_record.found = true %}{% endif %}
+  {% endfor %}
+  {% if not has_record.found %}{% set pending_employees.count = pending_employees.count + 1 %}{% endif %}
+{% endfor %}
+{% set estimated_total_salary = namespace(sum=0) %}
+{% for att in attendances %}
+  {% set estimated_total_salary.sum = estimated_total_salary.sum + (att.estimated_basic | default(0) | float) %}
+{% endfor %}
+{% for staff in staff_summary %}
+  {% set estimated_total_salary.sum = estimated_total_salary.sum + (staff.total_comm | default(0) | float) %}
+{% endfor %}
+
 <div class="space-y-6">
+    {# === KPI 摘要卡片 === #}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 flex items-center gap-4 hover:shadow-md transition-shadow">
+            <div class="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center text-2xl shrink-0">💰</div>
+            <div class="min-w-0">
+                <div class="text-xs text-gray-400 font-semibold uppercase tracking-wider">本月預估薪資總額</div>
+                <div class="text-xl font-extrabold text-gray-800">${{ "{:,.0f}".format(estimated_total_salary.sum) }}</div>
+                <div class="text-xs text-gray-400 mt-0.5">{{ current_month }}</div>
+            </div>
+        </div>
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 flex items-center gap-4 hover:shadow-md transition-shadow">
+            <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-2xl shrink-0">👥</div>
+            <div class="min-w-0">
+                <div class="text-xs text-gray-400 font-semibold uppercase tracking-wider">本月出勤人數</div>
+                <div class="text-xl font-extrabold text-gray-800">{{ total_attendance }} <span class="text-sm font-normal text-gray-400">/ {{ total_employees }} 人</span></div>
+                <div class="text-xs text-gray-400 mt-0.5">已錄入考勤記錄</div>
+            </div>
+        </div>
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 flex items-center gap-4 hover:shadow-md transition-shadow">
+            <div class="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center text-2xl shrink-0">📋</div>
+            <div class="min-w-0">
+                <div class="text-xs text-gray-400 font-semibold uppercase tracking-wider">待處理事項</div>
+                <div class="text-xl font-extrabold text-gray-800">{{ pending_employees.count }} <span class="text-sm font-normal text-gray-400">項</span></div>
+                <div class="text-xs text-gray-400 mt-0.5">尚未匯入考勤之員工</div>
+            </div>
+        </div>
+    </div>
+
+    {# === Chart.js 圖表區 === #}
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden" id="chart-section">
+        <div class="px-5 py-3.5 bg-gradient-to-r from-indigo-50 to-blue-50 border-b border-gray-200 flex items-center justify-between">
+            <h5 class="font-bold text-gray-700">📈 薪資與出勤趨勢概覽</h5>
+            <span class="text-xs text-gray-400">{{ current_month }}</span>
+        </div>
+        <div class="p-5">
+            {% set hourly_data = attendances | selectattr("salary_type", "equalto", "hourly") | list %}
+            {% if hourly_data %}
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                    <h6 class="text-sm font-bold text-gray-500 mb-3">時薪制員工工時分佈</h6>
+                    <div class="relative" style="height: 260px;">
+                        <canvas id="hoursChart"></canvas>
+                    </div>
+                </div>
+                <div>
+                    <h6 class="text-sm font-bold text-gray-500 mb-3">各員工預估薪資比較</h6>
+                    <div class="relative" style="height: 260px;">
+                        <canvas id="salaryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="py-10 text-center text-gray-400">
+                <div class="text-5xl mb-3">📊</div>
+                <p class="text-sm font-semibold">本月無時薪制員工資料</p>
+                <p class="text-xs mt-1">匯入考勤或切換品牌後圖表將自動顯示</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
     {# === 薪資結算主控台 === #}
     <div class="bg-white rounded-2xl shadow-sm border border-blue-200 overflow-hidden max-w-2xl" id="payroll-workflow-panel">
         <div class="px-5 py-4 bg-blue-600 text-white font-bold text-lg flex items-center gap-2">
@@ -327,6 +409,109 @@
         </div>
     </div>
 </div>
+
+{# === 員工薪資狀態彙總表 === #}
+{% if employees %}
+<div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="px-5 py-3.5 bg-gradient-to-r from-slate-50 to-gray-50 border-b border-gray-200 flex items-center justify-between">
+        <h5 class="font-bold text-gray-700">📊 員工薪資狀態總覽</h5>
+        <span class="text-xs bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full">{{ employees | length }} 位員工</span>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+            <thead>
+                <tr class="bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th class="px-3 py-3 border-b border-gray-200">員工</th>
+                    <th class="px-3 py-3 border-b border-gray-200">類型</th>
+                    <th class="px-3 py-3 border-b border-gray-200">時薪/月薪</th>
+                    <th class="px-3 py-3 border-b border-gray-200">佣金率</th>
+                    <th class="px-3 py-3 border-b border-gray-200">考勤狀態</th>
+                    <th class="px-3 py-3 border-b border-gray-200">預估薪資</th>
+                    <th class="px-3 py-3 border-b border-gray-200">結算狀態</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for emp in employees %}
+                {% set emp_att = namespace(found=none) %}
+                {% for att in attendances %}
+                    {% if att.nick_name == emp.nick_name %}{% set emp_att.found = att %}{% endif %}
+                {% endfor %}
+                {% set emp_sales = namespace(total=0) %}
+                {% for staff in staff_summary %}
+                    {% if staff.name == emp.nick_name %}{% set emp_sales.total = emp_sales.total + (staff.total_comm | default(0) | float) %}{% endif %}
+                {% endfor %}
+                <tr class="text-center border-b border-gray-100 hover:bg-gray-50 odd:bg-white even:bg-gray-50/50 transition-colors">
+                    <td class="px-3 py-3">
+                        <div class="font-bold text-blue-700">{{ emp.nick_name }}</div>
+                        <div class="text-xs text-gray-400">{{ emp.full_name }}</div>
+                    </td>
+                    <td class="px-3 py-3">
+                        {% if emp.salary_type == 'monthly' %}
+                            <span class="inline-block bg-purple-100 text-purple-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">月薪制</span>
+                        {% else %}
+                            <span class="inline-block bg-cyan-100 text-cyan-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">時薪制</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-3 py-3">
+                        {% if emp.salary_type == 'monthly' %}
+                            <span class="font-bold text-purple-700">${{ "{:,.0f}".format(emp.monthly_salary | default(0)) }}</span>
+                        {% else %}
+                            <span class="font-bold">${{ "{:,.1f}".format(emp.hourly_rate | default(0)) }}</span>
+                            {% if emp_att.found and emp_att.found.monthly_hourly_rate is not none %}
+                                <span class="inline-block bg-blue-100 text-blue-700 text-xs px-1.5 py-0.5 rounded-full ml-1">本月 ${{ "{:,.1f}".format(emp_att.found.monthly_hourly_rate) }}</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td class="px-3 py-3">
+                        <span class="font-bold text-gray-700">{{ "{:.1f}".format((emp.commission_rate | default(0.03)) * 100) }}%</span>
+                    </td>
+                    <td class="px-3 py-3">
+                        {% if emp_att.found %}
+                            {% if emp.salary_type == 'monthly' %}
+                                <span class="inline-block bg-green-100 text-green-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">{{ emp_att.found.location }}</span>
+                            {% else %}
+                                <span class="inline-block bg-green-100 text-green-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">{{ emp_att.found.days_worked }}天 / {{ "%g" | format(emp_att.found.hours) }}h</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="inline-block bg-red-100 text-red-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">未錄入</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-3 py-3">
+                        {% if emp_att.found %}
+                            {% set emp_basic = emp_att.found.estimated_basic | default(0) | float %}
+                            <span class="font-bold text-emerald-700">${{ "{:,.1f}".format(emp_basic + emp_sales.total) }}</span>
+                        {% else %}
+                            <span class="text-gray-400">—</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-3 py-3">
+                        {% if emp_att.found and emp_att.found.estimated_basic is defined %}
+                            <span class="inline-flex items-center gap-1 bg-green-100 text-green-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">
+                                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> 可結算
+                            </span>
+                        {% elif emp_att.found %}
+                            <span class="inline-flex items-center gap-1 bg-amber-100 text-amber-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> 待確認
+                            </span>
+                        {% else %}
+                            <span class="inline-flex items-center gap-1 bg-red-100 text-red-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">
+                                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> 缺資料
+                            </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if not attendances %}
+    <div class="px-5 py-8 text-center text-gray-400">
+        <div class="text-4xl mb-2">📭</div>
+        <p class="text-sm">尚無任何考勤數據，請先匯入或手動新增本月資料</p>
+    </div>
+    {% endif %}
+</div>
+{% endif %}
 
 <div class="fixed inset-0 z-50 items-start justify-center py-8 hidden modal overflow-y-auto" id="attendanceModal">
   <div class="absolute inset-0 bg-black/40" onclick="closeModal(this)"></div>
@@ -692,6 +877,76 @@ document.querySelectorAll('.att-tab-btn').forEach(btn => {
     });
   });
 });
+
+// === Chart.js 初始化 ===
+(function() {
+  const hoursCanvas = document.getElementById('hoursChart');
+  const salaryCanvas = document.getElementById('salaryChart');
+  if (!hoursCanvas && !salaryCanvas) return;
+
+  {% set hourly_data = [] %}
+  {% for att in attendances %}
+    {% if att.salary_type == 'hourly' %}
+      {% set _ = hourly_data.append({'name': att.nick_name, 'hours': att.hours | float, 'basic': att.estimated_basic | float}) %}
+    {% endif %}
+  {% endfor %}
+
+  const hourLabels = {{ hourly_data | map(attribute='name') | list | tojson }};
+  const hourValues = {{ hourly_data | map(attribute='hours') | list | tojson }};
+  const basicValues = {{ hourly_data | map(attribute='basic') | list | tojson }};
+
+  if (hoursCanvas && hourLabels.length > 0) {
+    new Chart(hoursCanvas, {
+      type: 'bar',
+      data: {
+        labels: hourLabels,
+        datasets: [{
+          label: '本月工時 (h)',
+          data: hourValues,
+          backgroundColor: 'rgba(99, 102, 241, 0.7)',
+          borderColor: 'rgba(99, 102, 241, 1)',
+          borderWidth: 1,
+          borderRadius: 6,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { size: 11 } } },
+          x: { ticks: { font: { size: 10 }, maxRotation: 45 } }
+        }
+      }
+    });
+  }
+
+  if (salaryCanvas && basicValues.length > 0) {
+    new Chart(salaryCanvas, {
+      type: 'bar',
+      data: {
+        labels: hourLabels,
+        datasets: [{
+          label: '預估底薪 ($)',
+          data: basicValues,
+          backgroundColor: 'rgba(16, 185, 129, 0.7)',
+          borderColor: 'rgba(16, 185, 129, 1)',
+          borderWidth: 1,
+          borderRadius: 6,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { size: 11 }, callback: v => '$' + v.toLocaleString() } },
+          x: { ticks: { font: { size: 10 }, maxRotation: 45 } }
+        }
+      }
+    });
+  }
+})();
 </script>
 {% endblock %}
 {% endblock %}

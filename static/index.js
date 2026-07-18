@@ -51,12 +51,12 @@ function editAttendance(name, loc, days, hours, ot, exp, adj, bonus, monthly_hr,
 
     const hrHint = document.getElementById('att_hr_hint');
     if (hrHint) {
-        hrHint.innerHTML = `<i class="bi bi-info-circle"></i> 該員工預設：$${default_hr}`;
+        hrHint.innerHTML = `ℹ️ 該員工預設：$${default_hr}`;
     }
 
     document.getElementById('daily_records_body').innerHTML = '<tr><td colspan="9" class="text-center">載入中...</td></tr>';
     refreshDailyTable(name, loc);
-    new bootstrap.Modal(document.getElementById('attendanceModal')).show();
+    openModal('attendanceModal');
 }
 
 function updateInitAttDefaultHr() {
@@ -67,10 +67,10 @@ function updateInitAttDefaultHr() {
     const inputEl = document.getElementById('init_att_monthly_hr');
 
     if (defaultHr) {
-        hintEl.innerHTML = `<i class="bi bi-info-circle"></i> 該員工預設時薪為 <strong>$${defaultHr}</strong>`;
+        hintEl.innerHTML = `ℹ️ 該員工預設時薪為 <strong>$${defaultHr}</strong>`;
         inputEl.placeholder = `預設 $${defaultHr}`;
     } else {
-        hintEl.innerHTML = '<i class="bi bi-info-circle"></i> 請先選擇推廣員以檢視預設時薪';
+        hintEl.innerHTML = 'ℹ️ 請先選擇推廣員以檢視預設時薪';
         inputEl.placeholder = '若留空則使用系統預設時薪';
     }
 }
@@ -88,7 +88,7 @@ function startNewAttendanceGroup() {
 
     const selectedOption = select.options[select.selectedIndex];
     const defaultHr = selectedOption ? parseFloat(selectedOption.getAttribute('data-hr')) : 0;
-    bootstrap.Modal.getInstance(document.getElementById('newAttendanceGroupModal')).hide();
+    closeModal(document.getElementById('newAttendanceGroupModal'));
     const hourlyRate = monthlyHr ? parseFloat(monthlyHr) : null;
     editAttendance(promoter, location, 0, 0, 0, 0, 0, 0, hourlyRate, defaultHr);
 }
@@ -193,12 +193,12 @@ function openSalesModal(name, location, monthlyComm, defaultComm) {
 
     const hintEl = document.getElementById('sales_comm_hint');
     if (hintEl) {
-        hintEl.innerHTML = `<i class="bi bi-info-circle"></i> 該員工預設：${(defaultComm * 100).toFixed(0)}%`;
+        hintEl.innerHTML = `ℹ️ 該員工預設：${(defaultComm * 100).toFixed(0)}%`;
     }
 
     setDateRange(document.getElementById('new_sales_date'), currentMonth, true);
-    document.getElementById('sales_records_body').innerHTML = '<tr><td colspan="7" class="py-4 text-center"><div class="spinner-border text-success" role="status"></div><br>正在撈取該店銷售紀錄...</td></tr>';
-    new bootstrap.Modal(document.getElementById('salesModal')).show();
+    document.getElementById('sales_records_body').innerHTML = '<tr><td colspan="7" class="py-4 text-center"><div class="animate-spin w-5 h-5 border-2 border-green-500 border-t-transparent rounded-full mx-auto mb-2"></div>正在撈取該店銷售紀錄...</td></tr>';
+    openModal('salesModal');
     refreshSalesTable(name, location);
 }
 
@@ -228,10 +228,10 @@ function updateInitSalesDefaultComm() {
 
     if (defaultComm) {
         const pct = (parseFloat(defaultComm) * 100).toFixed(0);
-        hintEl.innerHTML = `<i class="bi bi-info-circle"></i> 該員工預設佣金為 <strong>${pct}%</strong>`;
+        hintEl.innerHTML = `ℹ️ 該員工預設佣金為 <strong>${pct}%</strong>`;
         inputEl.placeholder = `預設 ${defaultComm}`;
     } else {
-        hintEl.innerHTML = '<i class="bi bi-info-circle"></i> 請先選擇推廣員，小數表示 (例: 3% 輸入 0.03)';
+        hintEl.innerHTML = 'ℹ️ 請先選擇推廣員，小數表示 (例: 3% 輸入 0.03)';
         inputEl.placeholder = '若留空則使用預設';
     }
 }
@@ -388,7 +388,7 @@ function startNewSalesGroup() {
     const selectedOption = select.options[select.selectedIndex];
     const defaultComm = selectedOption ? parseFloat(selectedOption.getAttribute('data-comm')) : 0.03;
     const commValue = monthlyComm ? parseFloat(monthlyComm) : null;
-    bootstrap.Modal.getInstance(document.getElementById('newSalesGroupModal')).hide();
+    closeModal(document.getElementById('newSalesGroupModal'));
     openSalesModal(promoter, location, commValue, defaultComm);
 }
 
