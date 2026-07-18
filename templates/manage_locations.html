@@ -1,106 +1,98 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="page-title">📍 標準店鋪管理 <span class="badge rounded-pill bg-dark ms-2">{{ current_brand_name }}</span></h2>
-        <a href="/?brand={{ current_brand }}" class="btn btn-secondary">返回主控台</a>
-    </div>
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h2 class="text-2xl font-bold text-gray-800">📍 標準店鋪管理
+      <span class="ml-2 inline-block bg-gray-800 text-white text-sm px-3 py-0.5 rounded-full">{{ current_brand_name }}</span>
+    </h2>
+    <a href="/?brand={{ current_brand }}" class="px-4 py-2 text-sm font-semibold text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">← 返回主控台</a>
+  </div>
 
-    <div class="card app-card">
-        <div class="table-wrap">
-            <table class="table align-middle mb-0 data-table">
-                <thead class="table-light">
-                    <tr>
-                        <th>區域</th>
-                        <th>標準名稱</th>
-                        <th class="text-end">操作</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="table-primary" id="new-location-row">
-                        <form id="add-location-form" action="/add_location" method="POST" style="display: contents;">
-                            <input type="hidden" name="brand" value="{{ current_brand }}">
-                            <td>
-                                <select name="region" class="form-select form-select-sm">
-                                    <option value="九龍">九龍</option>
-                                    <option value="新界">新界</option>
-                                    <option value="香港島">香港島</option>
-                                    <option value="Roadshow">Roadshow</option>
-                                </select>
-                            </td>
-                            <td>
-                                <input type="text" name="name" class="form-control form-control-sm" placeholder="例如: CWB Sogo" required>
-                            </td>
-                            <td class="text-end">
-                                <button type="submit" class="btn btn-sm btn-primary fw-bold">➕ 新增</button>
-                            </td>
-                        </form>
-                    </tr>
-                    {% for loc in locations %}
-                            <tr id="loc-{{ loc.id }}" data-row-id="{{ loc.id }}" data-type="location">
-                                <td><span class="badge bg-secondary">{{ loc.region }}</span></td>
-                                <td class="fw-bold">{{ loc.name }}</td>
-                                <td class="text-end">
-                                    <button class="btn btn-sm btn-outline-primary me-1" 
-                                            onclick="openEditModal('{{ loc.id }}', '{{ loc.name }}', '{{ loc.region }}')">
-                                        修改
-                                    </button>
-                                    <a href="/delete_location/{{ loc.id }}?brand={{ current_brand }}" class="btn btn-sm btn-outline-danger" 
-                                       onclick="return confirm('確定刪除？')">刪除</a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-    </div>
-
-<div class="modal fade" id="editLocationModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">✏️ 修改標準店鋪</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="/update_location" method="POST">
-                <div class="modal-body">
-                    <input type="hidden" name="brand" value="{{ current_brand }}">
-                    <input type="hidden" name="id" id="edit_id">
-                    
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">店鋪名稱</label>
-                        <input type="text" name="name" id="edit_name" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">所屬區域</label>
-                        <select name="region" id="edit_region" class="form-select">
-                            <option value="九龍">九龍</option>
-                            <option value="新界">新界</option>
-                            <option value="香港島">香港島</option>
-                            <option value="Roadshow">Roadshow</option>
-                            <option value="Excel匯入">Excel匯入</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                    <button type="submit" class="btn btn-primary px-4">儲存修改</button>
-                </div>
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm border-collapse">
+        <thead>
+          <tr class="bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+            <th class="px-4 py-3 border-b border-gray-200">區域</th>
+            <th class="px-4 py-3 border-b border-gray-200 text-left">標準名稱</th>
+            <th class="px-4 py-3 border-b border-gray-200 text-right pr-6">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="bg-blue-50 border-b border-blue-100">
+            <form id="add-location-form" action="/add_location" method="POST" style="display: contents;">
+              <input type="hidden" name="brand" value="{{ current_brand }}">
+              <td class="px-2 py-2"><select name="region" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"><option value="九龍">九龍</option><option value="新界">新界</option><option value="香港島">香港島</option><option value="Roadshow">Roadshow</option></select></td>
+              <td class="px-2 py-2"><input type="text" name="name" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="例如: CWB Sogo" required></td>
+              <td class="text-right pr-3 py-2"><button type="submit" class="px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors">➕ 新增</button></td>
             </form>
-        </div>
+          </tr>
+          {% for loc in locations %}
+          <tr id="loc-{{ loc.id }}" class="text-center border-b border-gray-100 hover:bg-gray-50 odd:bg-white even:bg-gray-50/50 transition-colors">
+            <td class="px-4 py-3"><span class="inline-block bg-gray-500 text-white text-xs px-2 py-0.5 rounded-full">{{ loc.region }}</span></td>
+            <td class="px-4 py-3 font-semibold text-left">{{ loc.name }}</td>
+            <td class="text-right pr-5 py-3 whitespace-nowrap">
+              <button class="px-3 py-1.5 text-xs font-semibold text-blue-600 border border-blue-300 rounded-xl hover:bg-blue-50 transition-colors me-1" onclick="openEditModal('{{ loc.id }}', '{{ loc.name }}', '{{ loc.region }}')">修改</button>
+              <a href="/delete_location/{{ loc.id }}?brand={{ current_brand }}" class="px-3 py-1.5 text-xs font-semibold text-red-600 border border-red-300 rounded-xl hover:bg-red-50 transition-colors" onclick="return confirm('確定刪除？')">刪除</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
+  </div>
 </div>
-    <script>
-    function openEditModal(id, name, region) {
-        // 1. 將資料填入 Modal 的輸入框中
-        document.getElementById('edit_id').value = id;
-        document.getElementById('edit_name').value = name;
-        document.getElementById('edit_region').value = region;
-        
-        // 2. 顯示彈窗
-        var editModal = new bootstrap.Modal(document.getElementById('editLocationModal'));
-        editModal.show();
-    }
-    </script>
+
+<div class="fixed inset-0 z-50 items-center justify-center hidden modal" id="editLocationModal">
+  <div class="absolute inset-0 bg-black/40" onclick="closeModal(this)"></div>
+  <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden z-10">
+    <div class="px-5 py-4 bg-blue-600 text-white font-bold text-lg flex items-center justify-between">
+      ✏️ 修改標準店鋪
+      <button class="text-white/70 hover:text-white text-xl leading-none" onclick="closeModal(this)">&times;</button>
+    </div>
+    <form action="/update_location" method="POST">
+      <div class="p-5 space-y-4">
+        <input type="hidden" name="brand" value="{{ current_brand }}">
+        <input type="hidden" name="id" id="edit_id">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">店鋪名稱</label>
+          <input type="text" name="name" id="edit_name" class="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">區域</label>
+          <select name="region" id="edit_region" class="w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="九龍">九龍</option>
+            <option value="新界">新界</option>
+            <option value="香港島">香港島</option>
+            <option value="Roadshow">Roadshow</option>
+          </select>
+        </div>
+      </div>
+      <div class="px-5 py-4 bg-gray-50 flex justify-end gap-2 rounded-b-2xl">
+        <button type="button" class="px-4 py-2 text-sm font-semibold text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors" onclick="closeModal(this)">取消</button>
+        <button type="submit" class="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors">儲存</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function openEditModal(id, name, region) {
+  document.getElementById('edit_id').value = id;
+  document.getElementById('edit_name').value = name;
+  document.getElementById('edit_region').value = region;
+  document.getElementById('editLocationModal').classList.remove('hidden');
+  document.getElementById('editLocationModal').classList.add('flex');
+}
+function closeModal(el) {
+  const modal = el.closest('.modal');
+  if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+}
+// Close on Escape
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal').forEach(m => { m.classList.add('hidden'); m.classList.remove('flex'); });
+  }
+});
+</script>
 {% endblock %}

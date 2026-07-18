@@ -1,112 +1,94 @@
 {% extends 'base.html' %}
-{% block content_container_class %}container-fluid px-3{% endblock %}
 {% block content %}
-<div class="mt-3">
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <h2 class="page-title">🔍 深度校對報告 (Excel vs 系統)</h2>
-        <div class="d-flex gap-2 flex-wrap">
-            <a href="/download_validation?month={{ current_month }}&brand={{ current_brand }}" class="btn btn-success fw-bold">📥 下載此比對結果 (Excel)</a>
-            <a href="/?month={{ current_month }}&brand={{ current_brand }}" class="btn btn-secondary">返回主控台</a>
-        </div>
+<div class="space-y-6">
+  <div class="flex items-center justify-between flex-wrap gap-2">
+    <h2 class="text-2xl font-bold text-gray-800">🔍 深度校對報告 (Excel vs 系統)</h2>
+    <div class="flex gap-2 flex-wrap">
+      <a href="/download_validation?month={{ current_month }}&brand={{ current_brand }}" class="px-4 py-2 text-sm font-bold text-white bg-green-600 rounded-xl hover:bg-green-700 transition-colors">📥 下載比對結果 (Excel)</a>
+      <a href="/?month={{ current_month }}&brand={{ current_brand }}" class="px-4 py-2 text-sm font-semibold text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">← 返回主控台</a>
     </div>
+  </div>
 
-    {# Month filter #}
-    <div class="card app-card mb-4">
-        <div class="card-body py-3">
-            <form id="validationFilterForm" class="row g-3 align-items-end" method="GET" action="/validate">
-                <input type="hidden" name="brand" value="{{ current_brand }}">
-                <div class="col-md-3">
-                    <label class="form-label fw-bold">校對月份</label>
-                    <input type="month" name="month" class="form-control" value="{{ current_month }}"
-                           onchange="document.getElementById('validationFilterForm').submit()">
-                </div>
-            </form>
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="p-4">
+      <form id="validationFilterForm" class="flex items-end gap-4" method="GET" action="/validate">
+        <input type="hidden" name="brand" value="{{ current_brand }}">
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">校對月份</label>
+          <input type="month" name="month" class="px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" value="{{ current_month }}" onchange="document.getElementById('validationFilterForm').submit()">
         </div>
+      </form>
     </div>
+  </div>
 
-    {# Summary cards #}
-    <div class="row g-3 mb-3">
-        <div class="col-6 col-md-3">
-            <div class="card app-card h-100">
-                <div class="card-body text-center py-3">
-                    <div class="text-muted small">總筆數</div>
-                    <div class="h4 mb-0">{{ summary.total }}</div>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-md-3">
-            <div class="card app-card h-100 border-success">
-                <div class="card-body text-center py-3">
-                    <div class="text-muted small">匹配</div>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 text-center">
+      <div class="text-xs text-gray-500">總筆數</div>
+      <div class="text-xl font-bold text-gray-800">{{ summary.total }}</div>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-green-200 p-4 text-center">
+      <div class="text-xs text-gray-500">匹配</div>
+      <div class="text-xl font-bold text-green-700">{{ summary.matched }}</div>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-red-200 p-4 text-center">
+      <div class="text-xs text-gray-500">不匹配</div>
+      <div class="text-xl font-bold text-red-700">{{ summary.mismatched }}</div>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-amber-200 p-4 text-center">
+      <div class="text-xs text-gray-500">缺數據</div>
+      <div class="text-xl font-bold text-amber-700">{{ summary.missing }}</div>
+    </div>
+  </div>
                     <div class="h4 mb-0 text-success">{{ summary.matched }}</div>
                 </div>
             </div>
         </div>
-        <div class="col-6 col-md-3">
-            <div class="card app-card h-100 border-danger">
-                <div class="card-body text-center py-3">
-                    <div class="text-muted small">不匹配</div>
-                    <div class="h4 mb-0 text-danger">{{ summary.mismatched }}</div>
-                </div>
-            </div>
+        <div class="bg-white rounded-2xl shadow-sm border border-red-200 p-3 text-center">
+          <div class="text-xs text-gray-500">不匹配</div>
+          <div class="text-xl font-bold text-red-600">{{ summary.mismatched }}</div>
         </div>
-        <div class="col-6 col-md-3">
-            <div class="card app-card h-100 border-warning">
-                <div class="card-body text-center py-3">
-                    <div class="text-muted small">系統找不到</div>
-                    <div class="h4 mb-0 text-warning">{{ summary.missing }}</div>
-                </div>
-            </div>
+        <div class="bg-white rounded-2xl shadow-sm border border-amber-200 p-3 text-center">
+          <div class="text-xs text-gray-500">系統找不到</div>
+          <div class="text-xl font-bold text-amber-600">{{ summary.missing }}</div>
         </div>
     </div>
 
     {# View controls #}
-    <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
-        <div class="form-check form-switch mb-0">
-            <input class="form-check-input" type="checkbox" id="showMismatchOnly">
-            <label class="form-check-label fw-semibold" for="showMismatchOnly">只顯示有差異的行</label>
-        </div>
-        <div class="form-check form-switch mb-0">
-            <input class="form-check-input" type="checkbox" id="showDetailCols">
-            <label class="form-check-label fw-semibold" for="showDetailCols">顯示系統明細欄位</label>
-        </div>
-    </div>
+  <div class="flex items-center gap-4 mb-3 flex-wrap">
+    <label class="flex items-center gap-2 text-sm font-semibold text-gray-700 cursor-pointer"><input type="checkbox" id="showMismatchOnly" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"> 只顯示有差異的行</label>
+    <label class="flex items-center gap-2 text-sm font-semibold text-gray-700 cursor-pointer"><input type="checkbox" id="showDetailCols" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"> 顯示系統明細欄位</label>
+  </div>
 
-    {# Main table #}
-    <div class="card app-card">
-        <div class="card-body p-0">
-            <div class="table-wrap">
-                <table id="valTable" class="table table-sm table-hover table-bordered mb-0 align-middle text-center" style="font-size: 0.95rem;">
-                    <thead>
-                        <tr>
-                            <th rowspan="2" class="align-middle">員工</th>
-                            <th rowspan="2" class="align-middle">地點</th>
-                            {# Financial columns #}
-                            <th colspan="2" class="table-light">底薪</th>
-                            <th colspan="2" class="table-light">佣金</th>
-                            <th colspan="2" class="table-light">津貼</th>
-                            <th colspan="2" class="table-light">MPF</th>
-                            <th colspan="2" class="table-primary">實發</th>
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table id="valTable" class="w-full text-sm border-collapse">
+        <thead>
+          <tr class="text-center text-xs font-semibold uppercase tracking-wider">
+            <th rowspan="2" class="px-3 py-3 border-b border-gray-200 bg-gray-50">員工</th>
+            <th rowspan="2" class="px-3 py-3 border-b border-gray-200 bg-gray-50">地點</th>
+            <th colspan="2" class="px-3 py-3 border-b border-gray-200 bg-gray-100">底薪</th>
+            <th colspan="2" class="px-3 py-3 border-b border-gray-200 bg-gray-100">佣金</th>
+            <th colspan="2" class="px-3 py-3 border-b border-gray-200 bg-gray-100">津貼</th>
+            <th colspan="2" class="px-3 py-3 border-b border-gray-200 bg-gray-100">MPF</th>
+            <th colspan="2" class="px-3 py-3 border-b border-gray-200 bg-blue-100">實發</th>
                             {# Result columns #}
                             <th rowspan="2" class="align-middle">差異欄位</th>
                             <th rowspan="2" class="align-middle">根因提示</th>
                             <th rowspan="2" class="align-middle">差異 ($)</th>
                             <th rowspan="2" class="align-middle">狀態</th>
                             {# System detail columns (toggleable) #}
-                            <th colspan="3" class="detail-col table-info">工時明細 (Excel/系統)</th>
-                            <th colspan="3" class="detail-col table-info">微調明細</th>
-                            <th colspan="2" class="detail-col table-info">銷售明細</th>
-                            <th colspan="2" class="detail-col table-info">時薪設定</th>
-                            <th colspan="2" class="detail-col table-info">佣金率設定</th>
+                            <th colspan="3" class="detail-col bg-cyan-50">工時明細 (Excel/系統)</th>
+                            <th colspan="3" class="detail-col bg-cyan-50">微調明細</th>
+                            <th colspan="2" class="detail-col bg-cyan-50">銷售明細</th>
+                            <th colspan="2" class="detail-col bg-cyan-50">時薪設定</th>
+                            <th colspan="2" class="detail-col bg-cyan-50">佣金率設定</th>
                         </tr>
-                        <tr class="table-secondary">
-                            {# Financial sub-headers #}
+                        <tr class="bg-gray-100 text-center">
                             <th>Ex</th><th>系</th>
                             <th>Ex</th><th>系</th>
                             <th>Ex</th><th>系</th>
                             <th>Ex</th><th>系</th>
                             <th>Ex</th><th>系</th>
-                            {# Detail sub-headers #}
                             <th class="detail-col">Ex日/系日</th>
                             <th class="detail-col">Ex工時/系工時</th>
                             <th class="detail-col">Ex OT/系 OT</th>
@@ -123,93 +105,72 @@
                     </thead>
                     <tbody>
                         {% for item in results %}
-                        <tr class="val-row {{ 'row-mismatch table-danger' if '❌' in item.status or '❓' in item.status else 'row-match' }}">
-                            <td class="fw-bold">{{ item.name }}</td>
-                            <td><small>{{ item.location }}</small></td>
-
-                            {# Financial: basic #}
-                            <td>{{ item.ex_basic }}</td>
-                            <td class="{{ 'text-danger fw-bold' if item.ex_basic != item.sys_basic else 'text-muted' }}">{{ item.sys_basic }}</td>
-                            {# Financial: comm #}
-                            <td>{{ item.ex_comm }}</td>
-                            <td class="{{ 'text-danger fw-bold' if item.ex_comm != item.sys_comm else 'text-muted' }}">{{ item.sys_comm }}</td>
-                            {# Financial: allowance #}
-                            <td>{{ item.ex_allow }}</td>
-                            <td class="{{ 'text-danger fw-bold' if item.ex_allow != item.sys_allow else 'text-muted' }}">{{ item.sys_allow }}</td>
-                            {# Financial: MPF #}
-                            <td>{{ item.ex_mpf }}</td>
-                            <td class="{{ 'text-danger fw-bold' if item.ex_mpf != item.sys_mpf else 'text-muted' }}">{{ item.sys_mpf }}</td>
-                            {# Financial: net #}
-                            <td class="table-primary fw-bold">{{ item.ex_net }}</td>
-                            <td class="table-primary fw-bold {{ 'text-danger' if '❌' in item.status else '' }}">{{ item.sys_net }}</td>
-
-                            {# Mismatch badges #}
-                            <td class="text-start">
+                        <tr class="text-center border-b border-gray-100 hover:bg-gray-50 even:bg-gray-50/50 transition-colors {{ 'bg-red-50' if '❌' in item.status or '❓' in item.status else '' }}">
+                            <td class="px-3 py-2 font-bold text-sm">{{ item.name }}</td>
+                            <td class="px-3 py-2 text-xs">{{ item.location }}</td>
+                            <td class="px-2 py-2">{{ item.ex_basic }}</td>
+                            <td class="px-2 py-2 {{ 'text-red-600 font-bold' if item.ex_basic != item.sys_basic else 'text-gray-400' }}">{{ item.sys_basic }}</td>
+                            <td class="px-2 py-2">{{ item.ex_comm }}</td>
+                            <td class="px-2 py-2 {{ 'text-red-600 font-bold' if item.ex_comm != item.sys_comm else 'text-gray-400' }}">{{ item.sys_comm }}</td>
+                            <td class="px-2 py-2">{{ item.ex_allow }}</td>
+                            <td class="px-2 py-2 {{ 'text-red-600 font-bold' if item.ex_allow != item.sys_allow else 'text-gray-400' }}">{{ item.sys_allow }}</td>
+                            <td class="px-2 py-2">{{ item.ex_mpf }}</td>
+                            <td class="px-2 py-2 {{ 'text-red-600 font-bold' if item.ex_mpf != item.sys_mpf else 'text-gray-400' }}">{{ item.sys_mpf }}</td>
+                            <td class="px-2 py-2 font-bold bg-blue-50">{{ item.ex_net }}</td>
+                            <td class="px-2 py-2 font-bold bg-blue-50 {{ 'text-red-600' if '❌' in item.status else '' }}">{{ item.sys_net }}</td>
+                            <td class="text-left px-2 py-2">
                                 {% if item.mismatch_fields %}
                                     {% for field in item.mismatch_fields %}
-                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle me-1">{{ field }}</span>
+                                        <span class="inline-block bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded-full me-1">{{ field }}</span>
                                     {% endfor %}
                                 {% elif '❓' in item.status %}
-                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle">系統無資料</span>
+                                    <span class="inline-block bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full">系統無資料</span>
                                 {% else %}
-                                    <span class="badge bg-success-subtle text-success border border-success-subtle">一致</span>
+                                    <span class="inline-block bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">一致</span>
                                 {% endif %}
                             </td>
-
-                            {# Root cause hints #}
-                            <td class="text-start">
+                            <td class="text-left px-2 py-2">
                                 {% if item.root_cause %}
                                     {% for hint in item.root_cause %}
-                                        <span class="badge bg-warning-subtle text-dark border border-warning-subtle me-1">{{ hint }}</span>
+                                        <span class="inline-block bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded-full me-1">{{ hint }}</span>
                                     {% endfor %}
                                 {% else %}
-                                    <span class="text-muted">—</span>
+                                    <span class="text-gray-400">—</span>
                                 {% endif %}
                             </td>
-
-                            {# Diff #}
-                            <td class="fw-bold {{ 'text-danger' if item.diff|float < -1 else ('text-success' if item.diff|float > 1 else 'text-muted') }}">
-                                {{ item.diff }}
+                            <td class="px-2 py-2 font-bold {{ 'text-red-600' if item.diff|float < -1 else ('text-green-600' if item.diff|float > 1 else 'text-gray-400') }}">{{ item.diff }}</td>
+                            <td class="px-2 py-2">{{ item.status }}</td>
+                            <td class="detail-col px-2 py-2 {{ 'text-red-600 font-bold' if item.ex_days != item.sys_days else 'text-gray-400' }}">{{ item.ex_days }} / {{ item.sys_days }}</td>
+                            <td class="detail-col px-2 py-2 {{ 'text-red-600 font-bold' if item.ex_hours != item.sys_hours else 'text-gray-400' }}">{{ item.ex_hours }} / {{ item.sys_hours }}</td>
+                            <td class="detail-col px-2 py-2 {{ 'text-red-600 font-bold' if item.ex_ot != item.sys_ot else 'text-gray-400' }}">{{ item.ex_ot }} / {{ item.sys_ot }}</td>
+                            <td class="detail-col px-2 py-2 text-gray-400 text-xs">{{ item.sys_expenses }}</td>
+                            <td class="detail-col px-2 py-2 text-gray-400 text-xs">{{ item.sys_adjustment }}</td>
+                            <td class="detail-col px-2 py-2 text-gray-400 text-xs">{{ item.sys_bonus }}</td>
+                            <td class="detail-col px-2 py-2 text-gray-400 text-xs">{{ item.sys_sales_entries }}</td>
+                            <td class="detail-col px-2 py-2 text-gray-400 text-xs">${{ item.sys_sales_amount }}</td>
+                            <td class="detail-col px-2 py-2">
+                                <span class="{{ 'text-blue-700 font-bold' if item.hr_overridden else 'text-gray-400' }}">${{ item.effective_hr }}{% if item.hr_overridden %} *{% endif %}</span>
                             </td>
-                            {# Status #}
-                            <td>{{ item.status }}</td>
-
-                            {# Work hours: Excel vs System #}
-                            <td class="detail-col {{ 'text-danger fw-bold' if item.ex_days != item.sys_days else 'text-muted' }}">{{ item.ex_days }} / {{ item.sys_days }}</td>
-                            <td class="detail-col {{ 'text-danger fw-bold' if item.ex_hours != item.sys_hours else 'text-muted' }}">{{ item.ex_hours }} / {{ item.sys_hours }}</td>
-                            <td class="detail-col {{ 'text-danger fw-bold' if item.ex_ot != item.sys_ot else 'text-muted' }}">{{ item.ex_ot }} / {{ item.sys_ot }}</td>
-                            <td class="detail-col text-muted">{{ item.sys_expenses }}</td>
-                            <td class="detail-col text-muted">{{ item.sys_adjustment }}</td>
-                            <td class="detail-col text-muted">{{ item.sys_bonus }}</td>
-                            <td class="detail-col text-muted">{{ item.sys_sales_entries }}</td>
-                            <td class="detail-col text-muted">${{ item.sys_sales_amount }}</td>
-                            <td class="detail-col">
-                                <span class="{% if item.hr_overridden %}text-primary fw-bold{% else %}text-muted{% endif %}">
-                                    ${{ item.effective_hr }}{% if item.hr_overridden %} *{% endif %}
-                                </span>
-                            </td>
-                            <td class="detail-col">
+                            <td class="detail-col px-2 py-2">
                                 {% if item.hr_overridden %}
-                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle">覆寫</span>
+                                    <span class="inline-block bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">覆寫</span>
                                 {% else %}
-                                    <span class="text-muted small">預設</span>
+                                    <span class="text-gray-400 text-xs">預設</span>
                                 {% endif %}
                             </td>
-                            <td class="detail-col">
-                                <span class="{% if item.comm_overridden %}text-primary fw-bold{% else %}text-muted{% endif %}">
-                                    {{ item.effective_comm_pct }}%{% if item.comm_overridden %} *{% endif %}
-                                </span>
+                            <td class="detail-col px-2 py-2">
+                                <span class="{{ 'text-blue-700 font-bold' if item.comm_overridden else 'text-gray-400' }}">{{ item.effective_comm_pct }}%{% if item.comm_overridden %} *{% endif %}</span>
                             </td>
-                            <td class="detail-col">
+                            <td class="detail-col px-2 py-2">
                                 {% if item.comm_overridden %}
-                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle">覆寫</span>
+                                    <span class="inline-block bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">覆寫</span>
                                 {% else %}
-                                    <span class="text-muted small">預設</span>
+                                    <span class="text-gray-400 text-xs">預設</span>
                                 {% endif %}
                             </td>
                         </tr>
                         {% else %}
-                        <tr><td colspan="29" class="py-4 text-muted text-center fst-italic">本月無校對資料（請先匯入 Excel）</td></tr>
+                        <tr><td colspan="29" class="text-center text-gray-400 py-6 italic">本月無校對資料（請先匯入 Excel）</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>

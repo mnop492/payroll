@@ -1,138 +1,127 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container-fluid mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="page-title fw-bold text-dark">📊 {{ calc_month }} 薪資計算結果</h2>
-            <p class="text-muted">品牌：<strong>{{ current_brand_name }}</strong>。以下為系統根據資料庫數據自動結算的結果，請進行校對。</p>
-        </div>
-        <div class="btn-group">
-            <a href="{{ url_for('main.download_payroll', month=calc_month, brand=current_brand) }}" class="btn btn-outline-success px-4">
-                📥 Excel 總表下載
-            </a>
-            <a href="{{ url_for('main.print_all_payslips', calc_month=calc_month, brand=current_brand) }}" target="_blank" class="btn btn-primary px-4 shadow-sm">
-                🖨️ 一鍵列印所有糧單
-            </a>
-        </div>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h2 class="text-2xl font-bold text-gray-800">📊 {{ calc_month }} 薪資計算結果</h2>
+    <p class="text-sm text-gray-500 mt-1">品牌：<strong class="text-gray-700">{{ current_brand_name }}</strong>。以下為系統根據資料庫數據自動結算的結果，請進行校對。</p>
+  </div>
+  <div class="flex gap-2">
+    <a href="{{ url_for('main.download_payroll', month=calc_month, brand=current_brand) }}" class="px-4 py-2 text-sm font-semibold text-green-700 border border-green-300 rounded-xl hover:bg-green-50 transition-colors">
+      📥 Excel 總表下載
+    </a>
+    <a href="{{ url_for('main.print_all_payslips', calc_month=calc_month, brand=current_brand) }}" target="_blank" class="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 shadow-sm transition-colors">
+      🖨️ 一鍵列印所有糧單
+    </a>
+  </div>
+</div>
+
+{% set hourly_records = records | selectattr('salary_type', 'ne', 'monthly') | list %}
+{% set monthly_records = records | selectattr('salary_type', 'equalto', 'monthly') | list %}
+
+<div class="flex gap-4 mb-6">
+  <div class="bg-gray-50 rounded-2xl px-5 py-3 border border-gray-200 text-center flex-1 max-w-[140px]">
+    <div class="text-xs text-gray-500">時薪制</div>
+    <div class="text-xl font-bold text-cyan-600">{{ hourly_records|length }} 人</div>
+  </div>
+  <div class="bg-gray-50 rounded-2xl px-5 py-3 border border-gray-200 text-center flex-1 max-w-[140px]">
+    <div class="text-xs text-gray-500">月薪制</div>
+    <div class="text-xl font-bold text-amber-600">{{ monthly_records|length }} 人</div>
+  </div>
+  <div class="bg-gray-50 rounded-2xl px-5 py-3 border border-gray-200 text-center flex-1 max-w-[140px]">
+    <div class="text-xs text-gray-500">總出糧人數</div>
+    <div class="text-xl font-bold text-blue-600">{{ records|length }} 人</div>
+  </div>
+  <div class="flex-1 text-right self-center">
+    <a href="{{ url_for('main.index', month=calc_month, brand=current_brand) }}" class="text-sm text-gray-400 hover:text-gray-600 transition-colors">← 返回主控台</a>
+  </div>
+</div>
     </div>
 
-    {% set hourly_records = records | selectattr('salary_type', 'ne', 'monthly') | list %}
-    {% set monthly_records = records | selectattr('salary_type', 'equalto', 'monthly') | list %}
-
-    <div class="row mb-4">
-        <div class="col-md-2">
-            <div class="card app-card bg-light border-0">
-                <div class="card-body text-center py-2">
-                    <div class="text-muted small">時薪制</div>
-                    <div class="h5 fw-bold mb-0 text-info">{{ hourly_records|length }} 人</div>
-                </div>
-            </div>
+    {% macro payroll_table(recs, title, is_hourly, show_hours) %}
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6">
+        <div class="px-5 py-3.5 font-bold text-base flex items-center gap-2 {{ 'bg-cyan-50 text-cyan-800 border-b border-cyan-200' if is_hourly else 'bg-amber-50 text-amber-800 border-b border-amber-200' }}">
+            {{ title }}
+            <span class="ml-auto text-xs {{ 'bg-cyan-200 text-cyan-800' if is_hourly else 'bg-amber-200 text-amber-800' }} px-2.5 py-0.5 rounded-full font-bold">{{ recs|length }}</span>
         </div>
-        <div class="col-md-2">
-            <div class="card app-card bg-light border-0">
-                <div class="card-body text-center py-2">
-                    <div class="text-muted small">月薪制</div>
-                    <div class="h5 fw-bold mb-0 text-warning">{{ monthly_records|length }} 人</div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="card app-card bg-light border-0">
-                <div class="card-body text-center py-2">
-                    <div class="text-muted small">總出糧人數</div>
-                    <div class="h5 fw-bold mb-0 text-primary">{{ records|length }} 人</div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 text-end align-self-center">
-            <a href="{{ url_for('main.index', month=calc_month, brand=current_brand) }}" class="btn btn-link text-decoration-none text-secondary">← 返回主控台</a>
-        </div>
-    </div>
-
-    {% macro payroll_table(recs, title, badge_class, show_hours) %}
-    <div class="card app-card border-0 mb-4">
-        <div class="card-header fw-bold fs-5 {{ 'bg-info text-dark' if badge_class == 'info' else 'bg-warning text-dark' }}">
-            {{ title }} <span class="badge bg-dark ms-1">{{ recs|length }}</span>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-wrap">
-                <table class="table table-hover table-striped table-bordered mb-0 align-middle data-table">
-                    <thead>
-                        <tr class="text-center">
-                            <th>#</th>
-                            <th>員工</th>
-                            <th>全名</th>
-                            <th>工作地點</th>
-                            {% if show_hours %}<th>工時 (Reg+OT)</th>{% endif %}
-                            <th>底薪</th>
-                            <th>總佣金</th>
-                            <th>津貼</th>
-                            <th class="small fw-normal">報銷</th>
-                            <th class="small fw-normal">微調</th>
-                            <th class="small fw-normal">勤工獎</th>
-                            <th style="background:#0d6efd; color:#fff;">總收入</th>
-                            <th style="background:#fd7e14; color:#000;">MPF 扣除</th>
-                            <th style="background:#198754; color:#fff;">實發薪資 (Net)</th>
-                            <th>操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for row in recs %}
-                        <tr id="payroll-{{ loop.index }}" class="text-center">
-                            <td class="text-muted">{{ loop.index }}</td>
-                            <td class="fw-bold text-start">
-                                {{ row['員工'] }}
-                                {% if '豁免' in row['MPF狀態'] %}
-                                    <span class="badge bg-warning text-dark ms-1" title="{{ row['MPF狀態'] }}">🛡️ 豁免</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ row['全名'] }}</td>
-                            <td>
-                                {% set locs = row['地點'].split("、") %}
-                                <span class="badge bg-secondary" data-bs-toggle="tooltip" title="跨多個地點">{{ locs | length }} 個地點</span></br>
-                                <span class="badge rounded-pill bg-info text-dark">{{ row['地點'] if row['地點'] else '未填寫' }}</span>
-                            </td>
-                            {% if show_hours %}<td>{{ row['工時'] }} + {{ row['OT工時'] }}</td>{% endif %}
-                            <td>${{ "{:,.2f}".format(row['底薪']) }}</td>
-                            <td>${{ "{:,.2f}".format(row['總佣金']) }}</td>
-                            <td>${{ "{:,.2f}".format(row['津貼']) }}</td>
-                            <td class="text-muted small">${{ "{:,.0f}".format(row['報銷']) }}</td>
-                            <td class="text-muted small">${{ "{:,.0f}".format(row['微調']) }}</td>
-                            <td class="text-muted small">${{ "{:,.0f}".format(row['出勤獎']) }}</td>
-                            <td class="fw-bold text-primary">${{ "{:,.2f}".format(row['總收入']) }}</td>
-                            <td class="text-danger">{% if row['MPF扣除'] > 0 %}-${{ "{:,.2f}".format(row['MPF扣除']) }}{% else %}$0.00{% endif %}</td>
-                            <td class="fw-bold text-success" style="font-size: 1.15rem;">${{ "{:,.2f}".format(row['實發薪資']) }}</td>
-                            <td>
-                                <a href="{{ url_for('main.view_payslip', idx=loop.index0, month=calc_month, brand=current_brand) }}" target="_blank" class="btn btn-sm btn-outline-primary">📄 查看糧單</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                        {% if not recs %}
-                        <tr>
-                            <td colspan="20" class="text-center text-muted py-4 fst-italic">
-                                📭 尚無{{ '時薪制' if badge_class == 'info' else '月薪制' }}員工資料
-                            </td>
-                        </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
-            </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm border-collapse">
+                <thead>
+                    <tr class="bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        <th class="px-3 py-3 border-b border-gray-200">#</th>
+                        <th class="px-3 py-3 border-b border-gray-200">員工</th>
+                        <th class="px-3 py-3 border-b border-gray-200">全名</th>
+                        <th class="px-3 py-3 border-b border-gray-200">工作地點</th>
+                        {% if show_hours %}<th class="px-3 py-3 border-b border-gray-200">工時</th>{% endif %}
+                        <th class="px-3 py-3 border-b border-gray-200">底薪</th>
+                        <th class="px-3 py-3 border-b border-gray-200">總佣金</th>
+                        <th class="px-3 py-3 border-b border-gray-200">津貼</th>
+                        <th class="px-3 py-3 border-b border-gray-200 text-gray-400 font-normal">報銷</th>
+                        <th class="px-3 py-3 border-b border-gray-200 text-gray-400 font-normal">微調</th>
+                        <th class="px-3 py-3 border-b border-gray-200 text-gray-400 font-normal">勤工獎</th>
+                        <th class="px-3 py-3 border-b border-gray-200 bg-blue-600 text-white">總收入</th>
+                        <th class="px-3 py-3 border-b border-gray-200 bg-orange-500 text-white">MPF扣除</th>
+                        <th class="px-3 py-3 border-b border-gray-200 bg-green-600 text-white">實發薪資</th>
+                        <th class="px-3 py-3 border-b border-gray-200">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in recs %}
+                    <tr class="text-center border-b border-gray-100 hover:bg-gray-50 even:bg-gray-50/50 transition-colors">
+                        <td class="px-3 py-2.5 text-gray-400 text-xs">{{ loop.index }}</td>
+                        <td class="px-3 py-2.5 font-bold text-left">
+                            {{ row['員工'] }}
+                            {% if '豁免' in row['MPF狀態'] %}
+                                <span class="inline-block bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded-full ms-1" title="{{ row['MPF狀態'] }}">🛡️ 豁免</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-3 py-2.5">{{ row['全名'] }}</td>
+                        <td class="px-3 py-2.5">
+                            {% set locs = row['地點'].split("、") %}
+                            {% if locs | length > 1 %}
+                                <span class="inline-block bg-gray-500 text-white text-xs px-2 py-0.5 rounded-full me-1">{{ locs | length }} 個地點</span>
+                            {% endif %}
+                            <span class="inline-block bg-cyan-100 text-cyan-800 text-xs px-2 py-0.5 rounded-full">{{ row['地點'] if row['地點'] else '未填寫' }}</span>
+                        </td>
+                        {% if show_hours %}<td class="px-3 py-2.5">{{ row['工時'] }} + {{ row['OT工時'] }}</td>{% endif %}
+                        <td class="px-3 py-2.5">${{ "{:,.2f}".format(row['底薪']) }}</td>
+                        <td class="px-3 py-2.5">${{ "{:,.2f}".format(row['總佣金']) }}</td>
+                        <td class="px-3 py-2.5">${{ "{:,.2f}".format(row['津貼']) }}</td>
+                        <td class="px-3 py-2.5 text-gray-400 text-xs">${{ "{:,.0f}".format(row['報銷']) }}</td>
+                        <td class="px-3 py-2.5 text-gray-400 text-xs">${{ "{:,.0f}".format(row['微調']) }}</td>
+                        <td class="px-3 py-2.5 text-gray-400 text-xs">${{ "{:,.0f}".format(row['出勤獎']) }}</td>
+                        <td class="px-3 py-2.5 font-bold text-blue-700">${{ "{:,.2f}".format(row['總收入']) }}</td>
+                        <td class="px-3 py-2.5 text-red-600">{% if row['MPF扣除'] > 0 %}-${{ "{:,.2f}".format(row['MPF扣除']) }}{% else %}$0.00{% endif %}</td>
+                        <td class="px-3 py-2.5 font-bold text-green-700 text-base">${{ "{:,.2f}".format(row['實發薪資']) }}</td>
+                        <td class="px-3 py-2.5">
+                            <a href="{{ url_for('main.view_payslip', idx=loop.index0, month=calc_month, brand=current_brand) }}" target="_blank" class="inline-block px-3 py-1.5 text-xs font-semibold text-blue-600 border border-blue-300 rounded-xl hover:bg-blue-50 transition-colors">📄 查看糧單</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% if not recs %}
+                    <tr>
+                        <td colspan="20" class="text-center text-gray-400 py-10 italic">
+                            📭 尚無{{ '時薪制' if is_hourly else '月薪制' }}員工資料
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
         </div>
     </div>
     {% endmacro %}
 
-    {{ payroll_table(hourly_records, '⏱️ 時薪制薪酬', 'info', true) }}
-    {{ payroll_table(monthly_records, '📅 月薪制薪酬', 'warning', false) }}
+    {{ payroll_table(hourly_records, '⏱️ 時薪制薪酬', true, true) }}
+    {{ payroll_table(monthly_records, '📅 月薪制薪酬', false, false) }}
 
-    <div class="mt-4 p-3 bg-light rounded border">
-        <small class="text-muted">
-            <strong>💡 系統提示：</strong><br>
+    <div class="mt-6 p-4 bg-gray-50 rounded-2xl border border-gray-200">
+        <div class="text-sm text-gray-500 space-y-1">
+            <strong class="text-gray-700">💡 系統提示：</strong><br>
             1. <strong>津貼計算：</strong> 系統已自動將「工作日數」乘上員工專屬的「日薪津貼額」。<br>
             2. <strong>MPF 標籤：</strong> 「🛡️ 暫免」代表新員工未達起扣月；「🚫 免供款」代表設定為非 MPF 員工；「📉 未達門檻」代表本月入息低於 $7,100 法定下限。<br>
             3. <strong>特殊佣金：</strong> 若該月份有設定特佣型號（如 ADD8906），系統已自動覆蓋預設比例。<br>
             4. 如需核對明細，請點擊上方「📥 Excel 總表下載」或至首頁點擊「🔍 歷史數據自動校對」。
-        </small>
+        </div>
     </div>
-</div>
 {% endblock %}

@@ -4,222 +4,184 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sharpsing計糧系統</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="{{ url_for('static', filename='app.css') }}" rel="stylesheet">
   {% block head_extra %}{% endblock %}
 </head>
-<body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow-sm">
-      <div class="container">
-        <a class="navbar-brand fw-bold" href="/">📋 糧單管理系統</a>
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-          {% if session.get('is_admin') %}
-          <li class="nav-item">
-            <a class="nav-link" href="/audit_logs">📝 稽核紀錄</a>
-          </li>
-          {% endif %}
-            <li class="nav-item">
-              <a class="nav-link" href="/validate{% if request.args.get('month') %}?month={{ request.args.get('month') }}{% endif %}">🔍 校對</a>
-            </li>
-          {% if session.get('user') %}
-          <li class="nav-item">
-            <a class="nav-link" href="#">👤 {{ session.get('user') }}</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/logout">登出</a>
-          </li>
-          {% else %}
-          <li class="nav-item">
-            <a class="nav-link" href="/login?next={{ request.path }}">登入</a>
-          </li>
-          {% endif %}
-            
-            <li class="nav-item dropdown dropdown-hover">
-                <a class="nav-link dropdown-toggle" href="#" id="settingsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    ⚙️ 系統設定
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-1" aria-labelledby="settingsDropdown">
-                    <li><a class="dropdown-item py-2" href="/manage_products{% if current_brand %}?brand={{ current_brand }}{% elif request.args.get('brand') %}?brand={{ request.args.get('brand') }}{% endif %}">📦 產品與佣金設定</a></li>
-                    <li><a class="dropdown-item py-2" href="/settings{% if current_brand %}?brand={{ current_brand }}{% elif request.args.get('brand') %}?brand={{ request.args.get('brand') }}{% endif %}">🛡️ 人事設定</a></li>
-                  {% if session.get('is_admin') %}
-                  <li><a class="dropdown-item py-2" href="/manage_users">👥 使用者管理</a></li>
-                    <li><a class="dropdown-item py-2" href="/manage_backups">💾 備份與還原</a></li>
-                    <li><a class="dropdown-item py-2" href="/manage_brands">🏷️ 品牌代碼管理</a></li>
-                  {% endif %}
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item py-2" href="/manage_locations{% if current_brand %}?brand={{ current_brand }}{% elif request.args.get('brand') %}?brand={{ request.args.get('brand') }}{% endif %}">📍 標準店鋪管理 </a></li>
-                </ul>
-            </li>
-        </ul>
-      </div>
-    </nav>
+<body class="flex h-screen bg-gray-50 text-gray-800 antialiased">
 
-    <div class="{% block content_container_class %}container{% endblock %}">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              </div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
-
-        {% set _active_brand = current_brand if current_brand is defined and current_brand else request.args.get('brand') %}
-        {% set _no_brand_ui_paths = ['/login', '/manage_users'] %}
-        {% set _show_brand_sidebar = available_brands is defined and available_brands and request.path not in _no_brand_ui_paths %}
-        {% set _brand_initial_limit = 8 %}
-
-        <div class="app-shell {% if _show_brand_sidebar %}app-shell-with-sidebar{% endif %}" data-active-brand="{{ _active_brand or '' }}" data-enable-title-brand="{{ '1' if request.path not in _no_brand_ui_paths else '0' }}">
-          {% if _show_brand_sidebar %}
-          <aside class="brand-sidebar card app-card">
-            <div class="brand-sidebar-header">
-              <div class="brand-sidebar-title">品牌分頁</div>
-              <div class="brand-sidebar-subtitle">切換目前頁面品牌</div>
-            </div>
-            <div class="brand-sidebar-controls">
-              <input
-                type="search"
-                class="form-control form-control-sm"
-                placeholder="搜尋品牌名稱/代碼"
-                data-brand-search
-                aria-label="搜尋品牌"
-              >
-            </div>
-            {% set ns = namespace(overflow_count=0) %}
-            <div class="brand-sidebar-list" role="tablist" aria-label="品牌切換" data-brand-list>
-              {% for brand in available_brands %}
-              {% set _is_active_item = (_active_brand == brand.brand_code) %}
-              {% set _is_overflow_item = (loop.index0 >= _brand_initial_limit and not _is_active_item) %}
-              {% if _is_overflow_item %}
-              {% set ns.overflow_count = ns.overflow_count + 1 %}
-              {% endif %}
-              <a
-                class="brand-sidebar-item {% if _is_active_item %}active{% endif %} {% if _is_overflow_item %}is-collapsed-hidden{% endif %}"
-                href="{{ request.path }}?brand={{ brand.brand_code }}{% if request.args.get('month') %}&month={{ request.args.get('month') }}{% endif %}"
-                data-brand-switch="{{ brand.brand_code }}"
-                data-brand-item
-                data-overflow="{{ '1' if _is_overflow_item else '0' }}"
-                data-brand-text="{{ (brand.brand_name ~ ' ' ~ brand.brand_code)|lower }}"
-              >
-                <span class="brand-sidebar-name">{{ brand.brand_name }}</span>
-                <span class="brand-sidebar-code">{{ brand.brand_code }}</span>
-              </a>
-              {% endfor %}
-              <div class="brand-sidebar-empty d-none" data-brand-empty>找不到符合的品牌。</div>
-            </div>
-            {% if ns.overflow_count > 0 %}
-            <div class="brand-sidebar-footer">
-              <button
-                type="button"
-                class="btn btn-outline-secondary btn-sm w-100"
-                data-brand-toggle
-                data-default-label="顯示更多 ({{ ns.overflow_count }})"
-                aria-expanded="false"
-              >
-                顯示更多 ({{ ns.overflow_count }})
-              </button>
-            </div>
-            {% endif %}
-          </aside>
-          {% endif %}
-
-          <main class="app-main-content">
-            {% block content %}{% endblock %}
-          </main>
-        </div>
+  {# ========== 左側深色導航欄 ========== #}
+  <aside class="w-64 bg-slate-900 text-white flex flex-col shrink-0 shadow-xl">
+    <div class="px-5 py-5 border-b border-slate-700">
+      <a href="/" class="text-xl font-bold tracking-tight hover:text-white">📋 糧單管理系統</a>
     </div>
+    <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <a href="/" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-700/70 transition-colors {% if request.path == '/' %}bg-slate-700/70 font-semibold{% endif %}">
+        <span>🏠</span> <span>主控台</span>
+      </a>
+      <a href="/settings{% if current_brand %}?brand={{ current_brand }}{% endif %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-700/70 transition-colors {% if request.path == '/settings' %}bg-slate-700/70 font-semibold{% endif %}">
+        <span>👤</span> <span>人事設定</span>
+      </a>
+      <a href="/manage_products{% if current_brand %}?brand={{ current_brand }}{% endif %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-700/70 transition-colors {% if request.path == '/manage_products' %}bg-slate-700/70 font-semibold{% endif %}">
+        <span>📦</span> <span>產品佣金</span>
+      </a>
+      <a href="/manage_locations{% if current_brand %}?brand={{ current_brand }}{% endif %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-700/70 transition-colors {% if request.path == '/manage_locations' %}bg-slate-700/70 font-semibold{% endif %}">
+        <span>📍</span> <span>店鋪管理</span>
+      </a>
+      <div class="border-t border-slate-700 my-3"></div>
+      <a href="/validate{% if request.args.get('month') %}?month={{ request.args.get('month') }}{% endif %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-700/70 transition-colors">
+        <span>🔍</span> <span>校對</span>
+      </a>
+      {% if session.get('is_admin') %}
+      <a href="/audit_logs" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-700/70 transition-colors">
+        <span>📝</span> <span>稽核紀錄</span>
+      </a>
+      <a href="/manage_users" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-700/70 transition-colors">
+        <span>👥</span> <span>使用者管理</span>
+      </a>
+      <a href="/manage_backups" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-700/70 transition-colors">
+        <span>💾</span> <span>備份還原</span>
+      </a>
+      <a href="/manage_brands" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-700/70 transition-colors">
+        <span>🏷️</span> <span>品牌管理</span>
+      </a>
+      {% endif %}
+    </nav>
+    <div class="px-4 py-4 border-t border-slate-700 space-y-2">
+      {% if session.get('user') %}
+      <div class="flex items-center gap-2 text-sm text-slate-300">
+        <span>👤</span> <span>{{ session.get('user') }}</span>
+      </div>
+      <a href="/logout" class="block text-sm text-slate-400 hover:text-white transition-colors px-3 py-1.5 rounded-xl hover:bg-slate-700">登出</a>
+      {% else %}
+      <a href="/login?next={{ request.path }}" class="block text-sm text-slate-300 hover:text-white px-3 py-1.5 rounded-xl hover:bg-slate-700">登入</a>
+      {% endif %}
+    </div>
+  </aside>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-      (function() {
-        const switchers = document.querySelectorAll('[data-brand-switch]');
-        if (!switchers.length) {
-          return;
-        }
+  {# ========== 右側主內容區 ========== #}
+  <main class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="space-y-2 mb-4">
+        {% for category, message in messages %}
+          {% set cat_map = {'success': 'bg-green-100 text-green-800 border-green-200', 'danger': 'bg-red-100 text-red-800 border-red-200', 'warning': 'bg-yellow-100 text-yellow-800 border-yellow-200', 'info': 'bg-blue-100 text-blue-800 border-blue-200'} %}
+          <div class="flex items-center justify-between px-4 py-3 rounded-xl border {{ cat_map.get(category, 'bg-gray-100 text-gray-800 border-gray-200') }}" role="alert">
+            <span>{{ message }}</span>
+            <button type="button" class="text-lg leading-none opacity-60 hover:opacity-100" onclick="this.parentElement.remove()">&times;</button>
+          </div>
+        {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
 
-        switchers.forEach((el) => {
-          el.addEventListener('click', function(event) {
-            const targetBrand = this.getAttribute('data-brand-switch');
-            if (!targetBrand) {
-              return;
-            }
+    {% set _active_brand = current_brand if current_brand is defined and current_brand else request.args.get('brand') %}
+    {% set _no_brand_ui_paths = ['/login', '/manage_users'] %}
+    {% set _show_brand_sidebar = available_brands is defined and available_brands and request.path not in _no_brand_ui_paths %}
+    {% set _brand_initial_limit = 8 %}
 
-            event.preventDefault();
-            const url = new URL(window.location.href);
-            url.searchParams.set('brand', targetBrand);
-            window.location.href = url.toString();
-          });
+    <div class="{% if _show_brand_sidebar %}flex gap-4 items-start{% endif %}" data-active-brand="{{ _active_brand or '' }}" data-enable-title-brand="{{ '1' if request.path not in _no_brand_ui_paths else '0' }}">
+      {% if _show_brand_sidebar %}
+      <aside class="w-64 shrink-0 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden sticky top-0">
+        <div class="px-4 py-3 border-b border-gray-200 bg-gradient-to-br from-gray-50 to-white">
+          <div class="font-extrabold text-sm tracking-tight">品牌分頁</div>
+          <div class="text-xs text-gray-400 mt-0.5">切換目前頁面品牌</div>
+        </div>
+        <div class="px-3 pt-2">
+          <input type="search" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="搜尋品牌名稱/代碼" data-brand-search aria-label="搜尋品牌">
+        </div>
+        {% set ns = namespace(overflow_count=0) %}
+        <div class="flex flex-col gap-1.5 p-3 max-h-[calc(100vh-14rem)] overflow-y-auto" role="tablist" aria-label="品牌切換" data-brand-list>
+          {% for brand in available_brands %}
+          {% set _is_active_item = (_active_brand == brand.brand_code) %}
+          {% set _is_overflow_item = (loop.index0 >= _brand_initial_limit and not _is_active_item) %}
+          {% if _is_overflow_item %}
+          {% set ns.overflow_count = ns.overflow_count + 1 %}
+          {% endif %}
+          <a class="flex flex-col gap-0.5 px-3 py-2.5 border border-gray-200 rounded-xl bg-white text-gray-800 no-underline transition-all hover:-translate-y-0.5 hover:shadow-md hover:border-gray-400 {% if _is_active_item %}border-gray-900 bg-gradient-to-br from-gray-900 to-gray-700 text-white shadow-lg{% endif %} {% if _is_overflow_item %}is-collapsed-hidden{% endif %}"
+            href="{{ request.path }}?brand={{ brand.brand_code }}{% if request.args.get('month') %}&month={{ request.args.get('month') }}{% endif %}"
+            data-brand-switch="{{ brand.brand_code }}" data-brand-item data-overflow="{{ '1' if _is_overflow_item else '0' }}"
+            data-brand-text="{{ (brand.brand_name ~ ' ' ~ brand.brand_code)|lower }}">
+            <span class="font-bold leading-tight">{{ brand.brand_name }}</span>
+            <span class="text-xs opacity-70 leading-tight">{{ brand.brand_code }}</span>
+          </a>
+          {% endfor %}
+          <div class="hidden border border-dashed border-gray-300 rounded-xl p-3 text-center text-sm text-gray-400 bg-gray-50" data-brand-empty>找不到符合的品牌。</div>
+        </div>
+        {% if ns.overflow_count > 0 %}
+        <div class="px-3 pb-3 pt-1 border-t border-gray-200">
+          <button type="button" class="w-full px-3 py-2 text-sm font-medium text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors" data-brand-toggle data-default-label="顯示更多 ({{ ns.overflow_count }})" aria-expanded="false">顯示更多 ({{ ns.overflow_count }})</button>
+        </div>
+        {% endif %}
+      </aside>
+      {% endif %}
+
+      <main class="flex-1 min-w-0">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </main>
+
+  <script>
+    (function() {
+      const switchers = document.querySelectorAll('[data-brand-switch]');
+      if (!switchers.length) return;
+      switchers.forEach((el) => {
+        el.addEventListener('click', function(event) {
+          const targetBrand = this.getAttribute('data-brand-switch');
+          if (!targetBrand) return;
+          event.preventDefault();
+          const url = new URL(window.location.href);
+          url.searchParams.set('brand', targetBrand);
+          window.location.href = url.toString();
         });
+      });
 
-        const sidebar = document.querySelector('.brand-sidebar');
-        if (!sidebar) {
-          return;
-        }
+      const sidebar = document.querySelector('[data-brand-list]');
+      if (!sidebar) return;
+      const container = sidebar.closest('aside');
+      const searchInput = container.querySelector('[data-brand-search]');
+      const toggleBtn = container.querySelector('[data-brand-toggle]');
+      const emptyState = container.querySelector('[data-brand-empty]');
+      const brandItems = Array.from(sidebar.querySelectorAll('[data-brand-item]'));
+      let expanded = false;
+      const hasOverflow = brandItems.some((item) => item.getAttribute('data-overflow') === '1');
 
-        const searchInput = sidebar.querySelector('[data-brand-search]');
-        const toggleBtn = sidebar.querySelector('[data-brand-toggle]');
-        const emptyState = sidebar.querySelector('[data-brand-empty]');
-        const brandItems = Array.from(sidebar.querySelectorAll('[data-brand-item]'));
-        let expanded = false;
+      function applyCollapsed() {
+        brandItems.forEach((item) => {
+          const shouldCollapse = item.getAttribute('data-overflow') === '1';
+          item.classList.toggle('is-collapsed-hidden', shouldCollapse && !expanded);
+        });
+      }
+      function applySearch() {
+        const query = (searchInput && searchInput.value ? searchInput.value : '').trim().toLowerCase();
+        let visible = 0;
+        brandItems.forEach((item) => {
+          const text = item.getAttribute('data-brand-text') || '';
+          const matches = !query || text.includes(query);
+          item.classList.toggle('is-search-hidden', !matches);
+          if (matches) visible += 1;
+        });
+        const searching = Boolean(query);
+        if (searching) brandItems.forEach((item) => item.classList.remove('is-collapsed-hidden'));
+        else applyCollapsed();
+        if (toggleBtn) toggleBtn.classList.toggle('hidden', searching || !hasOverflow);
+        if (emptyState) emptyState.classList.toggle('hidden', visible > 0 || !query);
+      }
 
-        const hasOverflow = brandItems.some((item) => item.getAttribute('data-overflow') === '1');
-
-        function applyCollapsed() {
-          brandItems.forEach((item) => {
-            const shouldCollapse = item.getAttribute('data-overflow') === '1';
-            item.classList.toggle('is-collapsed-hidden', shouldCollapse && !expanded);
-          });
-        }
-
-        function applySearch() {
-          const query = (searchInput && searchInput.value ? searchInput.value : '').trim().toLowerCase();
-          let visible = 0;
-
-          brandItems.forEach((item) => {
-            const text = item.getAttribute('data-brand-text') || '';
-            const matches = !query || text.includes(query);
-            item.classList.toggle('is-search-hidden', !matches);
-            if (matches) {
-              visible += 1;
-            }
-          });
-
-          const searching = Boolean(query);
-
-          if (searching) {
-            brandItems.forEach((item) => item.classList.remove('is-collapsed-hidden'));
-          } else {
-            applyCollapsed();
-          }
-
-          if (toggleBtn) {
-            toggleBtn.classList.toggle('d-none', searching || !hasOverflow);
-          }
-
-          if (emptyState) {
-            emptyState.classList.toggle('d-none', visible > 0);
-          }
-        }
-
-        if (searchInput) {
-          searchInput.addEventListener('input', applySearch);
-        }
-
-        if (toggleBtn && hasOverflow) {
-          const defaultLabel = toggleBtn.getAttribute('data-default-label') || '顯示更多';
-          toggleBtn.addEventListener('click', function() {
-            expanded = !expanded;
-            this.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-            this.textContent = expanded ? '收起清單' : defaultLabel;
-            applySearch();
-          });
-        }
-
-        applySearch();
-      })();
-    </script>
+      if (searchInput) searchInput.addEventListener('input', applySearch);
+      if (toggleBtn && hasOverflow) {
+        const defaultLabel = toggleBtn.getAttribute('data-default-label') || '顯示更多';
+        toggleBtn.addEventListener('click', function() {
+          expanded = !expanded;
+          this.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+          this.textContent = expanded ? '收起清單' : defaultLabel;
+          applySearch();
+        });
+      }
+      applySearch();
+    })();
+  </script>
   {% block scripts_extra %}{% endblock %}
 </body>
 </html>

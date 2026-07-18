@@ -1,210 +1,185 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container-fluid mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="page-title">📦 產品與佣金綜合管理 <span class="badge rounded-pill bg-dark ms-2">{{ current_brand_name }}</span></h2>
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h2 class="text-2xl font-bold text-gray-800">📦 產品與佣金綜合管理
+      <span class="ml-2 inline-block bg-gray-800 text-white text-sm px-3 py-0.5 rounded-full">{{ current_brand_name }}</span>
+    </h2>
+    <div class="flex gap-2">
+      <button class="px-4 py-2 text-sm font-semibold text-white bg-cyan-600 rounded-xl hover:bg-cyan-700 transition-colors shadow-sm" onclick="document.getElementById('manualSpecialModal').classList.remove('hidden');document.getElementById('manualSpecialModal').classList.add('flex')">➕ 手動新增特佣</button>
+      <a href="/?brand={{ current_brand }}" class="px-4 py-2 text-sm font-semibold text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">← 返回主控台</a>
+    </div>
+  </div>
+
+  {# 特佣規則卡片 #}
+  <div class="bg-white rounded-2xl shadow-sm border border-cyan-200 overflow-hidden">
+    <div class="px-5 py-3.5 bg-cyan-50 text-cyan-800 font-bold text-base flex items-center justify-between border-b border-cyan-200">
+      <span>📅 目前生效中的特佣規則 (時段限定)</span>
+      <span class="text-xs bg-white text-cyan-700 px-2.5 py-1 rounded-full">優先級：特佣規則 > 永久比例</span>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm border-collapse">
+        <thead>
+          <tr class="bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+            <th class="px-4 py-3 border-b border-gray-200">產品型號</th>
+            <th class="px-4 py-3 border-b border-gray-200">生效開始</th>
+            <th class="px-4 py-3 border-b border-gray-200">生效結束</th>
+            <th class="px-4 py-3 border-b border-gray-200 text-red-600">特佣比例</th>
+            <th class="px-4 py-3 border-b border-gray-200">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for rule in special_rules %}
+          <tr class="text-center border-b border-gray-100 hover:bg-gray-50 odd:bg-white even:bg-gray-50/50 transition-colors">
+            <td class="px-4 py-3 font-bold text-left"><code class="text-sm bg-gray-100 px-2 py-0.5 rounded">{{ rule.model }}</code></td>
+            <td class="px-4 py-3"><span class="inline-block bg-gray-100 text-gray-700 text-xs px-3 py-1.5 rounded-lg border border-gray-200">{{ rule.start_month }}</span></td>
+            <td class="px-4 py-3"><span class="inline-block bg-gray-100 text-gray-700 text-xs px-3 py-1.5 rounded-lg border border-gray-200">{{ rule.end_month }}</span></td>
+            <td class="px-4 py-3 font-bold text-red-600 text-lg">{{ "%.1f"|format(rule.rate * 100) }}%</td>
+            <td class="px-4 py-3">
+              <a href="/delete_special_comm/{{ rule.id }}?brand={{ current_brand }}" class="px-3 py-1.5 text-xs font-semibold text-red-600 border border-red-300 rounded-xl hover:bg-red-50 transition-colors" onclick="return confirm('確定要刪除這筆特佣規則嗎？')">🗑️ 刪除</a>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5" class="text-center text-gray-400 py-8 italic">目前沒有設定任何時段限定的特佣規則。</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {# 產品主目錄 #}
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-800 overflow-hidden">
+    <div class="px-5 py-3.5 bg-gray-800 text-white font-bold text-base flex items-center justify-between border-b border-gray-700">
+      <span>📦 產品主目錄 (永久比例管理)</span>
+      <div class="flex gap-2 items-center">
+        <span class="text-xs text-gray-300">批量永久設為</span>
+        <input type="number" step="0.001" id="bulkRate" class="px-2 py-1.5 text-xs border border-gray-600 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-amber-400 outline-none w-24" placeholder="0.02">
+        <button class="px-3 py-1.5 text-xs font-bold bg-amber-500 text-gray-900 rounded-xl hover:bg-amber-400 transition-colors" onclick="submitBulkUpdate()">💾 批量儲存</button>
+      </div>
+    </div>
+    <div class="overflow-x-auto" style="max-height:800px; overflow-y:auto;">
+      <table class="w-full text-sm border-collapse" id="productTable">
+        <thead class="sticky top-0 z-10">
+          <tr class="bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider shadow-sm">
+            <th class="px-3 py-3 border-b border-gray-200 w-[60px]"><input type="checkbox" id="selectAll" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500" onclick="toggleSelectAll(this)"></th>
+            <th class="px-3 py-3 border-b border-gray-200 min-w-[280px]">
+              型號
+              <div class="flex gap-2 mt-1.5"><select id="filterModelDrop" class="text-xs px-2 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" onchange="filterTable()"><option value="">✅ 所有型號</option></select><input type="text" id="filterModelText" class="text-xs px-2 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-28" placeholder="搜尋..." onkeyup="filterTable()"></div>
+            </th>
+            <th class="px-3 py-3 border-b border-gray-200 min-w-[280px]">
+              系列
+              <div class="flex gap-2 mt-1.5"><select id="filterLineDrop" class="text-xs px-2 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" onchange="filterTable()"><option value="">✅ 所有系列</option></select><input type="text" id="filterLineText" class="text-xs px-2 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-28" placeholder="搜尋..." onkeyup="filterTable()"></div>
+            </th>
+            <th class="px-3 py-3 border-b border-gray-200">永久佣金比例</th>
+            <th class="px-3 py-3 border-b border-gray-200">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in products %}
+          <tr id="product-{{ p.id }}" class="text-center border-b border-gray-100 hover:bg-gray-50 odd:bg-white even:bg-gray-50/50 transition-colors product-row">
+            <td class="px-3 py-2.5"><input type="checkbox" class="product-checkbox w-4 h-4 text-blue-600 rounded focus:ring-blue-500 border-gray-400" value="{{ p.id }}"></td>
+            <td class="px-3 py-2.5 font-bold text-left"><code class="text-sm bg-gray-100 px-2 py-0.5 rounded">{{ p.model }}</code></td>
+            <td class="px-3 py-2.5">{{ p.product_line if p.product_line else '-' }}</td>
+            <td class="px-3 py-2.5 font-bold {{ 'text-red-600' if p.commission_rate != 0.03 else 'text-blue-700' }}">{{ "%.1f"|format(p.commission_rate * 100) }}%</td>
+            <td class="px-3 py-2.5">
+              <button class="px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors shadow-sm" onclick="openEditModal('{{ p.model }}', {{ p.commission_rate }})">⚙️ 修改 / 設定特佣</button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+    </div>
+</div>
+
+<div class="fixed inset-0 z-50 items-center justify-center hidden modal" id="productEditModal">
+  <div class="absolute inset-0 bg-black/40" onclick="closeModal(this)"></div>
+  <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 z-10">
+    <div class="px-5 py-4 bg-blue-600 text-white font-bold text-lg flex items-center justify-between rounded-t-2xl">
+      🔧 修改產品佣金設定
+      <button class="text-white/50 hover:text-white text-2xl leading-none" onclick="closeModal(this)">&times;</button>
+    </div>
+    <form action="/update_product_config" method="POST">
+      <div class="p-5 space-y-4">
+        <input type="hidden" name="brand" value="{{ current_brand }}">
         <div>
-            <button class="btn btn-info fw-bold shadow-sm text-white me-2" data-bs-toggle="modal" data-bs-target="#manualSpecialModal">
-                ➕ 手動新增特佣 (非目錄產品)
-            </button>
-            <a href="/?brand={{ current_brand }}" class="btn btn-secondary">返回主控台</a>
+          <label class="block text-sm font-bold text-gray-700 mb-1">產品型號</label>
+          <input type="text" class="w-full px-3 py-2.5 border border-gray-300 rounded-xl bg-gray-100 text-gray-800 font-bold" name="model" id="modalModel" readonly>
         </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12 mb-4">
-            <div class="card app-card border-info">
-                <div class="card-header bg-info text-white fw-bold fs-5 d-flex justify-content-between align-items-center">
-                    <span>📅 目前生效中的特佣規則 (時段限定)</span>
-                    <small class="bg-white text-info px-2 py-1 rounded fs-6">優先級：特佣規則 > 永久比例</small>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-wrap">
-                        <table class="table table-hover text-center align-middle mb-0 data-table">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>產品型號 (Model)</th>
-                                    <th>生效開始月份</th>
-                                    <th>生效結束月份</th>
-                                    <th class="text-danger">特佣比例</th>
-                                    <th>操作</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for rule in special_rules %}
-                                <tr id="special-{{ rule.id }}" data-row-id="{{ rule.id }}" data-type="special_comm">
-                                    <td class="fw-bold text-start ps-4"><code>{{ rule.model }}</code></td>
-                                    <td><span class="badge bg-light text-dark border px-3 py-2">{{ rule.start_month }}</span></td>
-                                    <td><span class="badge bg-light text-dark border px-3 py-2">{{ rule.end_month }}</span></td>
-                                    <td class="fw-bold text-danger fs-5">{{ "%.1f"|format(rule.rate * 100) }}%</td>
-                                    <td>
-                                        <a href="/delete_special_comm/{{ rule.id }}?brand={{ current_brand }}" class="btn btn-sm btn-outline-danger px-3" onclick="return confirm('確定要刪除這筆特佣規則嗎？')">
-                                            🗑️ 刪除規則
-                                        </a>
-                                    </td>
-                                </tr>
-                                {% else %}
-                                <tr>
-                                    <td colspan="5" class="py-4 text-muted fst-italic">目前沒有設定任何時段限定的特佣規則。</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-xl p-3">
+          <label class="block text-sm font-bold text-gray-700 mb-2">選擇修改類型：</label>
+          <label class="flex items-center gap-2 mb-2 cursor-pointer"><input type="radio" name="update_type" id="typePerm" value="permanent" checked onchange="toggleDateFields('edit')" class="w-4 h-4 text-blue-600"><span class="text-sm font-bold text-blue-700">1. 永久修改 (更新預設比例)</span></label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="update_type" id="typeSpec" value="special" onchange="toggleDateFields('edit')" class="w-4 h-4 text-red-600"><span class="text-sm font-bold text-red-600">2. 時段特佣 (限時加碼/減碼)</span></label>
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">佣金比例 (例 0.05 代表 5%)</label>
+          <input type="number" step="0.001" class="w-full px-3 py-2.5 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-lg" name="rate" id="modalRate" required>
+        </div>
+        <div id="dateRangeSection" style="display: none;" class="border-2 border-red-200 rounded-xl p-3 bg-white">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs font-bold text-gray-600">開始月份</label>
+              <input type="month" class="w-full px-3 py-2 text-sm border border-red-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none" name="start_month" id="modalStart">
             </div>
-        </div>
-
-        <div class="col-12 mb-5">
-            <div class="card app-card border-dark">
-                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                    <span class="fw-bold fs-5">📦 產品主目錄 (永久比例管理)</span>
-                    <div class="input-group" style="width: 380px;">
-                        <span class="input-group-text bg-warning text-dark fw-bold border-warning">批量永久設為</span>
-                        <input type="number" step="0.001" id="bulkRate" class="form-control border-warning" placeholder="例: 0.02">
-                        <button class="btn btn-warning fw-bold border-warning" onclick="submitBulkUpdate()">💾 批量儲存</button>
-                    </div>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-wrap" style="max-height: 800px; overflow-y: auto;">
-                        <table class="table table-hover align-middle text-center mb-0 data-table" id="productTable">
-                            <thead class="table-light position-sticky top-0 shadow-sm" style="z-index: 1;">
-                                <tr>
-                                    <th style="width: 60px; vertical-align: middle;">
-                                        <input type="checkbox" id="selectAll" class="form-check-input border-dark" onclick="toggleSelectAll(this)">
-                                    </th>
-                                    <th style="min-width: 280px;">
-                                        型號 (Model)
-                                        <div class="d-flex gap-2 mt-2">
-                                            <select id="filterModelDrop" class="form-select form-select-sm border-info" onchange="filterTable()">
-                                                <option value="">✅ 所有型號</option>
-                                            </select>
-                                            <input type="text" id="filterModelText" class="form-control form-control-sm border-info" placeholder="搜尋..." onkeyup="filterTable()">
-                                        </div>
-                                    </th>
-                                    <th style="min-width: 280px;">
-                                        系列 (Line)
-                                        <div class="d-flex gap-2 mt-2">
-                                            <select id="filterLineDrop" class="form-select form-select-sm border-info" onchange="filterTable()">
-                                                <option value="">✅ 所有系列</option>
-                                            </select>
-                                            <input type="text" id="filterLineText" class="form-control form-control-sm border-info" placeholder="搜尋..." onkeyup="filterTable()">
-                                        </div>
-                                    </th>
-                                    <th style="vertical-align: middle;">永久佣金比例</th>
-                                    <th style="vertical-align: middle;">操作</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for p in products %}
-                                <tr id="product-{{ p.id }}" data-row-id="{{ p.id }}" data-type="product" class="product-row">
-                                    <td><input type="checkbox" class="product-checkbox form-check-input border-secondary" value="{{ p.id }}"></td>
-                                    <td class="model-cell fw-bold text-start ps-3"><code class="fs-6 text-dark">{{ p.model }}</code></td>
-                                    <td class="line-cell">{{ p.product_line if p.product_line else '-' }}</td>
-                                    <td class="fw-bold {{ 'text-danger' if p.commission_rate != 0.03 else 'text-primary' }}">
-                                        {{ "%.1f"|format(p.commission_rate * 100) }}%
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-primary fw-bold px-3 shadow-sm" 
-                                                onclick="openEditModal('{{ p.model }}', {{ p.commission_rate }})">
-                                            ⚙️ 修改 / 設定特佣
-                                        </button>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <div>
+              <label class="text-xs font-bold text-gray-600">結束月份</label>
+              <input type="month" class="w-full px-3 py-2 text-sm border border-red-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none" name="end_month" id="modalEnd">
             </div>
+          </div>
         </div>
-    </div>
+      </div>
+      <div class="px-5 py-4 bg-gray-50 rounded-b-2xl">
+        <button type="submit" class="w-full px-4 py-2.5 text-sm font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors">💾 儲存目錄產品設定</button>
+      </div>
+    </form>
+  </div>
 </div>
 
-<div class="modal fade" id="productEditModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content border-primary shadow">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title fw-bold">🔧 修改產品佣金設定</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <form action="/update_product_config" method="POST">
-                <div class="modal-body">
-                    <input type="hidden" name="brand" value="{{ current_brand }}">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">產品型號</label>
-                        <input type="text" class="form-control bg-light text-dark fw-bold" name="model" id="modalModel" readonly>
-                    </div>
-                    <div class="mb-3 p-3 bg-light rounded border border-secondary">
-                        <label class="form-label d-block fw-bold text-dark mb-2">選擇修改類型：</label>
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="radio" name="update_type" id="typePerm" value="permanent" checked onclick="toggleDateFields('edit')">
-                            <label class="form-check-label fw-bold text-primary" for="typePerm">1. 永久修改 (更新預設比例)</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="update_type" id="typeSpec" value="special" onclick="toggleDateFields('edit')">
-                            <label class="form-check-label fw-bold text-danger" for="typeSpec">2. 時段特佣 (限時加碼/減碼)</label>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">佣金比例 (例 0.05 代表 5%)</label>
-                        <input type="number" step="0.001" class="form-control border-primary form-control-lg" name="rate" id="modalRate" required>
-                    </div>
-                    <div id="dateRangeSection" style="display: none;" class="row g-2 p-3 border border-danger rounded bg-white mt-2">
-                        <div class="col-6">
-                            <label class="small fw-bold">開始月份</label>
-                            <input type="month" class="form-control border-danger" name="start_month" id="modalStart">
-                        </div>
-                        <div class="col-6">
-                            <label class="small fw-bold">結束月份</label>
-                            <input type="month" class="form-control border-danger" name="end_month" id="modalEnd">
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <button type="submit" class="btn btn-primary fw-bold px-4 w-100">💾 儲存目錄產品設定</button>
-                </div>
-            </form>
-        </div>
+<div class="fixed inset-0 z-50 items-center justify-center hidden modal" id="manualSpecialModal">
+  <div class="absolute inset-0 bg-black/40" onclick="closeModal(this)"></div>
+  <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 z-10">
+    <div class="px-5 py-4 bg-cyan-600 text-white font-bold text-lg flex items-center justify-between rounded-t-2xl">
+      ➕ 手動新增時段特佣
+      <button class="text-white/50 hover:text-white text-2xl leading-none" onclick="closeModal(this)">&times;</button>
     </div>
+    <form action="/save_special_comm" method="POST">
+      <div class="p-5 space-y-4">
+        <input type="hidden" name="brand" value="{{ current_brand }}">
+        <div class="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-600">此功能用於設定<strong class="text-gray-800">不在產品目錄中</strong>的型號特佣。</div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">手動輸入型號</label>
+          <input type="text" class="w-full px-3 py-2.5 border border-cyan-300 rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none uppercase" name="model" placeholder="PH9999" required>
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">特佣比例 (例 0.02)</label>
+          <input type="number" step="0.001" class="w-full px-3 py-2.5 border border-cyan-300 rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none" name="rate" placeholder="0.02" required>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs font-bold text-gray-600">開始月份</label>
+            <input type="month" class="w-full px-3 py-2.5 border border-cyan-300 rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none" name="start" required>
+          </div>
+          <div>
+            <label class="text-xs font-bold text-gray-600">結束月份</label>
+            <input type="month" class="w-full px-3 py-2.5 border border-cyan-300 rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none" name="end" required>
+          </div>
+        </div>
+      </div>
+      <div class="px-5 py-4 bg-gray-50 rounded-b-2xl">
+        <button type="submit" class="w-full px-4 py-2.5 text-sm font-bold text-white bg-cyan-600 rounded-xl hover:bg-cyan-700 transition-colors">🚀 立即新增特佣規則</button>
+      </div>
+    </form>
+  </div>
 </div>
 
-<div class="modal fade" id="manualSpecialModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content border-info shadow">
-            <div class="modal-header bg-info text-white">
-                <h5 class="modal-title fw-bold">➕ 手動新增時段特佣</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <form action="/save_special_comm" method="POST">
-                <div class="modal-body">
-                    <input type="hidden" name="brand" value="{{ current_brand }}">
-                    <div class="alert alert-secondary py-2 small">
-                        此功能用於設定<strong>不在產品目錄中</strong>的型號特佣。
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">手動輸入型號 (Model)</label>
-                        <input type="text" class="form-control border-info text-uppercase" name="model" placeholder="例如: PH9999" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">特佣比例 (例 0.02)</label>
-                        <input type="number" step="0.001" class="form-control border-info" name="rate" placeholder="0.02" required>
-                    </div>
-                    <div class="row g-2">
-                        <div class="col-6">
-                            <label class="small fw-bold">開始月份</label>
-                            <input type="month" class="form-control border-info" name="start" required>
-                        </div>
-                        <div class="col-6">
-                            <label class="small fw-bold">結束月份</label>
-                            <input type="month" class="form-control border-info" name="end" required>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-info text-white fw-bold w-100">🚀 立即新增特佣規則</button>
-                </div>
-            </form>
+<script>
+function closeModal(el) {
+  const modal = el.closest('.modal');
+  if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+}
+</script>
         </div>
     </div>
 </div>
@@ -277,7 +252,8 @@ function openEditModal(m, r) {
     document.getElementById('modalRate').value = r;
     document.getElementById('typePerm').checked = true;
     toggleDateFields('edit');
-    new bootstrap.Modal(document.getElementById('productEditModal')).show();
+    document.getElementById('productEditModal').classList.remove('hidden');
+    document.getElementById('productEditModal').classList.add('flex');
 }
 </script>
 {% endblock %}

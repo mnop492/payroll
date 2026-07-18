@@ -3,142 +3,114 @@
 {% block content %}
 {% set has_month_data = attendances or staff_summary %}
 
-<div class="row g-4 align-items-start">
-    <div class="col-12">
-        <div class="card app-card mb-4 border-primary" id="payroll-workflow-panel">
-            <div class="card-header bg-primary text-white">
-                <span class="fs-5">⚙️ 1. 薪資結算主控台 <span class="badge bg-light text-primary fw-bold ms-2">{{ current_brand_name }}</span></span>
+<div class="space-y-6">
+    {# === 薪資結算主控台 === #}
+    <div class="bg-white rounded-2xl shadow-sm border border-blue-200 overflow-hidden max-w-2xl" id="payroll-workflow-panel">
+        <div class="px-5 py-4 bg-blue-600 text-white font-bold text-lg flex items-center gap-2">
+            ⚙️ 1. 薪資結算主控台
+            <span class="ml-auto text-xs bg-white text-blue-700 px-2.5 py-0.5 rounded-full font-bold">{{ current_brand_name }}</span>
+        </div>
+        <div class="p-5 space-y-5">
+            <div>
+                <label class="block text-sm font-bold text-blue-700 mb-1.5">1. 選擇結算月份</label>
+                <input class="w-full px-3 py-2.5 border border-blue-300 bg-gray-50 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" type="month"
+                       value="{{ current_month }}"
+                       onchange="window.location.href='/?month=' + this.value + '&brand={{ current_brand }}'" required>
             </div>
-            <div class="card-body">
-                <div class="mb-4">
-                    <label class="form-label fw-bold text-primary">1. 選擇結算月份</label>
-                    <input class="form-control border-primary bg-light" type="month" 
-                           value="{{ current_month }}" 
-                           onchange="window.location.href='/?month=' + this.value + '&brand={{ current_brand }}'" required>
+
+            {% if attendances or staff_summary %}
+
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 shadow-sm">
+                <h6 class="font-bold text-blue-800 mb-2 text-base">✅ 已載入 {{ current_month }} 的資料</h6>
+                <p class="mb-3 text-sm text-gray-600">系統偵測到本月已匯入考勤與銷售紀錄。為了避免重複作業，您可以直接進行結算。</p>
+                <form action="/calculate_payroll" method="POST">
+                    <input type="hidden" name="calc_month" value="{{ current_month }}">
+                    <input type="hidden" name="brand" value="{{ current_brand }}">
+                    <button type="submit" class="w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-sm transition-colors">
+                        🚀 2. 進行薪資結算 (下一步)
+                    </button>
+                </form>
+            </div>
+
+            <div>
+                <label class="block text-sm font-bold text-blue-700 mb-1.5">補充或修正資料方式</label>
+                <div class="mb-3">
+                    <select id="inputModeSelect" class="w-full px-3 py-2.5 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white" aria-label="請選擇輸入方式">
+                        <option value="excel" {% if month_input_source != 'web' %}selected{% endif %}>Excel 匯入</option>
+                        <option value="web" {% if month_input_source == 'web' %}selected{% endif %}>網頁輸入</option>
+                    </select>
                 </div>
 
-                {% if attendances or staff_summary %}
-                    
-                    <div class="alert alert-info shadow-sm border-info">
-                        <h6 class="alert-heading fw-bold mb-2">
-                            <i class="bi bi-check-circle-fill text-success"></i> 已載入 {{ current_month }} 的資料
-                        </h6>
-                        <p class="mb-3 small text-dark">
-                            系統偵測到本月已匯入考勤與銷售紀錄。為了避免重複作業，您可以直接進行結算。
-                        </p>
-                        
-                        <form action="/calculate_payroll" method="POST" class="mb-2">
-                            <input type="hidden" name="calc_month" value="{{ current_month }}">
-                            <input type="hidden" name="brand" value="{{ current_brand }}">
-                            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">
-                                🚀 2. 進行薪資結算 (下一步)
-                            </button>
-                        </form>
+                <div id="excelInputPanel" class="border-2 border-red-200 rounded-xl p-4 bg-gray-50 mb-3">
+                    <div class="font-bold text-red-600 mb-2">A. Excel 匯入</div>
+                    <p class="text-sm text-gray-500 mb-3">如需用新的 Excel 覆蓋本月資料，可在這裡重新匯入。</p>
+                    <form action="/upload_and_import" method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="calc_month" value="{{ current_month }}">
+                        <input type="hidden" name="brand" value="{{ current_brand }}">
+                        <input class="w-full px-3 py-2 text-sm border border-red-300 rounded-xl mb-2 js-brand-file-input" type="file" name="excel_file" accept=".xlsx, .xls" required>
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2 text-xs mb-2 hidden js-brand-file-warning"></div>
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2 text-xs mb-2 hidden js-month-file-warning"></div>
+                        <button type="submit" class="w-full py-2 bg-red-600 text-white text-sm font-bold rounded-xl hover:bg-red-700 mb-2 transition-colors">
+                            ⚠️ 確認覆蓋並重新匯入
+                        </button>
+                        <label class="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-gray-200 cursor-pointer">
+                            <input type="checkbox" name="update_emp" checked class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500">
+                            <span class="text-sm font-bold text-blue-700">🔄 同步本月時薪與津貼 (MonthlyRates)</span>
+                        </label>
+                    </form>
+                    <a href="/validate?month={{ current_month }}&brand={{ current_brand }}" class="block w-full text-center px-3 py-2 text-sm font-bold text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors mt-2">🔍 歷史數據自動校對</a>
+                </div>
+
+                <div id="webInputPanel" class="border-2 border-green-200 rounded-xl p-4 bg-gray-50 mb-3" style="display: none;">
+                    <div class="font-bold text-green-700 mb-2">B. 網頁輸入</div>
+                    <p class="text-sm text-gray-500 mb-3">如需直接在系統補資料或修正，請使用以下入口。</p>
+                    <div class="space-y-2">
+                        <button class="w-full text-left px-4 py-2.5 text-sm font-bold text-amber-700 border border-amber-300 rounded-xl hover:bg-amber-50 transition-colors" type="button" onclick="openModal('newAttendanceGroupModal')">新增考勤人員 / 打卡資料</button>
+                        <button class="w-full text-left px-4 py-2.5 text-sm font-bold text-green-700 border border-green-300 rounded-xl hover:bg-green-50 transition-colors" type="button" onclick="clearAttendanceModal(); openModal('newSalesGroupModal')">新增銷售據點 / 單據資料</button>
+                        <a class="block w-full text-left px-4 py-2.5 text-sm font-bold text-blue-700 border border-blue-300 rounded-xl hover:bg-blue-50 transition-colors" href="/settings?month={{ current_month }}&brand={{ current_brand }}">設定本月時薪 / 佣金覆寫</a>
                     </div>
+                </div>
 
-                    <div class="mt-4">
-                        <label class="form-label fw-bold text-primary">補充或修正資料方式</label>
-                        <div class="mb-3">
-                            <select id="inputModeSelect" class="form-select border-primary" aria-label="請選擇輸入方式">
-                                <option value="excel" {% if month_input_source != 'web' %}selected{% endif %}>Excel 匯入</option>
-                                <option value="web" {% if month_input_source == 'web' %}selected{% endif %}>網頁輸入</option>
-                            </select>
-                        </div>
+            {% else %}
 
-                        <div id="excelInputPanel" class="border border-danger rounded p-3 bg-light mb-3">
-                            <div class="fw-bold text-danger mb-2">A. Excel 匯入</div>
-                            <p class="small text-muted mb-3">如需用新的 Excel 覆蓋本月資料，可在這裡重新匯入。</p>
-                            <form action="/upload_and_import" method="POST" enctype="multipart/form-data">
-                                <input type="hidden" name="calc_month" value="{{ current_month }}">
-                                <input type="hidden" name="brand" value="{{ current_brand }}">
-                                <input class="form-control form-control-sm border-danger mb-2 js-brand-file-input" type="file" name="excel_file" accept=".xlsx, .xls" required>
-                                <div class="alert alert-warning py-2 px-3 small mb-2 d-none js-brand-file-warning"></div>
-                                <div class="alert alert-warning py-2 px-3 small mb-2 d-none js-month-file-warning"></div>
-                                <button type="submit" class="btn btn-danger btn-sm w-100 fw-bold mb-2">
-                                    ⚠️ 確認覆蓋並重新匯入
-                                </button>
-                                <div class="form-check form-switch bg-white p-2 rounded border">
-                                    <input class="form-check-input ms-0 me-2" type="checkbox" name="update_emp" id="updateEmpCheckLoaded" checked>
-                                    <label class="form-check-label fw-bold text-primary" for="updateEmpCheckLoaded">
-                                        🔄 同步本月時薪與津貼 (MonthlyRates)
-                                    </label>
-                                </div>
-                            </form>
-                            <a href="/validate?month={{ current_month }}&brand={{ current_brand }}" class="btn btn-outline-dark btn-sm w-100 fw-bold mt-2">
-                                🔍 歷史數據自動校對
-                            </a>
-                        </div>
+                <label class="block text-sm font-bold text-blue-700 mb-1.5">2. 選擇輸入方式</label>
+                <div class="mb-3">
+                    <select id="inputModeSelect" class="w-full px-3 py-2.5 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white" aria-label="請選擇輸入方式">
+                        <option value="excel" {% if month_input_source != 'web' %}selected{% endif %}>Excel 匯入</option>
+                        <option value="web" {% if month_input_source == 'web' %}selected{% endif %}>網頁輸入</option>
+                    </select>
+                </div>
 
-                        <div id="webInputPanel" class="border border-success rounded p-3 bg-light mb-3" style="display: none;">
-                            <div class="fw-bold text-success mb-2">B. 網頁輸入</div>
-                            <p class="small text-muted mb-3">如需直接在系統補資料或修正，請使用以下入口。</p>
-                            <div class="d-grid gap-2">
-                                <button class="btn btn-outline-warning text-start" type="button" data-bs-toggle="modal" data-bs-target="#newAttendanceGroupModal">
-                                    新增考勤人員 / 打卡資料
-                                </button>
-                                <button class="btn btn-outline-success text-start" type="button" data-bs-toggle="modal" data-bs-target="#newSalesGroupModal" onclick="clearAttendanceModal()">
-                                    新增銷售據點 / 單據資料
-                                </button>
-                                <a class="btn btn-outline-primary text-start" href="/settings?month={{ current_month }}&brand={{ current_brand }}">設定本月時薪 / 佣金覆寫</a>
-                            </div>
-                        </div>
+                <div id="excelInputPanel" class="border-2 border-green-200 rounded-xl p-4 bg-gray-50 mb-3">
+                    <div class="font-bold text-green-700 mb-2">A. Excel 匯入</div>
+                    <p class="text-sm text-gray-500 mb-3">適合仍以 Excel 為主的月份作業。匯入後再回到系統內覆核與修正。</p>
+                    <form action="/upload_and_import" method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="calc_month" value="{{ current_month }}">
+                        <input type="hidden" name="brand" value="{{ current_brand }}">
+                        <input class="w-full px-3 py-2 text-sm border border-green-300 rounded-xl mb-2 js-brand-file-input" type="file" name="excel_file" accept=".xlsx, .xls" required>
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2 text-xs mb-2 hidden js-brand-file-warning"></div>
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2 text-xs mb-2 hidden js-month-file-warning"></div>
+                        <label class="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-gray-200 cursor-pointer mb-2">
+                            <input type="checkbox" name="update_emp" id="updateEmpCheck" checked class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500">
+                            <span class="text-sm font-bold text-blue-700">🔄 同步本月時薪與津貼 (MonthlyRates)</span>
+                        </label>
+                        <button type="submit" class="w-full py-2.5 bg-green-600 text-white text-sm font-bold rounded-xl hover:bg-green-700 transition-colors shadow-sm">📤 匯入 {{ current_month }} 資料</button>
+                    </form>
+                    <a href="/validate?month={{ current_month }}&brand={{ current_brand }}" class="block w-full text-center px-3 py-2 text-sm font-bold text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors mt-2">🔍 歷史數據自動校對</a>
+                </div>
+
+                <div id="webInputPanel" class="border-2 border-blue-200 rounded-xl p-4 bg-gray-50 mb-3" style="display: none;">
+                    <div class="font-bold text-blue-700 mb-2">B. 網頁輸入</div>
+                    <p class="text-sm text-gray-500 mb-3">適合直接在系統建立本月資料，不必先準備 Excel。</p>
+                    <div class="space-y-2">
+                        <button class="w-full text-left px-4 py-2.5 text-sm font-bold text-amber-700 border border-amber-300 rounded-xl hover:bg-amber-50 transition-colors" type="button" onclick="openModal('newAttendanceGroupModal')">新增考勤人員 / 打卡資料</button>
+                        <button class="w-full text-left px-4 py-2.5 text-sm font-bold text-green-700 border border-green-300 rounded-xl hover:bg-green-50 transition-colors" type="button" onclick="clearAttendanceModal(); openModal('newSalesGroupModal')">新增銷售據點 / 單據資料</button>
+                        <a class="block w-full text-left px-4 py-2.5 text-sm font-bold text-blue-700 border border-blue-300 rounded-xl hover:bg-blue-50 transition-colors" href="/settings?month={{ current_month }}&brand={{ current_brand }}">設定本月時薪 / 佣金覆寫</a>
+                        <a class="block w-full text-left px-4 py-2.5 text-sm font-bold text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors" href="/manage_locations?brand={{ current_brand }}">維護標準店鋪與人事主檔</a>
                     </div>
+                </div>
 
-                {% else %}
-
-                    <label class="form-label fw-bold text-primary">2. 選擇輸入方式</label>
-                    <div class="mb-3">
-                        <select id="inputModeSelect" class="form-select border-primary" aria-label="請選擇輸入方式">
-                            <option value="excel" {% if month_input_source != 'web' %}selected{% endif %}>Excel 匯入</option>
-                            <option value="web" {% if month_input_source == 'web' %}selected{% endif %}>網頁輸入</option>
-                        </select>
-                    </div>
-
-                    <div id="excelInputPanel" class="border border-success rounded p-3 bg-light mb-3">
-                        <div class="fw-bold text-success mb-2">A. Excel 匯入</div>
-                        <p class="small text-muted mb-3">適合仍以 Excel 為主的月份作業。匯入後再回到系統內覆核與修正。</p>
-                        <form action="/upload_and_import" method="POST" enctype="multipart/form-data">
-                            <input type="hidden" name="calc_month" value="{{ current_month }}">
-                            <input type="hidden" name="brand" value="{{ current_brand }}">
-                            <input class="form-control border-success mb-2 js-brand-file-input" type="file" name="excel_file" accept=".xlsx, .xls" required>
-                            <div class="alert alert-warning py-2 px-3 small mb-2 d-none js-brand-file-warning"></div>
-                            <div class="alert alert-warning py-2 px-3 small mb-2 d-none js-month-file-warning"></div>
-                            <div class="form-check form-switch bg-white p-2 rounded border mb-2">
-                                <input class="form-check-input ms-0 me-2" type="checkbox" name="update_emp" id="updateEmpCheck" checked>
-                                <label class="form-check-label fw-bold text-primary" for="updateEmpCheck">
-                                    🔄 同步本月時薪與津貼 (MonthlyRates)
-                                </label>
-                                <div class="form-text mt-1">
-                                    <small>勾選：以 Excel "Name List" 更新<strong>本月</strong>時薪與津貼（不影響其他月份及員工預設值）。</small>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-success w-100 py-2 fw-bold shadow-sm">
-                                📤 匯入 {{ current_month }} 資料
-                            </button>
-                        </form>
-                        <a href="/validate?month={{ current_month }}&brand={{ current_brand }}" class="btn btn-outline-dark w-100 fw-bold shadow-sm mt-2">
-                            🔍 歷史數據自動校對
-                        </a>
-                    </div>
-
-                    <div id="webInputPanel" class="border border-primary rounded p-3 bg-light mb-3" style="display: none;">
-                        <div class="fw-bold text-primary mb-2">B. 網頁輸入</div>
-                        <p class="small text-muted mb-3">適合直接在系統建立本月資料，不必先準備 Excel。</p>
-                        <div class="d-grid gap-2">
-                            <button class="btn btn-outline-warning text-start" type="button" data-bs-toggle="modal" data-bs-target="#newAttendanceGroupModal">
-                                新增考勤人員 / 打卡資料
-                            </button>
-                            <button class="btn btn-outline-success text-start" type="button" data-bs-toggle="modal" data-bs-target="#newSalesGroupModal" onclick="clearAttendanceModal()">
-                                新增銷售據點 / 單據資料
-                            </button>
-                            <a class="btn btn-outline-primary text-start" href="/settings?month={{ current_month }}&brand={{ current_brand }}">設定本月時薪 / 佣金覆寫</a>
-                            <a class="btn btn-outline-secondary text-start" href="/manage_locations?brand={{ current_brand }}">維護標準店鋪與人事主檔</a>
-                        </div>
-                    </div>
-
-                    <button class="btn btn-secondary w-100 py-2 fw-bold shadow-sm mb-3" disabled>
-                        🚀 3. 開始結算 (請先建立或匯入資料)
-                    </button>
+                <button class="w-full py-2.5 bg-gray-400 text-white text-sm font-bold rounded-xl cursor-not-allowed mb-3" disabled>🚀 3. 開始結算 (請先建立或匯入資料)</button>
 
                 {% endif %}
             </div>
@@ -147,18 +119,18 @@
 </div>
 
 {% if attendances or staff_summary %}
-<div class="quick-action-bar">
-    <div class="quick-action-card">
-        <div class="quick-action-meta">
-            <div class="small text-muted fw-semibold">⚡ 快速重算流程</div>
-            <div class="fw-bold">已完成修正後，可直接校對或重算 {{ current_month }} 薪資</div>
+<div class="sticky bottom-4 z-50 mt-4">
+    <div class="flex items-center justify-between gap-4 px-4 py-3 rounded-xl border border-gray-200 bg-white/95 shadow-lg backdrop-blur">
+        <div class="min-w-0">
+            <div class="text-xs text-gray-500 font-semibold">⚡ 快速重算流程</div>
+            <div class="font-bold text-sm">已完成修正後，可直接校對或重算 {{ current_month }} 薪資</div>
         </div>
-        <div class="quick-action-buttons">
-            <a href="/settings?month={{ current_month }}&brand={{ current_brand }}" class="btn btn-outline-secondary">檢查本月覆寫</a>
+        <div class="flex gap-2 flex-wrap justify-end">
+            <a href="/settings?month={{ current_month }}&brand={{ current_brand }}" class="px-3 py-1.5 text-sm font-semibold text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">檢查本月覆寫</a>
             <form action="/calculate_payroll" method="POST" class="m-0">
                 <input type="hidden" name="calc_month" value="{{ current_month }}">
                 <input type="hidden" name="brand" value="{{ current_brand }}">
-                <button type="submit" class="btn btn-success fw-bold">立即重新計算薪資</button>
+                <button type="submit" class="px-4 py-1.5 text-sm font-bold text-white bg-green-600 rounded-xl hover:bg-green-700 transition-colors">立即重新計算薪資</button>
             </form>
         </div>
     </div>
@@ -169,142 +141,122 @@
 {% set hourly_attendances = attendances | selectattr("salary_type", "equalto", "hourly") | list %}
 {% set monthly_attendances = attendances | selectattr("salary_type", "equalto", "monthly") | list %}
 
-<div class="card app-card border-warning mb-4" id="attendance-overview">
-    <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
-        <h5 class="mb-0 fw-bold">📋 2. 考勤總覽 {{ current_month }}</h5>
-        <button class="btn btn-sm btn-dark shadow-sm" data-bs-toggle="modal" data-bs-target="#newAttendanceGroupModal">
-            + 新增考勤人員
-        </button>
+<div class="bg-white rounded-2xl shadow-sm border border-amber-200 overflow-hidden" id="attendance-overview">
+    <div class="px-5 py-3.5 bg-amber-50 text-amber-800 font-bold text-base flex items-center justify-between border-b border-amber-200">
+        <h5 class="font-bold">📋 2. 考勤總覽 {{ current_month }}</h5>
+        <button class="px-3 py-1.5 text-xs font-semibold text-white bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors" onclick="openModal('newAttendanceGroupModal')">+ 新增考勤人員</button>
     </div>
-    <div class="card-body p-0">
+    <div class="p-0">
         {# --- 頁籤導航 --- #}
-        <ul class="nav nav-tabs px-3 pt-2 bg-light" id="attendanceTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="hourly-tab" data-bs-toggle="tab" data-bs-target="#hourly-attendance" type="button" role="tab" aria-controls="hourly-attendance" aria-selected="true">
-                    🕐 時薪制 <span class="badge bg-info text-dark ms-1">{{ hourly_attendances | length }}</span>
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="monthly-tab" data-bs-toggle="tab" data-bs-target="#monthly-attendance" type="button" role="tab" aria-controls="monthly-attendance" aria-selected="false">
-                    💰 月薪制 <span class="badge bg-warning text-dark ms-1">{{ monthly_attendances | length }}</span>
-                </button>
-            </li>
-        </ul>
+        <div class="flex border-b border-gray-200 px-4 pt-2 bg-gray-50 gap-1" id="attendanceTabs" role="tablist">
+            <button class="att-tab-btn px-4 py-2 text-sm font-semibold rounded-t-xl border border-b-0 border-gray-200 -mb-px bg-white text-gray-700" data-tab="hourly-att" role="tab">
+                🕐 時薪制 <span class="ml-1.5 inline-block bg-cyan-100 text-cyan-700 text-xs px-2 py-0.5 rounded-full">{{ hourly_attendances | length }}</span>
+            </button>
+            <button class="att-tab-btn px-4 py-2 text-sm font-semibold rounded-t-xl border border-b-0 border-gray-200 -mb-px bg-gray-50 text-gray-500" data-tab="monthly-att" role="tab">
+                💰 月薪制 <span class="ml-1.5 inline-block bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full">{{ monthly_attendances | length }}</span>
+            </button>
+        </div>
 
-        <div class="tab-content">
+        <div>
             {# === 時薪制頁籤 === #}
-            <div class="tab-pane fade show active" id="hourly-attendance" role="tabpanel" aria-labelledby="hourly-tab">
-                <div class="table-wrap">
-                    <table class="table table-hover text-center align-middle mb-0 data-table">
-                        <thead class="table-light">
-                            <tr>
-                                <th style="width: 70px;">ID</th> <th>推廣員</th> <th>全名</th>
-                                <th>本月時薪</th>
-                                <th>地點</th>
-                                <th>日數</th>
-                                <th>工時</th>
-                                <th>OT</th>
-                                <th class="text-success">報銷</th>
-                                <th class="text-primary fw-bold">預估底薪</th>
-                                <th>操作</th>
+            <div class="att-tab-pane block" id="tab-hourly-att">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <th class="px-3 py-3 border-b border-gray-200 w-[70px]">ID</th>
+                                <th class="px-3 py-3 border-b border-gray-200">推廣員</th>
+                                <th class="px-3 py-3 border-b border-gray-200">全名</th>
+                                <th class="px-3 py-3 border-b border-gray-200">本月時薪</th>
+                                <th class="px-3 py-3 border-b border-gray-200">地點</th>
+                                <th class="px-3 py-3 border-b border-gray-200">日數</th>
+                                <th class="px-3 py-3 border-b border-gray-200">工時</th>
+                                <th class="px-3 py-3 border-b border-gray-200">OT</th>
+                                <th class="px-3 py-3 border-b border-gray-200 text-green-700">報銷</th>
+                                <th class="px-3 py-3 border-b border-gray-200 text-blue-700 font-bold">預估底薪</th>
+                                <th class="px-3 py-3 border-b border-gray-200">操作</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for att in hourly_attendances %}
-                            <tr>
-                                <td class="fw-bold">{{ loop.index }}</td> <td class="fw-bold text-primary">{{ att.nick_name }}</td> <td class="fw-bold">{{ att.full_name }}</td>
-                                <td>
+                            <tr class="text-center border-b border-gray-100 hover:bg-gray-50 odd:bg-white even:bg-gray-50/50 transition-colors">
+                                <td class="px-3 py-2.5 font-bold">{{ loop.index }}</td>
+                                <td class="px-3 py-2.5 font-bold text-blue-700">{{ att.nick_name }}</td>
+                                <td class="px-3 py-2.5 font-semibold">{{ att.full_name }}</td>
+                                <td class="px-3 py-2.5">
                                     {% if att.monthly_hourly_rate is defined and att.monthly_hourly_rate is not none %}
-                                        <span class="badge bg-primary fs-6 shadow-sm" data-bs-toggle="tooltip" title="本月專屬時薪">
-                                            ${{ "{:,.2f}".format(att.monthly_hourly_rate) }}
-                                        </span>
+                                        <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full font-bold shadow-sm">${{ "{:,.2f}".format(att.monthly_hourly_rate) }}</span>
                                     {% else %}
-                                        <span class="text-secondary fw-bold">
-                                            ${{ "{:,.2f}".format(att.default_hourly_rate | default(0)) }}
-                                        </span>
-                                        <span class="text-muted small ms-1">(預設)</span>
+                                        <span class="font-bold text-gray-500">${{ "{:,.2f}".format(att.default_hourly_rate | default(0)) }}</span>
+                                        <span class="text-gray-400 text-xs ms-1">(預設)</span>
                                     {% endif %}
                                 </td>
-                                <td><span class="badge bg-info text-dark">{{ att.location }}</span></td>
-                                <td>{{ att.days_worked }}</td>
-                                <td>{{ "%g" | format(att.hours) }}</td>
-                                <td>{{ att.ot_hours }}</td>
-                                <td class="text-success fw-bold">${{ "{:,.1f}".format(att.expenses) }}</td>
-                                <td class="text-primary fw-bold">${{ "{:,.1f}".format(att.estimated_basic) }}</td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-primary"
-                                            onclick="editAttendance('{{ att.nick_name }}', '{{ att.location }}', {{ att.days_worked }}, {{ att.hours }}, {{ att.ot_hours }}, {{ att.expenses or 0 }}, {{ att.adjustment or 0 }}, {{ att.attendance_bonus or 0 }}, {{ att.monthly_hourly_rate if att.monthly_hourly_rate is not none else 'null' }}, {{ att.default_hourly_rate }})">
-                                            修改
-                                        </button>
-                                        <form action="/delete_attendance/{{ att.id }}" method="POST" class="m-0" onsubmit="return confirm('確定刪除？')">
-                                            <button type="submit" class="btn btn-outline-danger btn-sm">刪除</button>
-                                        </form>
-                                    </div>
+                                <td class="px-3 py-2.5"><span class="inline-block bg-cyan-100 text-cyan-800 text-xs px-2 py-0.5 rounded-full">{{ att.location }}</span></td>
+                                <td class="px-3 py-2.5">{{ att.days_worked }}</td>
+                                <td class="px-3 py-2.5">{{ "%g" | format(att.hours) }}</td>
+                                <td class="px-3 py-2.5">{{ att.ot_hours }}</td>
+                                <td class="px-3 py-2.5 font-bold text-green-700">${{ "{:,.1f}".format(att.expenses) }}</td>
+                                <td class="px-3 py-2.5 font-bold text-blue-700">${{ "{:,.1f}".format(att.estimated_basic) }}</td>
+                                <td class="px-3 py-2.5 whitespace-nowrap">
+                                    <button class="px-2.5 py-1 text-xs font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                                        onclick="editAttendance('{{ att.nick_name }}', '{{ att.location }}', {{ att.days_worked }}, {{ att.hours }}, {{ att.ot_hours }}, {{ att.expenses or 0 }}, {{ att.adjustment or 0 }}, {{ att.attendance_bonus or 0 }}, {{ att.monthly_hourly_rate if att.monthly_hourly_rate is not none else 'null' }}, {{ att.default_hourly_rate }})">修改</button>
+                                    <form action="/delete_attendance/{{ att.id }}" method="POST" class="inline" onsubmit="return confirm('確定刪除？')">
+                                        <button type="submit" class="px-2.5 py-1 text-xs font-semibold text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors">刪除</button>
+                                    </form>
                                 </td>
                             </tr>
                             {% else %}
-                            <tr>
-                                <td colspan="10" class="py-4 text-muted fst-italic">
-                                    尚無時薪制人員的考勤紀錄。
-                                </td>
-                            </tr>
+                            <tr><td colspan="11" class="text-center text-gray-400 py-8 italic">尚無時薪制人員的考勤紀錄。</td></tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
             </div>
 
-                        {# === 月薪制頁籤 === #}
-            <div class="tab-pane fade" id="monthly-attendance" role="tabpanel" aria-labelledby="monthly-tab">
-                <div class="table-wrap">
-                    <table class="table table-hover text-center align-middle mb-0 data-table">
-                        <thead class="table-light">
-                            <tr>
-                                <th style="width: 70px;">ID</th> <th>推廣員</th> <th>全名</th>
-                                <th>服務地點</th>
-                                <th class="text-primary fw-bold">固定月薪</th>
-                                <th class="text-success">報銷</th>
-                                <th>勤工獎</th>
-                                <th>微調</th>
-                                <th>操作</th>
+            {# === 月薪制頁籤 === #}
+            <div class="att-tab-pane hidden" id="tab-monthly-att">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <th class="px-3 py-3 border-b border-gray-200 w-[70px]">ID</th>
+                                <th class="px-3 py-3 border-b border-gray-200">推廣員</th>
+                                <th class="px-3 py-3 border-b border-gray-200">全名</th>
+                                <th class="px-3 py-3 border-b border-gray-200">服務地點</th>
+                                <th class="px-3 py-3 border-b border-gray-200 text-blue-700 font-bold">固定月薪</th>
+                                <th class="px-3 py-3 border-b border-gray-200 text-green-700">報銷</th>
+                                <th class="px-3 py-3 border-b border-gray-200">勤工獎</th>
+                                <th class="px-3 py-3 border-b border-gray-200">微調</th>
+                                <th class="px-3 py-3 border-b border-gray-200">操作</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for att in monthly_attendances %}
-                            <tr>
-                                <td class="fw-bold">{{ loop.index }}</td> <td class="fw-bold text-primary">{{ att.nick_name }}</td> <td class="fw-bold">{{ att.full_name }}</td>
-                                <td>
+                            <tr class="text-center border-b border-gray-100 hover:bg-gray-50 odd:bg-white even:bg-gray-50/50 transition-colors">
+                                <td class="px-3 py-2.5 font-bold">{{ loop.index }}</td>
+                                <td class="px-3 py-2.5 font-bold text-blue-700">{{ att.nick_name }}</td>
+                                <td class="px-3 py-2.5 font-semibold">{{ att.full_name }}</td>
+                                <td class="px-3 py-2.5">
                                     {% set locs = att.location.split("、") %}
-                                    {% if locs | length > 1 %}                                                                                
-                                                                                <span class="badge bg-secondary" data-bs-toggle="tooltip" title="跨多個地點">{{ locs | length }} 個地點</span></br>
-                                                                                <span class="badge bg-info text-dark">{{ att.location }}</span>
-                                    {% else %}
-                                        <span class="badge bg-info text-dark">{{ att.location }}</span>
+                                    {% if locs | length > 1 %}
+                                        <span class="inline-block bg-gray-500 text-white text-xs px-2 py-0.5 rounded-full me-1">{{ locs | length }} 個地點</span>
                                     {% endif %}
+                                    <span class="inline-block bg-cyan-100 text-cyan-800 text-xs px-2 py-0.5 rounded-full">{{ att.location }}</span>
                                 </td>
-                                <td class="text-primary fw-bold fs-5">${{ "{:,.0f}".format(att.monthly_salary) }}</td>
-                                <td class="text-success fw-bold">${{ "{:,.1f}".format(att.expenses) }}</td>
-                                <td>${{ "{:,.1f}".format(att.attendance_bonus or 0) }}</td>
-                                <td>${{ "{:,.1f}".format(att.adjustment or 0) }}</td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-primary"
-                                            onclick="editAttendance('{{ att.nick_name }}', '{{ att.location.split('、')[0] }}', {{ att.days_worked }}, {{ att.hours }}, {{ att.ot_hours }}, {{ att.expenses or 0 }}, {{ att.adjustment or 0 }}, {{ att.attendance_bonus or 0 }}, {{ att.monthly_hourly_rate if att.monthly_hourly_rate is not none else 'null' }}, {{ att.default_hourly_rate }})">
-                                            修改
-                                        </button>
-                                        <form action="/delete_attendance/{{ att.id }}" method="POST" class="m-0" onsubmit="return confirm('確定刪除？')">
-                                            <button type="submit" class="btn btn-outline-danger btn-sm">刪除</button>
-                                        </form>
-                                    </div>
+                                <td class="px-3 py-2.5 font-bold text-lg text-blue-700">${{ "{:,.0f}".format(att.monthly_salary) }}</td>
+                                <td class="px-3 py-2.5 font-bold text-green-700">${{ "{:,.1f}".format(att.expenses) }}</td>
+                                <td class="px-3 py-2.5">${{ "{:,.1f}".format(att.attendance_bonus or 0) }}</td>
+                                <td class="px-3 py-2.5">${{ "{:,.1f}".format(att.adjustment or 0) }}</td>
+                                <td class="px-3 py-2.5 whitespace-nowrap">
+                                    <button class="px-2.5 py-1 text-xs font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                                        onclick="editAttendance('{{ att.nick_name }}', '{{ att.location.split('、')[0] }}', {{ att.days_worked }}, {{ att.hours }}, {{ att.ot_hours }}, {{ att.expenses or 0 }}, {{ att.adjustment or 0 }}, {{ att.attendance_bonus or 0 }}, {{ att.monthly_hourly_rate if att.monthly_hourly_rate is not none else 'null' }}, {{ att.default_hourly_rate }})">修改</button>
+                                    <form action="/delete_attendance/{{ att.id }}" method="POST" class="inline" onsubmit="return confirm('確定刪除？')">
+                                        <button type="submit" class="px-2.5 py-1 text-xs font-semibold text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors">刪除</button>
+                                    </form>
                                 </td>
                             </tr>
                             {% else %}
-                            <tr>
-                                <td colspan="8" class="py-4 text-muted fst-italic">
-                                    尚無月薪制人員的考勤紀錄。
-                                </td>
-                            </tr>
+                            <tr><td colspan="9" class="text-center text-gray-400 py-8 italic">尚無月薪制人員的考勤紀錄。</td></tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -314,70 +266,61 @@
     </div>
 </div>
 
-<div class="card app-card border-success mb-4" id="sales-overview">
-    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-        <h5 class="mb-0 fw-bold">📊 3. 銷售管理中心 {{ current_month }}</h5>
-        <button class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#newSalesGroupModal" onclick="clearAttendanceModal()">
-            + 新增 {{ current_month }} 銷售據點
-        </button>
+<div class="bg-white rounded-2xl shadow-sm border border-green-200 overflow-hidden" id="sales-overview">
+    <div class="px-5 py-3.5 bg-green-50 text-green-800 font-bold text-base flex items-center justify-between border-b border-green-200">
+        <h5 class="font-bold">📊 3. 銷售管理中心 {{ current_month }}</h5>
+        <button class="px-3 py-1.5 text-xs font-semibold text-white bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors" onclick="clearAttendanceModal(); openModal('newSalesGroupModal')">+ 新增 {{ current_month }} 銷售據點</button>
     </div>
-    <div class="card-body p-0">
-        <div class="table-wrap">
-            <table class="table table-hover text-center align-middle mb-0 data-table">
-                <thead class="table-light">
-                    <tr>
-                        <th style="width: 70px;">ID</th> <th>推廣員</th> <th>全名</th>
-                        <th>地點</th>
-                        <th style="width: 12%;">本月佣金</th>
-                        <th>單據數量</th>
-                        <th>當月總銷額</th>
-                        <th>當月總佣金</th>
-                        <th style="width: 180px;">操作</th>
+    <div class="p-0">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm border-collapse">
+                <thead>
+                    <tr class="bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        <th class="px-3 py-3 border-b border-gray-200 w-[70px]">ID</th>
+                        <th class="px-3 py-3 border-b border-gray-200">推廣員</th>
+                        <th class="px-3 py-3 border-b border-gray-200">全名</th>
+                        <th class="px-3 py-3 border-b border-gray-200">地點</th>
+                        <th class="px-3 py-3 border-b border-gray-200 w-[12%]">本月佣金</th>
+                        <th class="px-3 py-3 border-b border-gray-200">單據數量</th>
+                        <th class="px-3 py-3 border-b border-gray-200">當月總銷額</th>
+                        <th class="px-3 py-3 border-b border-gray-200">當月總佣金</th>
+                        <th class="px-3 py-3 border-b border-gray-200 w-[180px]">操作</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for staff in staff_summary %}
-                    <tr>
-                        <td class="fw-bold">{{ loop.index }}</td> <td class="fw-bold text-primary">{{ staff.name }}</td> <td class="fw-bold">{{ staff.full_name }}</td>
-                        <td><span class="badge bg-info text-dark">{{ staff.main_location }}</span></td>
-                        <td>
+                    <tr class="text-center border-b border-gray-100 hover:bg-gray-50 odd:bg-white even:bg-gray-50/50 transition-colors">
+                        <td class="px-3 py-2.5 font-bold">{{ loop.index }}</td>
+                        <td class="px-3 py-2.5 font-bold text-blue-700">{{ staff.name }}</td>
+                        <td class="px-3 py-2.5 font-semibold">{{ staff.full_name }}</td>
+                        <td class="px-3 py-2.5"><span class="inline-block bg-cyan-100 text-cyan-800 text-xs px-2 py-0.5 rounded-full">{{ staff.main_location }}</span></td>
+                        <td class="px-3 py-2.5">
                             {% if staff.monthly_comm is not none %}
-                                <span class="badge bg-primary fs-6 shadow-sm" data-bs-toggle="tooltip" title="本月專屬佣金">
-                                    {{ (staff.monthly_comm * 100) | int }}%
-                                </span>
+                                <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full font-bold shadow-sm">{{ (staff.monthly_comm * 100) | int }}%</span>
                             {% else %}
-                                <span class="text-secondary fw-bold">
-                                    {{ (staff.default_comm * 100) | int }}%
-                                </span>
-                                <span class="text-muted small ms-1">(預設)</span>
+                                <span class="font-bold text-gray-500">{{ (staff.default_comm * 100) | int }}%</span>
+                                <span class="text-gray-400 text-xs ms-1">(預設)</span>
                             {% endif %}
                         </td>
-                        <td>{{ staff.total_entries }} 筆</td>
-                        <td class="fw-bold text-success">${{ "{:,.2f}".format(staff.total_amount) }}</td>
-                        <td class="fw-bold text-primary">${{ "{:,.2f}".format(staff.total_comm) }}</td>
-                        <td>
-                            <div class="d-flex justify-content-center gap-1">
-                                <button class="btn btn-sm btn-primary" 
-                                        onclick="openSalesModal('{{ staff.name }}', '{{ staff.main_location }}', {{ staff.monthly_comm if staff.monthly_comm is not none else 'null' }}, {{ staff.default_comm }})">
-                                    修改
-                                </button>
-                                <form action="/delete_sales_group" method="POST" class="m-0" 
+                        <td class="px-3 py-2.5">{{ staff.total_entries }} 筆</td>
+                        <td class="px-3 py-2.5 font-bold text-green-700">${{ "{:,.2f}".format(staff.total_amount) }}</td>
+                        <td class="px-3 py-2.5 font-bold text-blue-700">${{ "{:,.2f}".format(staff.total_comm) }}</td>
+                        <td class="px-3 py-2.5 whitespace-nowrap">
+                            <div class="flex justify-center gap-1">
+                                <button class="px-2.5 py-1 text-xs font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                                        onclick="openSalesModal('{{ staff.name }}', '{{ staff.main_location }}', {{ staff.monthly_comm if staff.monthly_comm is not none else 'null' }}, {{ staff.default_comm }})">修改</button>
+                                <form action="/delete_sales_group" method="POST" class="inline"
                                     onsubmit="return confirm('確定要清空 {{ staff.name }} 在 {{ staff.main_location }} 的所有單據嗎？此動作無法復原！');">
                                     <input type="hidden" name="month" value="{{ current_month }}">
                                     <input type="hidden" name="promoter" value="{{ staff.name }}">
                                     <input type="hidden" name="location" value="{{ staff.main_location }}">
-                                    <button type="submit" class="btn btn-outline-danger btn-sm" title="清空此店單據">刪除</button>                                    
-                                </form>
+                                    <button type="submit" class="px-2.5 py-1 text-xs font-semibold text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors" title="清空此店單據">刪除</button>
                                 </form>
                             </div>
                         </td>
                     </tr>
                     {% else %}
-                    <tr>
-                        <td colspan="8" class="py-4 text-muted fst-italic">
-                            {{ current_month }} 尚未有任何匯入數據。
-                        </td>
-                    </tr>
+                    <tr><td colspan="9" class="text-center text-gray-400 py-8 italic">{{ current_month }} 尚未有任何匯入數據。</td></tr>
                     {% endfor %}
                 </tbody>
             </table>
@@ -385,269 +328,192 @@
     </div>
 </div>
 
-<div class="modal fade" id="attendanceModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header bg-warning text-dark">
-                <h5 class="modal-title fw-bold" id="attendanceModalLabel">
-                    📅 編輯考勤明細：<span id="att_name_display" class="text-primary"></span>
-                    <span class="fs-6 text-muted ms-2">📍 <span id="att_loc_display"></span></span> </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            
-            <div class="modal-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover table-sm align-middle mb-0 text-center" style="font-size: 0.9rem;">
-                        <thead class="table-light sticky-top">
-                            <tr>
-                                <th style="width: 8%;">ID</th> <th style="width: 12%;">日期</th>
-                                <th style="width: 18%;">地點</th>
-                                <th style="width: 12%;">簽到</th>
-                                <th style="width: 12%;">簽退</th>
-                                <th style="width: 10%;">常規</th> <th style="width: 10%;">實際</th> 
-                                <th style="width: 10%;">OT</th>   <th style="width: 16%;">操作</th>
-                            </tr>
-                        </thead>
-                        <tbody id="daily_records_body">
-                            <tr><td colspan="6" class="text-muted py-4">尚無紀錄。</td></tr>
-                        </tbody>
-                        <tfoot class="table-info">
-                            <tr>
-                                <td></td> <td><input type="date" id="new_date" class="form-control form-control-sm"></td>                                
-                                <td>
-                                    <input type="text" id="new_loc" class="form-control form-control-sm bg-light text-muted" readonly>
-                                </td>
-                                
-                                <td><input type="time" id="new_in" class="form-control form-control-sm" value="12:00"></td>
-                                <td><input type="time" id="new_out" class="form-control form-control-sm" value="20:00"></td>
-                                
-                                <td><input type="number" step="0.5" id="new_normal" class="form-control form-control-sm" value="8.0"></td>
-                                
-                                <td colspan="3">
-                                    <button type="button" class="btn btn-sm btn-success w-100 fw-bold" onclick="addNewRecordFromUI()">
-                                        ➕ 新增紀錄
-                                    </button>
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-
-                <div class="p-3 bg-light border-top">
-                    <h6 class="fw-bold mb-3"><i class="bi bi-cash-stack"></i> 💰 月結微調項目 (Monthly Adjustment)</h6>
-                    <form id="adjustmentForm" action="/update_attendance" method="POST">
-                        <input type="hidden" name="calc_month" value="{{ current_month }}">
-                        <input type="hidden" name="nick_name" id="att_name_hidden">
-                        <input type="hidden" name="location" id="att_loc_hidden">
-                        <div class="row g-2">
-                            <div class="col-md-3 col-sm-6">
-                                <label class="form-label small fw-bold text-primary">本月專屬時薪</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text bg-light">$</span>
-                                    <input type="number" step="0.1" name="monthly_hourly_rate" id="att_monthly_hr" class="form-control border-primary">
-                                </div>
-                                <div class="form-text text-muted mt-1" id="att_hr_hint" style="font-size: 0.75rem;"></div>
-                            </div>
-                            <div class="col-md-3 col-sm-6">
-                                <label class="form-label small fw-bold">實報實銷 (Expenses)</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text bg-light">$</span>
-                                    <input type="number" step="0.1" name="expenses" id="att_exp" class="form-control">
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-sm-6">
-                                <label class="form-label small fw-bold">勤工獎 (Bonus)</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text bg-light">$</span>
-                                    <input type="number" step="0.1" name="attendance_bonus" id="att_bonus" class="form-control">
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-sm-6">
-                                <label class="form-label small fw-bold">其他調整 (Adj)</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text bg-light">$</span>
-                                    <input type="number" step="0.1" name="adjustment" id="att_adj" class="form-control">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-3 d-flex justify-content-between align-items-center">
-                            <small class="text-muted"><i class="bi bi-info-circle"></i> 時薪若留空，系統將自動使用該員工的預設時薪。</small>
-                            <button type="submit" class="btn btn-warning btn-sm fw-bold px-4 shadow-sm">儲存月結微調與時薪</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            
-            <div class="modal-footer bg-light">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
-            </div>
-        </div>
+<div class="fixed inset-0 z-50 items-start justify-center py-8 hidden modal overflow-y-auto" id="attendanceModal">
+  <div class="absolute inset-0 bg-black/40" onclick="closeModal(this)"></div>
+  <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-4xl mx-4 z-10">
+    <div class="sticky top-0 z-10 px-5 py-4 bg-amber-50 text-amber-800 font-bold text-lg flex items-center justify-between rounded-t-2xl border-b border-amber-200">
+      <span>📅 編輯考勤明細：<span id="att_name_display" class="text-blue-700"></span> <span class="text-sm text-gray-500 ms-2">📍 <span id="att_loc_display"></span></span></span>
+      <button class="text-amber-800/50 hover:text-amber-800 text-2xl leading-none" onclick="closeModal(this)">&times;</button>
     </div>
+    <div class="p-0">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead class="sticky top-0 z-10">
+            <tr class="bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th class="px-2 py-3 border-b border-gray-200 w-[8%]">ID</th>
+              <th class="px-2 py-3 border-b border-gray-200 w-[12%]">日期</th>
+              <th class="px-2 py-3 border-b border-gray-200 w-[18%]">地點</th>
+              <th class="px-2 py-3 border-b border-gray-200 w-[12%]">簽到</th>
+              <th class="px-2 py-3 border-b border-gray-200 w-[12%]">簽退</th>
+              <th class="px-2 py-3 border-b border-gray-200 w-[10%]">常規</th>
+              <th class="px-2 py-3 border-b border-gray-200 w-[10%]">實際</th>
+              <th class="px-2 py-3 border-b border-gray-200 w-[10%]">OT</th>
+              <th class="px-2 py-3 border-b border-gray-200 w-[16%]">操作</th>
+            </tr>
+          </thead>
+          <tbody id="daily_records_body"><tr><td colspan="9" class="text-center text-gray-400 py-6">尚無紀錄。</td></tr></tbody>
+          <tfoot>
+            <tr class="bg-blue-50">
+              <td></td>
+              <td class="px-1 py-1.5"><input type="date" id="new_date" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></td>
+              <td class="px-1 py-1.5"><input type="text" id="new_loc" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg bg-gray-100 text-gray-500" readonly></td>
+              <td class="px-1 py-1.5"><input type="time" id="new_in" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" value="12:00"></td>
+              <td class="px-1 py-1.5"><input type="time" id="new_out" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" value="20:00"></td>
+              <td class="px-1 py-1.5"><input type="number" step="0.5" id="new_normal" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" value="8.0"></td>
+              <td colspan="3" class="px-1 py-1.5"><button class="w-full px-2 py-1.5 text-xs font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors" onclick="addNewRecordFromUI()">➕ 新增紀錄</button></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <div class="p-4 bg-gray-50 border-t border-gray-200">
+        <h6 class="font-bold text-sm mb-3">💰 月結微調項目 (Monthly Adjustment)</h6>
+        <form id="adjustmentForm" action="/update_attendance" method="POST">
+          <input type="hidden" name="calc_month" value="{{ current_month }}">
+          <input type="hidden" name="nick_name" id="att_name_hidden">
+          <input type="hidden" name="location" id="att_loc_hidden">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-blue-700 mb-1">本月專屬時薪</label>
+              <div class="flex"><span class="inline-flex items-center px-2 bg-gray-100 border border-r-0 border-gray-300 rounded-l-lg text-sm">$</span><input type="number" step="0.1" name="monthly_hourly_rate" id="att_monthly_hr" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
+              <div class="text-xs text-gray-400 mt-1" id="att_hr_hint"></div>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">實報實銷</label>
+              <div class="flex"><span class="inline-flex items-center px-2 bg-gray-100 border border-r-0 border-gray-300 rounded-l-lg text-sm">$</span><input type="number" step="0.1" name="expenses" id="att_exp" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">勤工獎</label>
+              <div class="flex"><span class="inline-flex items-center px-2 bg-gray-100 border border-r-0 border-gray-300 rounded-l-lg text-sm">$</span><input type="number" step="0.1" name="attendance_bonus" id="att_bonus" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">其他調整</label>
+              <div class="flex"><span class="inline-flex items-center px-2 bg-gray-100 border border-r-0 border-gray-300 rounded-l-lg text-sm">$</span><input type="number" step="0.1" name="adjustment" id="att_adj" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
+            </div>
+          </div>
+          <div class="mt-3 flex items-center justify-between">
+            <span class="text-xs text-gray-500">時薪若留空，系統將自動使用該員工的預設時薪。</span>
+            <button type="submit" class="px-4 py-2 text-xs font-bold text-amber-800 bg-amber-100 rounded-xl hover:bg-amber-200 transition-colors">儲存月結微調與時薪</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="px-5 py-3 bg-gray-100 flex justify-end rounded-b-2xl">
+      <button class="px-4 py-2 text-sm font-semibold text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors" onclick="closeModal(this)">關閉</button>
+    </div>
+  </div>
 </div>
 
-<div class="modal fade" id="salesModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-scrollable"> <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title fw-bold">
-                    🛒 編輯銷售明細：<span id="sales_name_display" class="text-warning"></span> 
-                    <span class="fs-6 opacity-75">📍 <span id="sales_loc_display"></span></span>
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            
-            <div class="modal-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover table-sm align-middle mb-0 text-center" style="font-size: 0.9rem;">
-                        <thead class="table-light sticky-top">
-                            <tr>
-                                <th style="width: 70px;">ID</th> <th style="width: 15%;">銷售日期</th>
-                                <th style="width: 20%;">售出地點</th>
-                                <th style="width: 25%;">產品型號 (Model)</th>
-                                <th style="width: 10%;">數量</th>
-                                <th style="width: 15%;">單價 ($)</th>
-                                <th style="width: 15%;">操作</th>
-                            </tr>
-                        </thead>
-                        <tbody id="sales_records_body">
-                            <tr><td colspan="7" class="py-4 text-center">正在載入數據...</td></tr> </tbody>
-                        <tfoot class="table-success">
-                            <tr>
-                                <td></td> <td><input type="date" id="new_sales_date" class="form-control form-control-sm"></td>            
-                                <td>
-                                    <select id="new_sales_loc" class="form-select form-select-sm">
-                                        <option value="">-- 選擇店鋪 --</option>
-                                        {% for loc in locations %}
-                                        <option value="{{ loc.name }}">{{ loc.name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                                <td>
-                                    <input list="productModels" id="new_sales_model" class="form-control form-control-sm" placeholder="輸入或選擇型號">
-                                    <datalist id="productModels">
-                                        {% for p in products %}
-                                        <option value="{{ p.model }}">
-                                        {% endfor %}
-                                    </datalist>
-                                </td>
-                                <td><input type="number" id="new_sales_qty" class="form-control form-control-sm" value="1" min="1"></td>
-                                <td><input type="number" step="0.1" id="new_sales_price" class="form-control form-control-sm" placeholder="單價"></td>
-                                <td>
-                                    <button type="button" class="btn btn-sm btn-success w-100 fw-bold" onclick="addNewSalesRecordFromUI()">
-                                        ➕ 新增單據
-                                    </button>
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-            <div class="p-3 bg-light border-top d-flex flex-wrap align-items-center justify-content-between gap-2">
-                    <div class="d-flex align-items-center gap-2">
-                        <h6 class="fw-bold mb-0 me-2"><i class="bi bi-percent"></i> 月結佣金微調</h6>
-                        <label class="form-label mb-0 small fw-bold text-primary text-nowrap">本月專屬佣金</label>
-                        <input type="number" step="0.001" id="sales_monthly_comm_input" class="form-control form-control-sm border-primary" style="width: 120px;" placeholder="預設">
-                        <span id="sales_comm_hint" class="text-muted small ms-2"></span>
-                    </div>
-                    <button class="btn btn-sm btn-warning fw-bold shadow-sm px-4" onclick="saveSalesComm()">儲存佣金設定</button>
-                </div>
-            <div class="modal-footer bg-light">
-                <span class="text-muted small me-auto">💡 系統會自動將未知的新型號加入產品目錄中。修改後請重新結算薪資。</span>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
-            </div>
-        </div>
+<div class="fixed inset-0 z-50 items-start justify-center py-8 hidden modal overflow-y-auto" id="salesModal">
+  <div class="absolute inset-0 bg-black/40" onclick="closeModal(this)"></div>
+  <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-5xl mx-4 z-10">
+    <div class="sticky top-0 z-10 px-5 py-4 bg-green-50 text-green-800 font-bold text-lg flex items-center justify-between rounded-t-2xl border-b border-green-200">
+      <span>🛒 編輯銷售明細：<span id="sales_name_display" class="text-amber-600"></span> <span class="text-sm opacity-75">📍 <span id="sales_loc_display"></span></span></span>
+      <button class="text-green-800/50 hover:text-green-800 text-2xl leading-none" onclick="closeModal(this)">&times;</button>
     </div>
+    <div class="p-0">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead class="sticky top-0 z-10">
+            <tr class="bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th class="px-2 py-3 border-b border-gray-200 w-[70px]">ID</th>
+              <th class="px-2 py-3 border-b border-gray-200 w-[15%]">銷售日期</th>
+              <th class="px-2 py-3 border-b border-gray-200 w-[20%]">售出地點</th>
+              <th class="px-2 py-3 border-b border-gray-200 w-[25%]">產品型號</th>
+              <th class="px-2 py-3 border-b border-gray-200 w-[10%]">數量</th>
+              <th class="px-2 py-3 border-b border-gray-200 w-[15%]">單價</th>
+              <th class="px-2 py-3 border-b border-gray-200 w-[15%]">操作</th>
+            </tr>
+          </thead>
+          <tbody id="sales_records_body"><tr><td colspan="7" class="py-4 text-center text-gray-400">正在載入數據...</td></tr></tbody>
+          <tfoot>
+            <tr class="bg-green-50">
+              <td></td>
+              <td class="px-1 py-1.5"><input type="date" id="new_sales_date" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></td>
+              <td class="px-1 py-1.5"><select id="new_sales_loc" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"><option value="">-- 選擇店鋪 --</option>{% for loc in locations %}<option value="{{ loc.name }}">{{ loc.name }}</option>{% endfor %}</select></td>
+              <td class="px-1 py-1.5"><input list="productModels" id="new_sales_model" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="輸入或選擇型號"><datalist id="productModels">{% for p in products %}<option value="{{ p.model }}">{% endfor %}</datalist></td>
+              <td class="px-1 py-1.5"><input type="number" id="new_sales_qty" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" value="1" min="1"></td>
+              <td class="px-1 py-1.5"><input type="number" step="0.1" id="new_sales_price" class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="單價"></td>
+              <td class="px-1 py-1.5"><button class="w-full px-2 py-1.5 text-xs font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors" onclick="addNewSalesRecordFromUI()">➕ 新增單據</button></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <div class="px-4 py-3 bg-gray-50 border-t border-gray-200 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold">📊 月結佣金微調</span>
+          <label class="text-xs font-bold text-blue-700">本月專屬佣金</label>
+          <input type="number" step="0.001" id="sales_monthly_comm_input" class="w-28 px-2 py-1.5 text-xs border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="預設">
+          <span id="sales_comm_hint" class="text-xs text-gray-400"></span>
+        </div>
+        <button class="px-4 py-1.5 text-xs font-bold text-amber-800 bg-amber-100 rounded-xl hover:bg-amber-200 transition-colors" onclick="saveSalesComm()">儲存佣金設定</button>
+      </div>
+    </div>
+    <div class="px-5 py-3 bg-gray-100 flex items-center justify-between rounded-b-2xl">
+      <span class="text-xs text-gray-500">💡 系統會自動將未知的新型號加入產品目錄中。修改後請重新結算薪資。</span>
+      <button class="px-4 py-2 text-sm font-semibold text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors" onclick="closeModal(this)">關閉</button>
+    </div>
+  </div>
 </div>
 
-<div class="modal fade" id="newAttendanceGroupModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-warning text-dark">
-                <h5 class="modal-title fw-bold">➕ 新增考勤人員與據點</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label fw-bold">1. 選擇推廣員 (Promoter)</label>
-                    <select id="init_att_promoter" class="form-select border-warning">
-                        <option value="">-- 請選擇系統員工 --</option>
-                        {% for emp in employees %}
-                        <option value="{{ emp.nick_name }}">{{ emp.nick_name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="form-label fw-bold">2. 選擇地點 (Location)</label>
-                    <select id="init_att_loc" class="form-select border-warning">
-                        <option value="">-- 請選地點 --</option>
-                        {% for loc in locations %}
-                        <option value="{{ loc.name }}">{{ loc.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold text-primary">3. 本月專屬時薪 (選填)</label>
-                    <div class="input-group shadow-sm">
-                        <span class="input-group-text bg-light">$</span>
-                        <input type="number" step="0.1" id="init_att_monthly_hr" class="form-control border-warning" placeholder="若留空則使用系統預設時薪">
-                    </div>
-                    <div class="form-text text-muted mt-1" id="init_att_hr_hint">
-                        <i class="bi bi-info-circle"></i> 請先選擇推廣員以檢視預設時薪
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-warning fw-bold px-4" onclick="startNewAttendanceGroup()">🚀 開始打卡</button>
-            </div>
-        </div>
+{# 新增考勤 Modal #}
+<div class="fixed inset-0 z-50 items-center justify-center hidden modal" id="newAttendanceGroupModal">
+  <div class="absolute inset-0 bg-black/40" onclick="closeModal(this)"></div>
+  <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 z-10">
+    <div class="px-5 py-4 bg-amber-50 text-amber-800 font-bold text-lg flex items-center justify-between rounded-t-2xl border-b border-amber-200">
+      ➕ 新增考勤人員與據點
+      <button class="text-amber-800/50 hover:text-amber-800 text-2xl leading-none" onclick="closeModal(this)">&times;</button>
     </div>
+    <div class="p-5 space-y-4">
+      <div>
+        <label class="block text-sm font-bold text-gray-700 mb-1">1. 選擇推廣員</label>
+        <select id="init_att_promoter" class="w-full px-3 py-2.5 border border-amber-300 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none"><option value="">-- 請選擇系統員工 --</option>{% for emp in employees %}<option value="{{ emp.nick_name }}">{{ emp.nick_name }}</option>{% endfor %}</select>
+      </div>
+      <div>
+        <label class="block text-sm font-bold text-gray-700 mb-1">2. 選擇地點</label>
+        <select id="init_att_loc" class="w-full px-3 py-2.5 border border-amber-300 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none"><option value="">-- 請選地點 --</option>{% for loc in locations %}<option value="{{ loc.name }}">{{ loc.name }}</option>{% endfor %}</select>
+      </div>
+      <div>
+        <label class="block text-sm font-bold text-blue-700 mb-1">3. 本月專屬時薪 (選填)</label>
+        <div class="flex shadow-sm rounded-xl overflow-hidden border border-amber-300"><span class="inline-flex items-center px-3 bg-gray-100 text-sm">$</span><input type="number" step="0.1" id="init_att_monthly_hr" class="w-full px-3 py-2.5 outline-none" placeholder="若留空則使用系統預設時薪"></div>
+        <div class="text-xs text-gray-400 mt-1" id="init_att_hr_hint">請先選擇推廣員以檢視預設時薪</div>
+      </div>
+    </div>
+    <div class="px-5 py-4 bg-gray-50 flex justify-end gap-2 rounded-b-2xl">
+      <button class="px-4 py-2 text-sm font-semibold text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors" onclick="closeModal(this)">取消</button>
+      <button class="px-4 py-2 text-sm font-bold text-amber-800 bg-amber-100 rounded-xl hover:bg-amber-200 transition-colors" onclick="startNewAttendanceGroup()">🚀 開始打卡</button>
+    </div>
+  </div>
 </div>
 
-<div class="modal fade" id="newSalesGroupModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title fw-bold">➕ 開啟新銷售據點</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label fw-bold">1. 選擇推廣員 (Promoter)</label>
-                    <select id="init_sales_promoter" class="form-select border-success" onchange="updateInitSalesDefaultComm()">
-                        <option value="" data-comm="">-- 請選擇系統員工 --</option>
-                        {% for emp in employees %}
-                        <option value="{{ emp.nick_name }}" data-comm="{{ emp.commission_rate }}">{{ emp.nick_name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="mb-3 mt-3">
-                    <label class="form-label fw-bold text-primary">3. 本月專屬佣金 (選填)</label>
-                    <div class="input-group shadow-sm">
-                        <input type="number" step="0.001" id="init_sales_monthly_comm" class="form-control border-success" placeholder="留空則使用預設">
-                    </div>
-                    <div class="form-text text-muted mt-1" id="init_sales_comm_hint">
-                        <i class="bi bi-info-circle"></i> 請先選擇推廣員，小數表示 (例: 3% 輸入 0.03)
-                    </div>
-                </div>
-                <div class="mb-4">
-                    <label class="form-label fw-bold">2. 選擇主戰場 (Location)</label>
-                    <select id="init_sales_loc" class="form-select border-success">
-                        <option value="">-- 請選擇標準店鋪 --</option>
-                        {% for loc in locations %}
-                        <option value="{{ loc.name }}">{{ loc.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="alert alert-warning py-2 mb-0">
-                    <i class="bi bi-info-circle"></i> 選擇後將自動開啟明細表，您可直接開始輸入單據。
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-success fw-bold px-4" onclick="startNewSalesGroup()">🚀 開始輸入單據</button>
-            </div>
-        </div>
+{# 新增銷售 Modal #}
+<div class="fixed inset-0 z-50 items-center justify-center hidden modal" id="newSalesGroupModal">
+  <div class="absolute inset-0 bg-black/40" onclick="closeModal(this)"></div>
+  <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 z-10">
+    <div class="px-5 py-4 bg-green-50 text-green-800 font-bold text-lg flex items-center justify-between rounded-t-2xl border-b border-green-200">
+      ➕ 開啟新銷售據點
+      <button class="text-green-800/50 hover:text-green-800 text-2xl leading-none" onclick="closeModal(this)">&times;</button>
     </div>
+    <div class="p-5 space-y-4">
+      <div>
+        <label class="block text-sm font-bold text-gray-700 mb-1">1. 選擇推廣員</label>
+        <select id="init_sales_promoter" class="w-full px-3 py-2.5 border border-green-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" onchange="updateInitSalesDefaultComm()"><option value="" data-comm="">-- 請選擇系統員工 --</option>{% for emp in employees %}<option value="{{ emp.nick_name }}" data-comm="{{ emp.commission_rate }}">{{ emp.nick_name }}</option>{% endfor %}</select>
+      </div>
+      <div>
+        <label class="block text-sm font-bold text-blue-700 mb-1">3. 本月專屬佣金 (選填)</label>
+        <div class="flex shadow-sm rounded-xl overflow-hidden border border-green-300"><input type="number" step="0.001" id="init_sales_monthly_comm" class="w-full px-3 py-2.5 outline-none" placeholder="留空則使用預設"></div>
+        <div class="text-xs text-gray-400 mt-1">請先選擇推廣員，小數表示 (例: 3% 輸入 0.03)</div>
+      </div>
+      <div>
+        <label class="block text-sm font-bold text-gray-700 mb-1">2. 選擇主戰場</label>
+        <select id="init_sales_loc" class="w-full px-3 py-2.5 border border-green-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none"><option value="">-- 請選擇標準店鋪 --</option>{% for loc in locations %}<option value="{{ loc.name }}">{{ loc.name }}</option>{% endfor %}</select>
+      </div>
+      <div class="bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2 text-xs text-yellow-800">選擇後將自動開啟明細表，您可直接開始輸入單據。</div>
+    </div>
+    <div class="px-5 py-4 bg-gray-50 flex justify-end gap-2 rounded-b-2xl">
+      <button class="px-4 py-2 text-sm font-semibold text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors" onclick="closeModal(this)">取消</button>
+      <button class="px-4 py-2 text-sm font-bold text-white bg-green-600 rounded-xl hover:bg-green-700 transition-colors" onclick="startNewSalesGroup()">🚀 開始輸入單據</button>
+    </div>
+  </div>
 </div>
 
 <script id="index-page-data" type="application/json">{{ index_page_data | tojson }}</script>
@@ -742,7 +608,7 @@
 
             const file = input.files && input.files[0];
             if (!file) {
-                warningEl.classList.add('d-none');
+                warningEl.classList.add('hidden');
                 warningEl.textContent = '';
                 return;
             }
@@ -750,11 +616,11 @@
             const detectedBrand = detectBrandByFilename(file.name);
             if (detectedBrand && detectedBrand.code !== currentBrand) {
                 warningEl.textContent = `提醒：檔名看起來像「${detectedBrand.name}」品牌，但你目前選的是「${currentBrandName}」。請先確認品牌是否選對。`;
-                warningEl.classList.remove('d-none');
+                warningEl.classList.remove('hidden');
                 return;
             }
 
-            warningEl.classList.add('d-none');
+            warningEl.classList.add('hidden');
             warningEl.textContent = '';
         }
 
@@ -766,7 +632,7 @@
 
             const file = input.files && input.files[0];
             if (!file) {
-                warningEl.classList.add('d-none');
+                warningEl.classList.add('hidden');
                 warningEl.textContent = '';
                 return;
             }
@@ -774,11 +640,11 @@
             const detectedMonth = detectMonthByFilename(file.name);
             if (detectedMonth && currentMonth && detectedMonth !== currentMonth) {
                 warningEl.textContent = `提醒：檔名看起來像 ${detectedMonth} 月資料，但你目前選的是 ${currentMonth}。請先確認月份是否選對。`;
-                warningEl.classList.remove('d-none');
+                warningEl.classList.remove('hidden');
                 return;
             }
 
-            warningEl.classList.add('d-none');
+            warningEl.classList.add('hidden');
             warningEl.textContent = '';
         }
 
@@ -790,4 +656,42 @@
         });
     })();
 </script>
+
+{% block scripts_extra %}
+<script>
+// === 通用 Modal (取代 Bootstrap modal) ===
+function openModal(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('hidden');
+  el.classList.add('flex');
+}
+function closeModal(btn) {
+  const modal = btn.closest('.modal');
+  if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+}
+// Close modals by clicking backdrop
+document.querySelectorAll('.modal').forEach(m => {
+  m.addEventListener('click', function(e) {
+    if (e.target === this) { this.classList.add('hidden'); this.classList.remove('flex'); }
+  });
+});
+// === 考勤頁籤切換 ===
+document.querySelectorAll('.att-tab-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const tab = this.getAttribute('data-tab');
+    document.querySelectorAll('.att-tab-btn').forEach(b => {
+      const active = b.getAttribute('data-tab') === tab;
+      b.className = active
+        ? 'att-tab-btn px-4 py-2 text-sm font-semibold rounded-t-xl border border-b-0 border-gray-200 -mb-px bg-white text-gray-700'
+        : 'att-tab-btn px-4 py-2 text-sm font-semibold rounded-t-xl border border-b-0 border-gray-200 -mb-px bg-gray-50 text-gray-500';
+    });
+    document.querySelectorAll('.att-tab-pane').forEach(p => {
+      p.classList.toggle('hidden', p.id !== 'tab-' + tab);
+      p.classList.toggle('block', p.id === 'tab-' + tab);
+    });
+  });
+});
+</script>
+{% endblock %}
 {% endblock %}

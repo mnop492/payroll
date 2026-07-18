@@ -12882,3 +12882,407 @@ KeyError: ['Name']
 2026-07-17 21:21:44,963 - INFO - 162.158.193.252 - - [17/Jul/2026 21:21:44] "GET / HTTP/1.1" 200 -
 2026-07-17 21:22:20,680 - INFO - 172.71.218.213 - - [17/Jul/2026 21:22:20] "GET /manage_users HTTP/1.1" 200 -
 2026-07-17 21:22:34,046 - INFO - 172.71.218.213 - - [17/Jul/2026 21:22:34] "GET /settings HTTP/1.1" 200 -
+2026-07-17 21:23:04,431 - INFO - 172.71.218.213 - - [17/Jul/2026 21:23:04] "GET / HTTP/1.1" 200 -
+2026-07-17 21:24:01,265 - INFO - 172.71.218.213 - - [17/Jul/2026 21:24:01] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-17 21:24:35,856 - INFO - 172.71.218.213 - - [17/Jul/2026 21:24:35] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-17 21:24:45,813 - INFO - 172.71.218.213 - - [17/Jul/2026 21:24:45] "GET /settings?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 21:24:52,386 - INFO - 172.71.218.213 - - [17/Jul/2026 21:24:52] "GET /settings?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 21:26:10,695 - INFO - 172.68.211.170 - - [17/Jul/2026 21:26:10] "GET /settings?brand=dch_e_com HTTP/1.1" 200 -
+2026-07-17 21:26:11,619 - INFO - 172.68.211.170 - - [17/Jul/2026 21:26:11] "GET /settings?brand=toshiba HTTP/1.1" 200 -
+2026-07-17 21:26:12,369 - INFO - 172.68.211.170 - - [17/Jul/2026 21:26:12] "GET /settings?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 21:26:15,091 - INFO - 172.68.211.170 - - [17/Jul/2026 21:26:15] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-17 21:26:16,941 - INFO - 172.68.211.170 - - [17/Jul/2026 21:26:16] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-17 21:26:18,594 - INFO - 172.68.211.170 - - [17/Jul/2026 21:26:18] "GET / HTTP/1.1" 200 -
+2026-07-17 21:26:38,464 - INFO - 172.68.211.170 - - [17/Jul/2026 21:26:38] "GET /?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 21:26:44,103 - INFO - 172.68.211.170 - - [17/Jul/2026 21:26:44] "GET /?month=2026-06&brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 21:27:01,099 - INFO - 172.68.211.170 - - [17/Jul/2026 21:27:01] "GET /?month=2026-06&brand=century_field HTTP/1.1" 200 -
+2026-07-17 21:27:24,889 - INFO - 172.68.211.170 - - [17/Jul/2026 21:27:24] "GET /?month=2026-06&brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 21:27:29,920 - INFO - 172.68.211.170 - - [17/Jul/2026 21:27:29] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 21:27:40,448 - INFO - 172.68.211.170 - - [17/Jul/2026 21:27:40] "GET /view_payslip/0/2026-06?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 21:27:40,985 - INFO - 172.71.210.238 - - [17/Jul/2026 21:27:40] "GET /static/logo.png HTTP/1.1" 200 -
+2026-07-17 21:30:47,281 - INFO -  * Detected change in 'c:\\Users\\Ray\\Documents\\Workspace\\payroll\\payroll_engine.py', reloading
+2026-07-17 21:30:47,533 - INFO -  * Restarting with stat
+2026-07-17 21:30:48,885 - WARNING -  * Debugger is active!
+2026-07-17 21:30:48,888 - INFO -  * Debugger PIN: 680-757-247
+2026-07-17 21:30:51,995 - INFO -  * Detected change in 'c:\\Users\\Ray\\Documents\\Workspace\\payroll\\payroll_engine.py', reloading
+2026-07-17 21:30:52,180 - INFO -  * Restarting with stat
+2026-07-17 21:30:53,348 - WARNING -  * Debugger is active!
+2026-07-17 21:30:53,352 - INFO -  * Debugger PIN: 680-757-247
+2026-07-17 21:31:04,581 - INFO -  * Detected change in 'c:\\Users\\Ray\\Documents\\Workspace\\payroll\\payroll_engine.py', reloading
+2026-07-17 21:31:04,919 - INFO -  * Restarting with stat
+2026-07-17 21:31:06,072 - WARNING -  * Debugger is active!
+2026-07-17 21:31:06,075 - INFO -  * Debugger PIN: 680-757-247
+2026-07-17 21:46:14,473 - INFO - 162.159.98.145 - - [17/Jul/2026 21:46:14] "[31m[1mGET /calculate_payroll HTTP/1.1[0m" 405 -
+2026-07-17 21:46:18,350 - INFO - 162.159.98.145 - - [17/Jul/2026 21:46:18] "GET /?month=2026-06&brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 21:46:20,158 - INFO - 162.159.98.145 - - [17/Jul/2026 21:46:20] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 21:46:33,577 - INFO - 162.159.98.145 - - [17/Jul/2026 21:46:33] "GET /view_payslip/0/2026-06?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 21:46:40,571 - INFO - 162.159.98.145 - - [17/Jul/2026 21:46:40] "GET /?month=2026-06&brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 21:46:44,314 - INFO - 162.159.98.145 - - [17/Jul/2026 21:46:44] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 21:47:38,109 - INFO - 162.158.193.253 - - [17/Jul/2026 21:47:38] "GET /print_all/2026-06?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 21:50:45,838 - INFO - 172.71.214.94 - - [17/Jul/2026 21:50:45] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 21:51:05,586 - INFO - 172.71.214.94 - - [17/Jul/2026 21:51:05] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 21:51:09,049 - INFO - 172.71.214.94 - - [17/Jul/2026 21:51:09] "GET /?month=2026-06&brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 21:51:10,185 - INFO - 172.71.214.94 - - [17/Jul/2026 21:51:10] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 22:40:08,045 - INFO - 172.71.214.95 - - [17/Jul/2026 22:40:08] "GET /?month=2026-06&brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 22:42:18,056 - INFO - 172.71.210.47 - - [17/Jul/2026 22:42:18] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 22:43:34,924 - INFO -  * Detected change in 'c:\\Users\\Ray\\Documents\\Workspace\\payroll\\payroll_engine.py', reloading
+2026-07-17 22:43:35,084 - INFO -  * Restarting with stat
+2026-07-17 22:43:36,319 - WARNING -  * Debugger is active!
+2026-07-17 22:43:36,322 - INFO -  * Debugger PIN: 680-757-247
+2026-07-17 22:44:33,434 - INFO - 172.71.218.213 - - [17/Jul/2026 22:44:33] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 22:44:40,818 - INFO - 172.71.218.213 - - [17/Jul/2026 22:44:40] "GET /?month=2026-06&brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 22:44:42,359 - INFO - 172.71.218.213 - - [17/Jul/2026 22:44:42] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 22:44:55,685 - INFO - 172.71.218.213 - - [17/Jul/2026 22:44:55] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 22:45:03,066 - INFO - 172.71.218.213 - - [17/Jul/2026 22:45:03] "GET /view_payslip/0/2026-06?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 22:45:11,959 - INFO - 172.71.218.213 - - [17/Jul/2026 22:45:11] "GET /?month=2026-06&brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 22:46:30,853 - INFO - 172.68.211.171 - - [17/Jul/2026 22:46:30] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 22:51:51,299 - INFO -  * Detected change in 'c:\\Users\\Ray\\Documents\\Workspace\\payroll\\payroll_engine.py', reloading
+2026-07-17 22:51:51,588 - INFO -  * Restarting with stat
+2026-07-17 22:51:52,966 - WARNING -  * Debugger is active!
+2026-07-17 22:51:52,969 - INFO -  * Debugger PIN: 680-757-247
+2026-07-17 22:52:28,921 - INFO - 162.159.98.145 - - [17/Jul/2026 22:52:28] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 22:52:39,577 - INFO - 162.159.98.145 - - [17/Jul/2026 22:52:39] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 22:53:59,728 - INFO - 172.68.211.170 - - [17/Jul/2026 22:53:59] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 22:55:07,422 - INFO - 162.159.98.145 - - [17/Jul/2026 22:55:07] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 23:01:03,686 - INFO - 172.71.218.212 - - [17/Jul/2026 23:01:03] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 23:01:13,106 - INFO - 172.71.218.212 - - [17/Jul/2026 23:01:13] "GET /?month=2026-06&brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 23:01:14,659 - INFO - 172.71.218.212 - - [17/Jul/2026 23:01:14] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 23:01:31,461 - INFO - 172.71.218.212 - - [17/Jul/2026 23:01:31] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 23:05:39,758 - INFO - 172.71.214.95 - - [17/Jul/2026 23:05:39] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 23:06:04,523 - INFO - 172.71.214.95 - - [17/Jul/2026 23:06:04] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 23:06:27,706 - INFO - 172.71.214.95 - - [17/Jul/2026 23:06:27] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 23:09:18,146 - INFO -  * Detected change in 'c:\\Users\\Ray\\Documents\\Workspace\\payroll\\payroll_engine.py', reloading
+2026-07-17 23:09:18,368 - INFO -  * Restarting with stat
+2026-07-17 23:09:19,831 - WARNING -  * Debugger is active!
+2026-07-17 23:09:19,834 - INFO -  * Debugger PIN: 680-757-247
+2026-07-17 23:09:22,209 - INFO - 172.68.211.171 - - [17/Jul/2026 23:09:22] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 23:12:20,412 - INFO - 172.71.214.95 - - [17/Jul/2026 23:12:20] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 23:12:30,158 - INFO - 172.71.214.95 - - [17/Jul/2026 23:12:30] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 23:12:59,694 - INFO - 172.71.214.95 - - [17/Jul/2026 23:12:59] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 23:15:00,981 - INFO - 162.158.193.253 - - [17/Jul/2026 23:15:00] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 23:17:03,461 - INFO - 172.71.214.95 - - [17/Jul/2026 23:17:03] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 23:18:49,604 - INFO -  * Detected change in 'c:\\Users\\Ray\\Documents\\Workspace\\payroll\\payroll_engine.py', reloading
+2026-07-17 23:18:49,819 - INFO -  * Restarting with stat
+2026-07-17 23:18:51,108 - WARNING -  * Debugger is active!
+2026-07-17 23:18:51,110 - INFO -  * Debugger PIN: 680-757-247
+2026-07-17 23:19:44,691 - INFO - 172.71.210.97 - - [17/Jul/2026 23:19:44] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 23:20:07,934 - INFO - 172.71.210.46 - - [17/Jul/2026 23:20:07] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 23:20:15,645 - INFO - 172.71.210.46 - - [17/Jul/2026 23:20:15] "GET / HTTP/1.1" 200 -
+2026-07-17 23:20:34,972 - INFO - 172.71.210.46 - - [17/Jul/2026 23:20:34] "GET /?month=2026-06&brand=century_field HTTP/1.1" 200 -
+2026-07-17 23:20:35,936 - INFO - 172.71.210.46 - - [17/Jul/2026 23:20:35] "GET /?month=2026-06&brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 23:20:37,173 - INFO - 172.71.210.46 - - [17/Jul/2026 23:20:37] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 23:21:57,260 - INFO - 162.159.98.145 - - [17/Jul/2026 23:21:57] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 23:22:04,742 - INFO - 162.159.98.145 - - [17/Jul/2026 23:22:04] "GET /print_all/2026-06?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 23:22:25,755 - INFO - 162.159.98.145 - - [17/Jul/2026 23:22:25] "GET / HTTP/1.1" 200 -
+2026-07-17 23:22:29,887 - INFO - 162.159.98.145 - - [17/Jul/2026 23:22:29] "GET /?month=2026-06&brand=century_field HTTP/1.1" 200 -
+2026-07-17 23:22:35,891 - INFO - 162.159.98.145 - - [17/Jul/2026 23:22:35] "GET /?month=2026-06&brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 23:23:46,531 - INFO -  * Detected change in 'c:\\Users\\Ray\\Documents\\Workspace\\payroll\\payroll_engine.py', reloading
+2026-07-17 23:23:46,682 - INFO -  * Restarting with stat
+2026-07-17 23:23:47,711 - WARNING -  * Debugger is active!
+2026-07-17 23:23:47,714 - INFO -  * Debugger PIN: 680-757-247
+2026-07-17 23:23:54,422 - INFO - 172.71.210.47 - - [17/Jul/2026 23:23:54] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 23:24:33,438 - INFO - 172.71.210.47 - - [17/Jul/2026 23:24:33] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 23:24:50,146 - INFO - 172.71.210.47 - - [17/Jul/2026 23:24:50] "GET /print_all/2026-06?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 23:25:57,397 - INFO - 162.158.193.253 - - [17/Jul/2026 23:25:57] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 23:26:07,983 - INFO - 162.158.193.253 - - [17/Jul/2026 23:26:07] "GET / HTTP/1.1" 200 -
+2026-07-17 23:26:56,365 - INFO - 172.71.214.94 - - [17/Jul/2026 23:26:56] "GET /?brand=dch_e_com HTTP/1.1" 200 -
+2026-07-17 23:27:07,908 - INFO - 172.71.214.94 - - [17/Jul/2026 23:27:07] "GET /?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 23:27:11,993 - INFO - 172.71.214.94 - - [17/Jul/2026 23:27:11] "GET /?month=2026-06&brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 23:27:38,288 - INFO - 172.71.214.94 - - [17/Jul/2026 23:27:38] "GET /api/daily_attendance/2026-06/Amy/Metro%20City HTTP/1.1" 200 -
+2026-07-17 23:27:44,108 - INFO - 172.71.214.94 - - [17/Jul/2026 23:27:44] "GET /?month=2026-06&brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 23:27:56,758 - INFO - 172.71.214.94 - - [17/Jul/2026 23:27:56] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 23:28:42,381 - INFO - 172.71.214.94 - - [17/Jul/2026 23:28:42] "GET /view_payslip/0/2026-06?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 23:28:59,644 - INFO - 172.71.214.94 - - [17/Jul/2026 23:28:59] "GET /?month=2026-06&brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 23:29:03,159 - INFO - 172.71.214.94 - - [17/Jul/2026 23:29:03] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 23:29:05,581 - INFO - 172.71.214.94 - - [17/Jul/2026 23:29:05] "GET /print_all/2026-06?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 23:29:13,688 - INFO - 172.71.214.94 - - [17/Jul/2026 23:29:13] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-17 23:29:20,264 - INFO - 172.71.214.94 - - [17/Jul/2026 23:29:20] "GET / HTTP/1.1" 200 -
+2026-07-17 23:29:26,999 - INFO - 172.71.214.94 - - [17/Jul/2026 23:29:26] "GET /?month=2026-01&brand=century_field HTTP/1.1" 200 -
+2026-07-17 23:29:39,305 - INFO - 172.71.214.94 - - [17/Jul/2026 23:29:39] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-17 23:29:51,512 - INFO - 172.71.214.94 - - [17/Jul/2026 23:29:51] "GET /manage_products?brand=century_field HTTP/1.1" 200 -
+2026-07-17 23:29:53,513 - INFO - 172.71.214.94 - - [17/Jul/2026 23:29:53] "GET /manage_products?brand=dch_e_com HTTP/1.1" 200 -
+2026-07-17 23:29:54,145 - INFO - 172.71.214.94 - - [17/Jul/2026 23:29:54] "GET /manage_products?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 23:29:54,575 - INFO - 172.71.214.94 - - [17/Jul/2026 23:29:54] "GET /manage_products?brand=toshiba HTTP/1.1" 200 -
+2026-07-17 23:29:55,369 - INFO - 172.71.214.94 - - [17/Jul/2026 23:29:55] "GET /manage_products?brand=century_field HTTP/1.1" 200 -
+2026-07-17 23:29:56,085 - INFO - 172.71.214.94 - - [17/Jul/2026 23:29:56] "GET /manage_products?brand=dch_e_com HTTP/1.1" 200 -
+2026-07-17 23:29:56,562 - INFO - 172.71.214.94 - - [17/Jul/2026 23:29:56] "GET /manage_products?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 23:29:56,956 - INFO - 172.71.214.94 - - [17/Jul/2026 23:29:56] "GET /manage_products?brand=toshiba HTTP/1.1" 200 -
+2026-07-17 23:29:58,231 - INFO - 172.71.214.94 - - [17/Jul/2026 23:29:58] "GET /manage_products?brand=century_field HTTP/1.1" 200 -
+2026-07-17 23:29:58,695 - INFO - 172.71.214.94 - - [17/Jul/2026 23:29:58] "GET /manage_products?brand=dch_e_com HTTP/1.1" 200 -
+2026-07-17 23:29:59,217 - INFO - 172.71.214.94 - - [17/Jul/2026 23:29:59] "GET /manage_products?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 23:29:59,528 - INFO - 172.71.214.94 - - [17/Jul/2026 23:29:59] "GET /manage_products?brand=toshiba HTTP/1.1" 200 -
+2026-07-17 23:30:00,282 - INFO - 172.71.214.94 - - [17/Jul/2026 23:30:00] "GET /manage_products?brand=century_field HTTP/1.1" 200 -
+2026-07-17 23:30:00,787 - INFO - 172.71.214.94 - - [17/Jul/2026 23:30:00] "GET /manage_products?brand=dch_e_com HTTP/1.1" 200 -
+2026-07-17 23:30:01,086 - INFO - 172.71.214.94 - - [17/Jul/2026 23:30:01] "GET /manage_products?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 23:30:01,447 - INFO - 172.71.214.94 - - [17/Jul/2026 23:30:01] "GET /manage_products?brand=toshiba HTTP/1.1" 200 -
+2026-07-17 23:30:02,926 - INFO - 172.71.214.94 - - [17/Jul/2026 23:30:02] "GET /manage_products?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 23:30:04,095 - INFO - 172.71.214.94 - - [17/Jul/2026 23:30:04] "GET /manage_products?brand=dch_e_com HTTP/1.1" 200 -
+2026-07-17 23:30:05,288 - INFO - 172.71.214.94 - - [17/Jul/2026 23:30:05] "GET /manage_products?brand=century_field HTTP/1.1" 200 -
+2026-07-17 23:30:06,581 - INFO - 172.71.214.94 - - [17/Jul/2026 23:30:06] "GET /manage_products?brand=toshiba HTTP/1.1" 200 -
+2026-07-17 23:30:09,596 - INFO - 172.71.214.94 - - [17/Jul/2026 23:30:09] "GET /manage_products?brand=century_field HTTP/1.1" 200 -
+2026-07-17 23:30:14,470 - INFO - 172.71.214.94 - - [17/Jul/2026 23:30:14] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-17 23:30:25,523 - INFO - 172.71.214.94 - - [17/Jul/2026 23:30:25] "GET /settings?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 23:30:28,723 - INFO - 172.71.214.94 - - [17/Jul/2026 23:30:28] "GET /settings?brand=toshiba HTTP/1.1" 200 -
+2026-07-17 23:30:32,214 - INFO - 172.71.214.94 - - [17/Jul/2026 23:30:32] "GET /settings?brand=dch_e_com HTTP/1.1" 200 -
+2026-07-17 23:30:33,599 - INFO - 172.71.214.94 - - [17/Jul/2026 23:30:33] "GET /settings?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 23:30:35,736 - INFO - 172.71.214.94 - - [17/Jul/2026 23:30:35] "GET /manage_users HTTP/1.1" 200 -
+2026-07-17 23:31:01,948 - INFO - 172.71.214.94 - - [17/Jul/2026 23:31:01] "GET / HTTP/1.1" 200 -
+2026-07-17 23:31:09,781 - INFO - 172.71.214.94 - - [17/Jul/2026 23:31:09] "GET /manage_users HTTP/1.1" 200 -
+2026-07-17 23:31:32,494 - INFO - 172.71.214.94 - - [17/Jul/2026 23:31:32] "GET /manage_brands HTTP/1.1" 200 -
+2026-07-17 23:31:43,631 - INFO - 172.71.214.94 - - [17/Jul/2026 23:31:43] "GET /manage_locations HTTP/1.1" 200 -
+2026-07-17 23:31:46,988 - INFO - 172.71.214.94 - - [17/Jul/2026 23:31:46] "GET /manage_locations?brand=dch_e_com HTTP/1.1" 200 -
+2026-07-17 23:31:47,381 - INFO - 172.71.214.94 - - [17/Jul/2026 23:31:47] "GET /manage_locations?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 23:31:48,297 - INFO - 172.71.214.94 - - [17/Jul/2026 23:31:48] "GET /manage_locations?brand=toshiba HTTP/1.1" 200 -
+2026-07-17 23:31:48,859 - INFO - 172.71.214.94 - - [17/Jul/2026 23:31:48] "GET /manage_locations?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 23:31:49,297 - INFO - 172.71.214.94 - - [17/Jul/2026 23:31:49] "GET /manage_locations?brand=dch_e_com HTTP/1.1" 200 -
+2026-07-17 23:31:49,684 - INFO - 172.71.214.94 - - [17/Jul/2026 23:31:49] "GET /manage_locations?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 23:31:50,163 - INFO - 172.71.214.94 - - [17/Jul/2026 23:31:50] "GET /manage_locations?brand=toshiba HTTP/1.1" 200 -
+2026-07-17 23:31:53,128 - INFO - 172.71.214.94 - - [17/Jul/2026 23:31:53] "GET /manage_locations?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 23:31:53,727 - INFO - 172.71.214.94 - - [17/Jul/2026 23:31:53] "GET /manage_locations?brand=dch_e_com HTTP/1.1" 200 -
+2026-07-17 23:31:54,488 - INFO - 172.71.214.94 - - [17/Jul/2026 23:31:54] "GET /manage_locations?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 23:31:58,826 - INFO - 172.71.214.94 - - [17/Jul/2026 23:31:58] "GET /manage_locations?brand=toshiba HTTP/1.1" 200 -
+2026-07-17 23:32:02,471 - INFO - 172.71.214.94 - - [17/Jul/2026 23:32:02] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-17 23:32:08,154 - INFO - 172.71.214.94 - - [17/Jul/2026 23:32:08] "GET /manage_locations?brand=dch_e_com HTTP/1.1" 200 -
+2026-07-17 23:32:08,992 - INFO - 172.71.214.94 - - [17/Jul/2026 23:32:08] "GET /manage_locations?brand=ecovacs HTTP/1.1" 200 -
+2026-07-17 23:32:09,499 - INFO - 172.71.214.94 - - [17/Jul/2026 23:32:09] "GET /manage_locations?brand=toshiba HTTP/1.1" 200 -
+2026-07-17 23:32:10,429 - INFO - 172.71.214.94 - - [17/Jul/2026 23:32:10] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-17 23:32:13,391 - INFO - 172.71.214.94 - - [17/Jul/2026 23:32:13] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-17 23:32:14,440 - INFO - 172.71.214.94 - - [17/Jul/2026 23:32:14] "GET /validate HTTP/1.1" 200 -
+2026-07-17 23:32:25,191 - INFO - 172.71.214.94 - - [17/Jul/2026 23:32:25] "GET /validate?brand=century_field&month=2025-10 HTTP/1.1" 200 -
+2026-07-17 23:32:37,675 - INFO - 172.71.214.94 - - [17/Jul/2026 23:32:37] "GET / HTTP/1.1" 200 -
+2026-07-18 14:16:48,638 - INFO - 162.158.178.60 - - [18/Jul/2026 14:16:48] "[32mGET / HTTP/1.1[0m" 302 -
+2026-07-18 14:16:48,714 - INFO - 162.158.178.60 - - [18/Jul/2026 14:16:48] "GET /login?next=/? HTTP/1.1" 200 -
+2026-07-18 14:16:49,065 - INFO - 162.158.193.213 - - [18/Jul/2026 14:16:49] "GET /static/app.css HTTP/1.1" 200 -
+2026-07-18 14:16:49,731 - INFO - 162.159.98.199 - - [18/Jul/2026 14:16:49] "[32mGET /favicon.ico HTTP/1.1[0m" 302 -
+2026-07-18 14:16:50,015 - INFO - 162.158.193.145 - - [18/Jul/2026 14:16:50] "GET /login?next=/favicon.ico? HTTP/1.1" 200 -
+2026-07-18 16:53:49,549 - INFO - 104.23.170.49 - - [18/Jul/2026 16:53:49] "[32mGET / HTTP/1.1[0m" 302 -
+2026-07-18 16:53:50,343 - INFO - 104.23.170.11 - - [18/Jul/2026 16:53:50] "GET /login?next=/? HTTP/1.1" 200 -
+2026-07-18 16:53:51,288 - INFO - 172.71.99.5 - - [18/Jul/2026 16:53:51] "GET /static/app.css HTTP/1.1" 200 -
+2026-07-18 16:53:52,660 - INFO - 172.71.95.82 - - [18/Jul/2026 16:53:52] "[32mGET /favicon.ico HTTP/1.1[0m" 302 -
+2026-07-18 16:53:53,603 - INFO - 104.23.172.2 - - [18/Jul/2026 16:53:53] "GET /login?next=/favicon.ico? HTTP/1.1" 200 -
+2026-07-18 16:53:59,218 - INFO - 172.71.99.130 - - [18/Jul/2026 16:53:59] "[32mGET / HTTP/1.1[0m" 302 -
+2026-07-18 16:54:00,157 - INFO - 172.71.98.11 - - [18/Jul/2026 16:54:00] "GET /login?next=/? HTTP/1.1" 200 -
+2026-07-18 16:54:00,592 - INFO - 172.71.98.11 - - [18/Jul/2026 16:54:00] "[32mGET /validate HTTP/1.1[0m" 302 -
+2026-07-18 16:54:01,031 - INFO - 172.71.98.11 - - [18/Jul/2026 16:54:01] "GET /login?next=/validate? HTTP/1.1" 200 -
+2026-07-18 16:54:01,524 - INFO - 104.23.172.2 - - [18/Jul/2026 16:54:01] "GET /login?next=/favicon.ico? HTTP/1.1" 200 -
+2026-07-18 16:54:02,839 - INFO - 172.71.98.11 - - [18/Jul/2026 16:54:02] "GET /login?next=/login HTTP/1.1" 200 -
+2026-07-18 16:54:03,319 - INFO - 104.23.172.2 - - [18/Jul/2026 16:54:03] "GET /login?next=/favicon.ico? HTTP/1.1" 200 -
+2026-07-18 16:54:04,505 - INFO - 172.71.98.11 - - [18/Jul/2026 16:54:04] "[32mGET /manage_products HTTP/1.1[0m" 302 -
+2026-07-18 16:54:04,920 - INFO - 172.71.98.11 - - [18/Jul/2026 16:54:04] "GET /login?next=/manage_products? HTTP/1.1" 200 -
+2026-07-18 16:54:05,602 - INFO - 104.23.172.2 - - [18/Jul/2026 16:54:05] "GET /login?next=/favicon.ico? HTTP/1.1" 200 -
+2026-07-18 16:54:07,248 - INFO - 172.71.98.11 - - [18/Jul/2026 16:54:07] "[32mGET /settings HTTP/1.1[0m" 302 -
+2026-07-18 16:54:07,665 - INFO - 172.71.98.11 - - [18/Jul/2026 16:54:07] "GET /login?next=/settings? HTTP/1.1" 200 -
+2026-07-18 16:54:08,132 - INFO - 104.23.172.2 - - [18/Jul/2026 16:54:08] "GET /login?next=/favicon.ico? HTTP/1.1" 200 -
+2026-07-18 16:54:10,574 - INFO - 172.71.99.130 - - [18/Jul/2026 16:54:10] "[32mGET /manage_locations HTTP/1.1[0m" 302 -
+2026-07-18 16:54:10,992 - INFO - 172.71.99.130 - - [18/Jul/2026 16:54:10] "GET /login?next=/manage_locations? HTTP/1.1" 200 -
+2026-07-18 16:54:11,470 - INFO - 104.23.172.2 - - [18/Jul/2026 16:54:11] "GET /login?next=/favicon.ico? HTTP/1.1" 200 -
+2026-07-18 16:54:21,732 - INFO - 104.23.172.2 - - [18/Jul/2026 16:54:21] "GET /login?next=/favicon.ico? HTTP/1.1" 200 -
+2026-07-18 16:54:24,138 - INFO - 104.23.172.2 - - [18/Jul/2026 16:54:24] "GET /login?next=/favicon.ico? HTTP/1.1" 200 -
+2026-07-18 21:05:04,400 - INFO - 162.158.193.252 - - [18/Jul/2026 21:05:04] "GET / HTTP/1.1" 200 -
+2026-07-18 21:05:04,704 - INFO - 172.68.211.6 - - [18/Jul/2026 21:05:04] "GET /static/index.js HTTP/1.1" 200 -
+2026-07-18 21:06:51,170 - INFO - 162.158.178.61 - - [18/Jul/2026 21:06:51] "GET / HTTP/1.1" 200 -
+2026-07-18 21:07:57,601 - INFO - 172.71.214.94 - - [18/Jul/2026 21:07:57] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-18 21:07:59,638 - INFO - 172.71.214.94 - - [18/Jul/2026 21:07:59] "GET /manage_products?brand=century_field HTTP/1.1" 200 -
+2026-07-18 21:08:02,454 - INFO - 172.71.214.94 - - [18/Jul/2026 21:08:02] "GET /validate HTTP/1.1" 200 -
+2026-07-18 21:08:11,005 - INFO - 172.71.214.94 - - [18/Jul/2026 21:08:11] "GET / HTTP/1.1" 200 -
+2026-07-18 21:10:05,431 - INFO - 172.71.218.212 - - [18/Jul/2026 21:10:05] "GET / HTTP/1.1" 200 -
+2026-07-18 21:10:23,252 - INFO - 172.71.218.212 - - [18/Jul/2026 21:10:23] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-18 21:10:50,577 - INFO - 172.71.218.212 - - [18/Jul/2026 21:10:50] "GET / HTTP/1.1" 200 -
+2026-07-18 21:11:30,129 - INFO - 162.159.98.145 - - [18/Jul/2026 21:11:30] "GET / HTTP/1.1" 200 -
+2026-07-18 21:11:59,768 - INFO - 162.159.98.145 - - [18/Jul/2026 21:11:59] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-18 21:12:24,616 - INFO - 162.159.98.145 - - [18/Jul/2026 21:12:24] "GET /manage_backups HTTP/1.1" 200 -
+2026-07-18 21:14:37,529 - INFO - 162.159.98.144 - - [18/Jul/2026 21:14:37] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2026-07-18 21:14:37,601 - INFO - 192.168.123.210 - - [18/Jul/2026 21:14:37] "[36mGET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2026-07-18 21:14:37,606 - INFO - 192.168.123.210 - - [18/Jul/2026 21:14:37] "[36mGET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2026-07-18 21:14:37,910 - INFO - 192.168.123.210 - - [18/Jul/2026 21:14:37] "[36mGET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2026-07-18 21:14:42,353 - INFO - 162.159.98.144 - - [18/Jul/2026 21:14:42] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2026-07-18 21:14:42,402 - INFO - 192.168.123.210 - - [18/Jul/2026 21:14:42] "[36mGET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2026-07-18 21:14:42,407 - INFO - 192.168.123.210 - - [18/Jul/2026 21:14:42] "[36mGET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2026-07-18 21:14:42,443 - INFO - 192.168.123.210 - - [18/Jul/2026 21:14:42] "[36mGET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2026-07-18 21:16:28,911 - INFO - 172.68.211.171 - - [18/Jul/2026 21:16:28] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2026-07-18 21:16:28,994 - INFO - 192.168.123.210 - - [18/Jul/2026 21:16:28] "[36mGET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2026-07-18 21:16:29,184 - INFO - 192.168.123.210 - - [18/Jul/2026 21:16:29] "[36mGET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2026-07-18 21:16:29,445 - INFO - 192.168.123.210 - - [18/Jul/2026 21:16:29] "[36mGET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2026-07-18 21:17:41,568 - INFO - 162.159.98.144 - - [18/Jul/2026 21:17:41] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2026-07-18 21:17:41,621 - INFO - 192.168.123.210 - - [18/Jul/2026 21:17:41] "[36mGET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2026-07-18 21:17:41,622 - INFO - 192.168.123.210 - - [18/Jul/2026 21:17:41] "[36mGET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2026-07-18 21:17:41,686 - INFO - 192.168.123.210 - - [18/Jul/2026 21:17:41] "[36mGET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2026-07-18 21:17:43,605 - INFO - 162.159.98.144 - - [18/Jul/2026 21:17:43] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2026-07-18 21:17:43,660 - INFO - 192.168.123.210 - - [18/Jul/2026 21:17:43] "[36mGET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2026-07-18 21:17:43,684 - INFO - 192.168.123.210 - - [18/Jul/2026 21:17:43] "[36mGET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2026-07-18 21:17:43,734 - INFO - 192.168.123.210 - - [18/Jul/2026 21:17:43] "[36mGET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2026-07-18 21:19:44,607 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.123.88:5001
+2026-07-18 21:19:44,607 - INFO - [33mPress CTRL+C to quit[0m
+2026-07-18 21:19:44,610 - INFO -  * Restarting with stat
+2026-07-18 21:19:45,546 - WARNING -  * Debugger is active!
+2026-07-18 21:19:45,549 - INFO -  * Debugger PIN: 683-312-730
+2026-07-18 21:19:46,668 - INFO - 127.0.0.1 - - [18/Jul/2026 21:19:46] "[32mGET / HTTP/1.1[0m" 302 -
+2026-07-18 21:19:54,164 - INFO - 127.0.0.1 - - [18/Jul/2026 21:19:54] "GET /login HTTP/1.1" 200 -
+2026-07-18 21:20:00,761 - INFO - 127.0.0.1 - - [18/Jul/2026 21:20:00] "GET /login HTTP/1.1" 200 -
+2026-07-18 21:20:13,160 - INFO - 172.71.214.94 - - [18/Jul/2026 21:20:13] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2026-07-18 21:20:13,443 - INFO - 192.168.123.210 - - [18/Jul/2026 21:20:13] "[36mGET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2026-07-18 21:20:13,446 - INFO - 192.168.123.210 - - [18/Jul/2026 21:20:13] "[36mGET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2026-07-18 21:20:13,719 - INFO - 192.168.123.210 - - [18/Jul/2026 21:20:13] "[36mGET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2026-07-18 21:20:33,823 - INFO - 172.71.214.94 - - [18/Jul/2026 21:20:33] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2026-07-18 21:20:33,872 - INFO - 192.168.123.210 - - [18/Jul/2026 21:20:33] "[36mGET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2026-07-18 21:20:33,873 - INFO - 192.168.123.210 - - [18/Jul/2026 21:20:33] "[36mGET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2026-07-18 21:20:33,941 - INFO - 192.168.123.210 - - [18/Jul/2026 21:20:33] "[36mGET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2026-07-18 21:21:03,932 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.123.88:5001
+2026-07-18 21:21:03,932 - INFO - [33mPress CTRL+C to quit[0m
+2026-07-18 21:21:03,933 - INFO -  * Restarting with stat
+2026-07-18 21:21:05,245 - WARNING -  * Debugger is active!
+2026-07-18 21:21:05,248 - INFO -  * Debugger PIN: 680-757-247
+2026-07-18 21:21:05,338 - INFO - 172.71.214.94 - - [18/Jul/2026 21:21:05] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2026-07-18 21:21:05,495 - INFO - 192.168.123.210 - - [18/Jul/2026 21:21:05] "[36mGET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2026-07-18 21:21:05,496 - INFO - 192.168.123.210 - - [18/Jul/2026 21:21:05] "[36mGET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2026-07-18 21:21:05,542 - INFO - 192.168.123.210 - - [18/Jul/2026 21:21:05] "[36mGET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2026-07-18 21:21:06,292 - INFO - 172.71.214.94 - - [18/Jul/2026 21:21:06] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2026-07-18 21:21:06,342 - INFO - 192.168.123.210 - - [18/Jul/2026 21:21:06] "[36mGET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2026-07-18 21:21:06,343 - INFO - 192.168.123.210 - - [18/Jul/2026 21:21:06] "[36mGET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2026-07-18 21:21:06,391 - INFO - 192.168.123.210 - - [18/Jul/2026 21:21:06] "[36mGET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2026-07-18 21:21:07,281 - INFO - 172.71.214.94 - - [18/Jul/2026 21:21:07] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2026-07-18 21:21:07,345 - INFO - 192.168.123.210 - - [18/Jul/2026 21:21:07] "[36mGET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2026-07-18 21:21:07,346 - INFO - 192.168.123.210 - - [18/Jul/2026 21:21:07] "[36mGET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2026-07-18 21:21:07,389 - INFO - 192.168.123.210 - - [18/Jul/2026 21:21:07] "[36mGET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2026-07-18 21:22:34,394 - INFO - 162.158.178.60 - - [18/Jul/2026 21:22:34] "GET / HTTP/1.1" 200 -
+2026-07-18 21:22:36,761 - INFO - 162.158.178.60 - - [18/Jul/2026 21:22:36] "GET / HTTP/1.1" 200 -
+2026-07-18 21:22:38,395 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.123.88:5001
+2026-07-18 21:22:38,396 - INFO - [33mPress CTRL+C to quit[0m
+2026-07-18 21:22:38,398 - INFO -  * Restarting with stat
+2026-07-18 21:22:39,376 - WARNING -  * Debugger is active!
+2026-07-18 21:22:39,379 - INFO -  * Debugger PIN: 683-312-730
+2026-07-18 21:22:41,453 - INFO - 127.0.0.1 - - [18/Jul/2026 21:22:41] "[32mGET / HTTP/1.1[0m" 302 -
+2026-07-18 21:24:40,403 - INFO - 172.71.210.46 - - [18/Jul/2026 21:24:40] "[32mGET /logout HTTP/1.1[0m" 302 -
+2026-07-18 21:24:40,433 - INFO - 172.71.210.46 - - [18/Jul/2026 21:24:40] "[32mGET / HTTP/1.1[0m" 302 -
+2026-07-18 21:24:40,467 - INFO - 172.71.210.46 - - [18/Jul/2026 21:24:40] "GET /login?next=/? HTTP/1.1" 200 -
+2026-07-18 21:24:56,622 - INFO - 172.71.210.46 - - [18/Jul/2026 21:24:56] "GET /login?next=/? HTTP/1.1" 200 -
+2026-07-18 21:25:11,373 - INFO - 172.71.210.46 - - [18/Jul/2026 21:25:11] "[32mGET /settings HTTP/1.1[0m" 302 -
+2026-07-18 21:25:11,395 - INFO - 172.71.210.46 - - [18/Jul/2026 21:25:11] "GET /login?next=/settings? HTTP/1.1" 200 -
+2026-07-18 21:25:12,549 - INFO - 172.71.210.46 - - [18/Jul/2026 21:25:12] "[32mGET /manage_products HTTP/1.1[0m" 302 -
+2026-07-18 21:25:12,573 - INFO - 172.71.210.46 - - [18/Jul/2026 21:25:12] "GET /login?next=/manage_products? HTTP/1.1" 200 -
+2026-07-18 21:25:13,245 - INFO - 172.71.210.46 - - [18/Jul/2026 21:25:13] "[32mGET /manage_locations HTTP/1.1[0m" 302 -
+2026-07-18 21:25:13,267 - INFO - 172.71.210.46 - - [18/Jul/2026 21:25:13] "GET /login?next=/manage_locations? HTTP/1.1" 200 -
+2026-07-18 21:25:14,190 - INFO - 172.71.210.46 - - [18/Jul/2026 21:25:14] "[32mGET /validate HTTP/1.1[0m" 302 -
+2026-07-18 21:25:14,217 - INFO - 172.71.210.46 - - [18/Jul/2026 21:25:14] "GET /login?next=/validate? HTTP/1.1" 200 -
+2026-07-18 21:25:44,500 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.123.88:5001
+2026-07-18 21:25:44,500 - INFO - [33mPress CTRL+C to quit[0m
+2026-07-18 21:25:44,501 - INFO -  * Restarting with stat
+2026-07-18 21:25:45,431 - WARNING -  * Debugger is active!
+2026-07-18 21:25:45,433 - INFO -  * Debugger PIN: 683-312-730
+2026-07-18 21:25:47,309 - INFO - 127.0.0.1 - - [18/Jul/2026 21:25:47] "[32mGET / HTTP/1.1[0m" 302 -
+2026-07-18 21:25:50,998 - INFO - 172.71.210.46 - - [18/Jul/2026 21:25:50] "[32mPOST /login?next=/validate? HTTP/1.1[0m" 302 -
+2026-07-18 21:25:51,043 - INFO - 172.71.210.46 - - [18/Jul/2026 21:25:51] "GET /validate HTTP/1.1" 200 -
+2026-07-18 21:25:55,407 - INFO - 172.71.210.46 - - [18/Jul/2026 21:25:55] "GET / HTTP/1.1" 200 -
+2026-07-18 21:26:09,536 - INFO - 172.71.210.46 - - [18/Jul/2026 21:26:09] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-18 21:26:16,908 - INFO - 172.71.210.46 - - [18/Jul/2026 21:26:16] "GET /manage_brands HTTP/1.1" 200 -
+2026-07-18 21:27:23,596 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.123.88:5001
+2026-07-18 21:27:23,596 - INFO - [33mPress CTRL+C to quit[0m
+2026-07-18 21:27:23,598 - INFO -  * Restarting with stat
+2026-07-18 21:27:24,575 - WARNING -  * Debugger is active!
+2026-07-18 21:27:24,578 - INFO -  * Debugger PIN: 683-312-730
+2026-07-18 21:27:26,523 - INFO - 127.0.0.1 - - [18/Jul/2026 21:27:26] "[32mGET / HTTP/1.1[0m" 302 -
+2026-07-18 21:27:26,763 - INFO - 127.0.0.1 - - [18/Jul/2026 21:27:26] "[32mGET /settings HTTP/1.1[0m" 302 -
+2026-07-18 21:27:49,865 - INFO - 162.159.98.144 - - [18/Jul/2026 21:27:49] "GET / HTTP/1.1" 200 -
+2026-07-18 21:28:54,033 - INFO - 172.71.210.47 - - [18/Jul/2026 21:28:54] "GET / HTTP/1.1" 200 -
+2026-07-18 21:29:26,134 - INFO - 172.71.210.47 - - [18/Jul/2026 21:29:26] "GET /validate HTTP/1.1" 200 -
+2026-07-18 21:29:28,990 - INFO - 172.71.210.47 - - [18/Jul/2026 21:29:28] "[35m[1mGET /manage_brands HTTP/1.1[0m" 500 -
+2026-07-18 21:29:29,064 - INFO - 192.168.123.210 - - [18/Jul/2026 21:29:29] "GET /manage_brands?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2026-07-18 21:29:29,274 - INFO - 192.168.123.210 - - [18/Jul/2026 21:29:29] "GET /manage_brands?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2026-07-18 21:29:29,355 - INFO - 192.168.123.210 - - [18/Jul/2026 21:29:29] "GET /manage_brands?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2026-07-18 21:29:33,091 - INFO - 172.71.210.47 - - [18/Jul/2026 21:29:33] "GET / HTTP/1.1" 200 -
+2026-07-18 21:29:39,236 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.123.88:5001
+2026-07-18 21:29:39,236 - INFO - [33mPress CTRL+C to quit[0m
+2026-07-18 21:29:39,237 - INFO -  * Restarting with stat
+2026-07-18 21:29:40,148 - WARNING -  * Debugger is active!
+2026-07-18 21:29:40,150 - INFO -  * Debugger PIN: 683-312-730
+2026-07-18 21:29:42,374 - INFO - 127.0.0.1 - - [18/Jul/2026 21:29:42] "[32mGET / HTTP/1.1[0m" 302 -
+2026-07-18 21:29:42,607 - INFO - 172.71.210.47 - - [18/Jul/2026 21:29:42] "GET /?brand=ecovacs HTTP/1.1" 200 -
+2026-07-18 21:29:42,613 - INFO - 127.0.0.1 - - [18/Jul/2026 21:29:42] "GET /login HTTP/1.1" 200 -
+2026-07-18 21:29:42,891 - INFO - 127.0.0.1 - - [18/Jul/2026 21:29:42] "[32mGET /settings HTTP/1.1[0m" 302 -
+2026-07-18 21:30:00,618 - INFO - 172.71.210.47 - - [18/Jul/2026 21:30:00] "GET /?month=2026-02&brand=ecovacs HTTP/1.1" 200 -
+2026-07-18 21:30:03,164 - INFO - 172.71.210.47 - - [18/Jul/2026 21:30:03] "GET /?month=2026-06&brand=ecovacs HTTP/1.1" 200 -
+2026-07-18 21:30:31,764 - INFO - 172.71.210.47 - - [18/Jul/2026 21:30:31] "GET /?month=2026-06&brand=ecovacs HTTP/1.1" 200 -
+2026-07-18 21:31:32,586 - INFO - 172.71.218.212 - - [18/Jul/2026 21:31:32] "GET / HTTP/1.1" 200 -
+2026-07-18 21:31:33,806 - INFO - 172.71.218.212 - - [18/Jul/2026 21:31:33] "GET / HTTP/1.1" 200 -
+2026-07-18 21:31:35,547 - INFO - 172.71.218.212 - - [18/Jul/2026 21:31:35] "GET / HTTP/1.1" 200 -
+2026-07-18 21:31:46,389 - INFO - 172.71.218.212 - - [18/Jul/2026 21:31:46] "[35m[1mGET /manage_brands HTTP/1.1[0m" 500 -
+2026-07-18 21:31:46,469 - INFO - 192.168.123.210 - - [18/Jul/2026 21:31:46] "[36mGET /manage_brands?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2026-07-18 21:31:46,679 - INFO - 192.168.123.210 - - [18/Jul/2026 21:31:46] "[36mGET /manage_brands?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2026-07-18 21:32:08,834 - INFO - 172.71.218.212 - - [18/Jul/2026 21:32:08] "GET /manage_products?brand=century_field HTTP/1.1" 200 -
+2026-07-18 21:32:23,491 - INFO - 172.71.218.212 - - [18/Jul/2026 21:32:23] "GET /?brand=century_field HTTP/1.1" 200 -
+2026-07-18 21:32:34,388 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.123.88:5001
+2026-07-18 21:32:34,388 - INFO - [33mPress CTRL+C to quit[0m
+2026-07-18 21:32:34,389 - INFO -  * Restarting with stat
+2026-07-18 21:32:35,265 - WARNING -  * Debugger is active!
+2026-07-18 21:32:35,267 - INFO -  * Debugger PIN: 683-312-730
+2026-07-18 21:32:38,483 - INFO - 127.0.0.1 - - [18/Jul/2026 21:32:38] "[32mGET / HTTP/1.1[0m" 302 -
+2026-07-18 21:32:38,721 - INFO - 127.0.0.1 - - [18/Jul/2026 21:32:38] "GET /login HTTP/1.1" 200 -
+2026-07-18 21:32:38,945 - INFO - 127.0.0.1 - - [18/Jul/2026 21:32:38] "[32mGET /settings HTTP/1.1[0m" 302 -
+2026-07-18 21:32:39,186 - INFO - 127.0.0.1 - - [18/Jul/2026 21:32:39] "[32mGET /manage_locations HTTP/1.1[0m" 302 -
+2026-07-18 21:32:39,423 - INFO - 127.0.0.1 - - [18/Jul/2026 21:32:39] "[32mGET /manage_products HTTP/1.1[0m" 302 -
+2026-07-18 21:32:39,658 - INFO - 127.0.0.1 - - [18/Jul/2026 21:32:39] "[32mGET /manage_backups HTTP/1.1[0m" 302 -
+2026-07-18 21:32:39,895 - INFO - 127.0.0.1 - - [18/Jul/2026 21:32:39] "[32mGET /manage_brands HTTP/1.1[0m" 302 -
+2026-07-18 21:32:40,132 - INFO - 127.0.0.1 - - [18/Jul/2026 21:32:40] "[32mGET /manage_users HTTP/1.1[0m" 302 -
+2026-07-18 21:33:01,575 - INFO - 172.71.218.212 - - [18/Jul/2026 21:33:01] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-18 21:33:03,986 - INFO - 172.71.218.212 - - [18/Jul/2026 21:33:03] "[35m[1mGET /manage_brands HTTP/1.1[0m" 500 -
+2026-07-18 21:33:04,038 - INFO - 192.168.123.210 - - [18/Jul/2026 21:33:04] "[36mGET /manage_brands?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2026-07-18 21:33:04,042 - INFO - 192.168.123.210 - - [18/Jul/2026 21:33:04] "[36mGET /manage_brands?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2026-07-18 21:34:02,200 - INFO - 172.71.218.212 - - [18/Jul/2026 21:34:02] "GET /manage_brands HTTP/1.1" 200 -
+2026-07-18 21:34:26,063 - INFO - 127.0.0.1 - - [18/Jul/2026 21:34:26] "[32mGET / HTTP/1.1[0m" 302 -
+2026-07-18 21:34:26,299 - INFO - 127.0.0.1 - - [18/Jul/2026 21:34:26] "GET /login HTTP/1.1" 200 -
+2026-07-18 21:34:26,533 - INFO - 127.0.0.1 - - [18/Jul/2026 21:34:26] "[32mGET /settings HTTP/1.1[0m" 302 -
+2026-07-18 21:34:26,765 - INFO - 127.0.0.1 - - [18/Jul/2026 21:34:26] "[32mGET /manage_locations HTTP/1.1[0m" 302 -
+2026-07-18 21:34:26,987 - INFO - 127.0.0.1 - - [18/Jul/2026 21:34:26] "[32mGET /manage_products HTTP/1.1[0m" 302 -
+2026-07-18 21:34:27,237 - INFO - 127.0.0.1 - - [18/Jul/2026 21:34:27] "[32mGET /manage_backups HTTP/1.1[0m" 302 -
+2026-07-18 21:34:27,473 - INFO - 127.0.0.1 - - [18/Jul/2026 21:34:27] "[32mGET /manage_brands HTTP/1.1[0m" 302 -
+2026-07-18 21:34:27,705 - INFO - 127.0.0.1 - - [18/Jul/2026 21:34:27] "[32mGET /manage_users HTTP/1.1[0m" 302 -
+2026-07-18 21:34:30,371 - INFO - 172.71.218.212 - - [18/Jul/2026 21:34:30] "GET / HTTP/1.1" 200 -
+2026-07-18 21:35:43,317 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.123.88:5001
+2026-07-18 21:35:43,317 - INFO - [33mPress CTRL+C to quit[0m
+2026-07-18 21:35:43,318 - INFO -  * Restarting with stat
+2026-07-18 21:35:44,204 - WARNING -  * Debugger is active!
+2026-07-18 21:35:44,207 - INFO -  * Debugger PIN: 683-312-730
+2026-07-18 21:35:46,315 - INFO - 127.0.0.1 - - [18/Jul/2026 21:35:46] "[32mGET / HTTP/1.1[0m" 302 -
+2026-07-18 21:35:46,551 - INFO - 127.0.0.1 - - [18/Jul/2026 21:35:46] "[32mGET /manage_brands HTTP/1.1[0m" 302 -
+2026-07-18 21:35:46,784 - INFO - 127.0.0.1 - - [18/Jul/2026 21:35:46] "[32mGET /manage_locations HTTP/1.1[0m" 302 -
+2026-07-18 21:36:07,393 - INFO - 172.68.211.170 - - [18/Jul/2026 21:36:07] "GET / HTTP/1.1" 200 -
+2026-07-18 21:37:40,734 - INFO - 172.71.214.94 - - [18/Jul/2026 21:37:40] "GET /manage_backups HTTP/1.1" 200 -
+2026-07-18 21:37:45,901 - INFO - 172.71.214.94 - - [18/Jul/2026 21:37:45] "GET /manage_users HTTP/1.1" 200 -
+2026-07-18 21:39:56,046 - INFO - 162.158.193.253 - - [18/Jul/2026 21:39:56] "GET /manage_users HTTP/1.1" 200 -
+2026-07-18 21:39:57,309 - INFO - 162.158.193.253 - - [18/Jul/2026 21:39:57] "GET / HTTP/1.1" 200 -
+2026-07-18 21:39:58,759 - INFO - 162.158.193.253 - - [18/Jul/2026 21:39:58] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-18 21:39:59,838 - INFO - 162.158.193.253 - - [18/Jul/2026 21:39:59] "GET /manage_products?brand=century_field HTTP/1.1" 200 -
+2026-07-18 21:40:00,629 - INFO - 162.158.193.253 - - [18/Jul/2026 21:40:00] "GET /manage_locations?brand=century_field HTTP/1.1" 200 -
+2026-07-18 21:40:01,543 - INFO - 162.158.193.253 - - [18/Jul/2026 21:40:01] "GET /validate HTTP/1.1" 200 -
+2026-07-18 21:40:15,512 - INFO - 162.158.193.253 - - [18/Jul/2026 21:40:15] "GET /validate?brand=dch_e_com HTTP/1.1" 200 -
+2026-07-18 21:40:16,357 - INFO - 162.158.193.253 - - [18/Jul/2026 21:40:16] "GET /validate?brand=ecovacs HTTP/1.1" 200 -
+2026-07-18 21:40:17,079 - INFO - 162.158.193.253 - - [18/Jul/2026 21:40:17] "GET /validate?brand=toshiba HTTP/1.1" 200 -
+2026-07-18 21:40:23,414 - INFO - 162.158.193.253 - - [18/Jul/2026 21:40:23] "GET /validate?brand=century_field HTTP/1.1" 200 -
+2026-07-18 21:40:26,809 - INFO - 162.158.193.253 - - [18/Jul/2026 21:40:26] "GET /validate?brand=century_field&month=2026-02 HTTP/1.1" 200 -
+2026-07-18 21:42:54,362 - INFO - 172.71.210.46 - - [18/Jul/2026 21:42:54] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-18 21:43:30,692 - INFO - 172.71.210.46 - - [18/Jul/2026 21:43:30] "GET /validate?month=2026-02 HTTP/1.1" 200 -
+2026-07-18 21:44:00,912 - INFO - 172.71.210.46 - - [18/Jul/2026 21:44:00] "GET /validate?month=2026-02 HTTP/1.1" 200 -
