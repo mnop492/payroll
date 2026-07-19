@@ -8,5 +8,5 @@ __pycache__/
 # Other temp files
 *.tmp
 *.temp
-system.log
+log/system.log
 .venv/
