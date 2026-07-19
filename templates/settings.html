@@ -1,307 +1,41 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 {% block content %}
 <div class="space-y-6">
   <div class="flex items-center justify-between">
-    <h2 class="text-2xl font-bold text-slate-100">👤 員工主檔與人事設定
+    <h2 class="text-2xl font-bold text-slate-100">⚙️ 系統設定
       <span class="ml-2 inline-block bg-slate-700 text-slate-100 text-sm px-3 py-0.5 rounded-full">{{ current_brand_name }}</span>
     </h2>
   </div>
 
-  <div class="flex items-center gap-4 mb-4">
-    <span class="text-sm text-slate-500 border-l-2 border-slate-600 pl-3 py-1">
-      本頁可設定 <strong class="text-slate-200">當月</strong> 專屬的時薪覆寫，<br>
-      若留白則會自動使用員工預設時薪。
-    </span>
+{# 外部 API 設定（僅管理員 + Toshiba 品牌） #}
+{% if session.get('is_admin') and external_api_config and current_brand == 'toshiba' %}
+<div class="bg-slate-800 rounded-2xl shadow-sm border border-slate-700 overflow-hidden mt-6">
+  <div class="px-5 py-3.5 bg-slate-700 text-slate-100 font-bold text-base border-b border-slate-600">
+    🔗 外部 API 設定（Toshiba 品牌用）
   </div>
-
-    {% set hourly_emps = employees | selectattr('salary_type', 'ne', 'monthly') | list %}
-    {% set monthly_emps = employees | selectattr('salary_type', 'equalto', 'monthly') | list %}
-
-    {# === 員工卡片含頁籤 === #}
-    <div class="bg-slate-800 rounded-2xl shadow-sm border border-amber-800/40 overflow-hidden" data-tabs>
-        <div class="px-5 py-3.5 bg-amber-900/30 text-amber-200 font-bold text-base border-b border-amber-800/40">
-            📋 員工基礎薪酬與 MPF 設定
-        </div>
-
-        {# 頁籤按鈕 #}
-        <div class="flex border-b border-slate-700 px-4 pt-3 gap-1" role="tablist">
-            <button class="tab-btn px-4 py-2.5 text-sm font-semibold rounded-t-xl border border-b-0 border-slate-700 -mb-px bg-slate-800 text-slate-200"
-                    data-tab="hourly" role="tab">
-                ⏱️ 時薪制員工 <span class="ml-1.5 inline-block bg-cyan-900/40 text-cyan-300 text-sm px-3 py-0.5 rounded-full">{{ hourly_emps | length }}</span>
-            </button>
-            <button class="tab-btn px-4 py-2.5 text-sm font-semibold rounded-t-xl border border-b-0 border-slate-700 -mb-px bg-slate-700 text-slate-400"
-                    data-tab="monthly" role="tab">
-                📅 月薪制員工 <span class="ml-1.5 inline-block bg-amber-900/40 text-amber-300 text-sm px-3 py-0.5 rounded-full">{{ monthly_emps | length }}</span>
-            </button>
-        </div>
-
-        {# === 時薪制頁籤 === #}
-        <div class="tab-pane block" id="tab-hourly">
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm border-collapse">
-                    <thead>
-                        <tr class="bg-slate-700 text-center text-sm font-semibold text-slate-300 uppercase tracking-wider">
-                            <th class="px-3 py-3 border-b border-slate-600">員工暱稱</th>
-                            <th class="px-3 py-3 border-b border-slate-600">全名</th>
-                            <th class="px-3 py-3 border-b border-slate-600">預設時薪</th>
-                            <th class="px-3 py-3 border-b border-slate-600">本月覆寫時薪</th>
-                            <th class="px-3 py-3 border-b border-slate-600">津貼</th>
-                            <th class="px-3 py-3 border-b border-slate-600">預設佣金</th>
-                            <th class="px-3 py-3 border-b border-slate-600 text-blue-300">本月覆寫佣金</th>
-                            <th class="px-3 py-3 border-b border-slate-600">MPF起扣</th>
-                            <th class="px-3 py-3 border-b border-slate-600 text-right pr-4">操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="bg-blue-900/20 border-b border-slate-600">
-                            <form action="/add_employee" method="POST" style="display: contents;">
-                                <input type="hidden" name="brand" value="{{ current_brand }}">
-                                <input type="hidden" name="payroll_month" value="{{ current_month }}">
-                                <input type="hidden" name="salary_type" value="hourly">
-                                <td class="px-1 py-1.5"><input type="text" name="nick_name" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="新增暱稱" required></td>
-                                <td class="px-1 py-1.5"><input type="text" name="full_name" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="新增全名"></td>
-                                <td class="px-1 py-1.5"><input type="number" step="0.1" name="hourly_rate" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="時薪"></td>
-                                <td class="px-1 py-1.5"><input type="number" step="0.1" name="monthly_hourly_rate" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="覆寫"></td>
-                                <td class="px-1 py-1.5"><input type="number" step="0.1" name="allowance" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="津貼"></td>
-                                <td class="px-1 py-1.5"><input type="number" step="0.001" name="commission_rate" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="0.03"></td>
-                                <td class="px-1 py-1.5"><input type="number" step="0.001" name="monthly_commission_rate" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="覆寫"></td>
-                                <td class="px-1 py-1.5"><input type="month" name="mpf_start_month" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></td>
-                                <td class="text-right pr-2 py-1.5"><button type="submit" class="px-3 py-1.5 text-sm font-semibold text-slate-100 bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors">➕ 新增</button></td>
-                            </form>
-                        </tr>
-                        {% for emp in hourly_emps %}
-                        <tr class="text-center border-b border-slate-700 hover:bg-slate-700 even:bg-slate-700/50 transition-colors">
-                            <td class="px-3 py-2.5 font-bold text-blue-300">{{ emp.nick_name }}</td>
-                            <td class="px-3 py-2.5 font-semibold">{{ emp.full_name if emp.full_name and emp.full_name != 'None' else '' }}</td>
-                            <td class="px-3 py-2.5">${{ emp.hourly_rate }}</td>
-                            <td class="px-3 py-2.5">${{ monthly_map.get(emp.nick_name, '') if monthly_map.get(emp.nick_name, '') != '' else '-' }}</td>
-                            <td class="px-3 py-2.5">${{ emp.allowance }}</td>
-                            <td class="px-3 py-2.5">{{ (emp.commission_rate * 100) | int }}%</td>
-                            <td class="px-3 py-2.5">
-                                {% set m_comm = monthly_comm_map.get(emp.nick_name) %}
-                                {% if m_comm is not none and m_comm != '' %}
-                                    <span class="inline-block bg-blue-900/40 text-blue-300 text-sm px-2.5 py-0.5 rounded-full font-semibold">{{ (m_comm * 100) | int }}%</span>
-                                {% else %}<span class="text-slate-500">-</span>{% endif %}
-                            </td>
-                            <td class="px-3 py-2.5 text-sm">{{ emp.mpf_start_month if emp.mpf_start_month and emp.mpf_start_month != 'None' else '-' }}</td>
-                            <td class="text-right pr-3 py-2.5 whitespace-nowrap">
-                                <button class="inline-block px-3 py-1.5 text-sm font-semibold text-blue-600 border border-blue-800/40 rounded-xl hover:bg-blue-900/30 transition-colors me-1"
-                                        onclick='openEmpModal({{ emp.id|tojson }}, {{ emp.nick_name|tojson }}, {{ (emp.full_name if emp.full_name and emp.full_name != "None" else "")|tojson }}, {{ emp.hourly_rate|tojson }}, {{ monthly_map.get(emp.nick_name, "")|tojson }}, {{ emp.allowance|tojson }}, {{ emp.commission_rate|tojson }}, {{ monthly_comm_map.get(emp.nick_name, "")|tojson }}, {{ emp.mpf_start_month|tojson }}, "hourly", 0)'>✏️ 修改</button>
-                                <form action="/delete_employee/{{ emp.id }}" method="POST" class="inline">
-                                    <input type="hidden" name="brand" value="{{ current_brand }}">
-                                    <input type="hidden" name="payroll_month" value="{{ current_month }}">
-                                    <button type="submit" class="inline-block px-3 py-1.5 text-sm font-semibold text-red-400 border border-red-800/50 rounded-xl hover:bg-red-900/30 transition-colors" onclick="return confirm('確定刪除員工 {{ emp.nick_name }}？');">🗑️ 刪除</button>
-                                </form>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        {# === 月薪制頁籤 === #}
-        <div class="tab-pane hidden" id="tab-monthly">
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm border-collapse">
-                    <thead>
-                        <tr class="bg-slate-700 text-center text-sm font-semibold text-slate-300 uppercase tracking-wider">
-                            <th class="px-3 py-3 border-b border-slate-600">員工暱稱</th>
-                            <th class="px-3 py-3 border-b border-slate-600">全名</th>
-                            <th class="px-3 py-3 border-b border-slate-600">固定月薪</th>
-                            <th class="px-3 py-3 border-b border-slate-600">津貼</th>
-                            <th class="px-3 py-3 border-b border-slate-600">預設佣金</th>
-                            <th class="px-3 py-3 border-b border-slate-600 text-blue-300">本月覆寫佣金</th>
-                            <th class="px-3 py-3 border-b border-slate-600">MPF起扣</th>
-                            <th class="px-3 py-3 border-b border-slate-600 text-right pr-4">操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="bg-amber-900/30 border-b border-amber-800/40">
-                            <form action="/add_employee" method="POST" style="display: contents;">
-                                <input type="hidden" name="brand" value="{{ current_brand }}">
-                                <input type="hidden" name="payroll_month" value="{{ current_month }}">
-                                <input type="hidden" name="salary_type" value="monthly">
-                                <td class="px-1 py-1.5"><input type="text" name="nick_name" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="新增暱稱" required></td>
-                                <td class="px-1 py-1.5"><input type="text" name="full_name" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="新增全名"></td>
-                                <td class="px-1 py-1.5"><input type="number" step="0.1" name="monthly_salary" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="月薪"></td>
-                                <td class="px-1 py-1.5"><input type="number" step="0.1" name="allowance" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="津貼"></td>
-                                <td class="px-1 py-1.5"><input type="number" step="0.001" name="commission_rate" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="0.03"></td>
-                                <td class="px-1 py-1.5"><input type="number" step="0.001" name="monthly_commission_rate" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="覆寫"></td>
-                                <td class="px-1 py-1.5"><input type="month" name="mpf_start_month" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></td>
-                                <td class="text-right pr-2 py-1.5"><button type="submit" class="px-3 py-1.5 text-sm font-semibold text-amber-300 bg-amber-800/40 rounded-xl hover:bg-amber-700/50 transition-colors">➕ 新增</button></td>
-                            </form>
-                        </tr>
-                        {% for emp in monthly_emps %}
-                        <tr class="text-center border-b border-slate-700 hover:bg-slate-700 even:bg-slate-700/50 transition-colors">
-                            <td class="px-3 py-2.5 font-bold text-blue-300">{{ emp.nick_name }}</td>
-                            <td class="px-3 py-2.5 font-semibold">{{ emp.full_name if emp.full_name and emp.full_name != 'None' else '' }}</td>
-                            <td class="px-3 py-2.5 font-bold text-base text-blue-300">${{ "{:,.0f}".format(emp.monthly_salary or 0) }}</td>
-                            <td class="px-3 py-2.5">${{ emp.allowance }}</td>
-                            <td class="px-3 py-2.5">{{ (emp.commission_rate * 100) | int }}%</td>
-                            <td class="px-3 py-2.5">
-                                {% set m_comm = monthly_comm_map.get(emp.nick_name) %}
-                                {% if m_comm is not none and m_comm != '' %}
-                                    <span class="inline-block bg-blue-900/40 text-blue-300 text-sm px-2.5 py-0.5 rounded-full font-semibold">{{ (m_comm * 100) | int }}%</span>
-                                {% else %}<span class="text-slate-500">-</span>{% endif %}
-                            </td>
-                            <td class="px-3 py-2.5 text-sm">{{ emp.mpf_start_month if emp.mpf_start_month and emp.mpf_start_month != 'None' else '-' }}</td>
-                            <td class="text-right pr-3 py-2.5 whitespace-nowrap">
-                                <button class="inline-block px-3 py-1.5 text-sm font-semibold text-blue-600 border border-blue-800/40 rounded-xl hover:bg-blue-900/30 transition-colors me-1"
-                                        onclick='openEmpModal({{ emp.id|tojson }}, {{ emp.nick_name|tojson }}, {{ (emp.full_name if emp.full_name and emp.full_name != "None" else "")|tojson }}, {{ emp.hourly_rate|tojson }}, {{ monthly_map.get(emp.nick_name, "")|tojson }}, {{ emp.allowance|tojson }}, {{ emp.commission_rate|tojson }}, {{ monthly_comm_map.get(emp.nick_name, "")|tojson }}, {{ emp.mpf_start_month|tojson }}, "monthly", {{ (emp.monthly_salary or 0)|tojson }})'>✏️ 修改</button>
-                                <form action="/delete_employee/{{ emp.id }}" method="POST" class="inline">
-                                    <input type="hidden" name="brand" value="{{ current_brand }}">
-                                    <input type="hidden" name="payroll_month" value="{{ current_month }}">
-                                    <button type="submit" class="inline-block px-3 py-1.5 text-sm font-semibold text-red-400 border border-red-800/50 rounded-xl hover:bg-red-900/30 transition-colors" onclick="return confirm('確定刪除員工 {{ emp.nick_name }}？');">🗑️ 刪除</button>
-                                </form>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-{# 頁籤切換腳本 #}
-<script>
-(function() {
-  const container = document.querySelector('[data-tabs]');
-  if (!container) return;
-  const btns = container.querySelectorAll('.tab-btn');
-  const panes = {
-    hourly: document.getElementById('tab-hourly'),
-    monthly: document.getElementById('tab-monthly'),
-  };
-
-  function activateTab(name) {
-    btns.forEach(b => {
-      const isActive = b.getAttribute('data-tab') === name;
-      b.className = isActive
-        ? 'tab-btn px-4 py-2.5 text-sm font-semibold rounded-t-xl border border-b-0 border-slate-700 -mb-px bg-slate-800 text-slate-200'
-        : 'tab-btn px-4 py-2.5 text-sm font-semibold rounded-t-xl border border-b-0 border-slate-700 -mb-px bg-slate-700 text-slate-400';
-    });
-    Object.keys(panes).forEach(k => {
-      panes[k].classList.toggle('hidden', k !== name);
-      panes[k].classList.toggle('block', k === name);
-    });
-  }
-
-  btns.forEach(btn => {
-    btn.addEventListener('click', () => activateTab(btn.getAttribute('data-tab')));
-  });
-})();
-</script>
-
-<div class="fixed inset-0 z-50 items-center justify-center hidden modal" id="editEmpModal">
-  <div class="absolute inset-0 bg-black/40" onclick="closeModal(this)"></div>
-  <div class="relative bg-slate-800 rounded-2xl shadow-xl w-full max-w-lg mx-4 z-10 max-h-[90vh] overflow-y-auto">
-    <div class="sticky top-0 z-10 px-5 py-4 bg-blue-600 text-slate-100 font-bold text-lg flex items-center justify-between rounded-t-2xl">
-      <span>✏️ 修改員工資料：<span id="display_emp_name"></span></span>
-      <button class="text-slate-100/50 hover:text-slate-100 text-2xl leading-none" onclick="closeModal(this)">&times;</button>
-    </div>
-    <form action="/update_employee" method="POST">
-      <div class="p-5 space-y-4">
-        <input type="hidden" name="id" id="edit_emp_id">
-        <input type="hidden" name="brand" value="{{ current_brand }}">
-        <input type="hidden" name="payroll_month" value="{{ current_month }}">
-
+  <div class="p-5">
+    <p class="text-sm text-slate-400 mb-4">此設定用於從外部數據管理系統（port 5000）同步 Toshiba 品牌的銷售與出勤資料。</p>
+    <form action="/save_external_api_config" method="POST" class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="block text-sm font-bold text-slate-200 mb-1">全名 (Full Name)</label>
-          <input type="text" name="full_name" id="edit_full_name" class="text-slate-200 bg-slate-800 w-full px-3 py-2.5 border border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="請輸入正式英文全名">
+          <label class="block text-sm font-semibold text-slate-300 mb-1">API 主機位址</label>
+          <input type="text" name="base_url" value="{{ external_api_config.base_url }}"
+                 class="w-full px-3 py-2 text-sm bg-slate-900 border border-slate-600 rounded-xl text-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+                 placeholder="http://localhost:5000" required>
         </div>
-
         <div>
-          <label class="block text-sm font-bold text-slate-200 mb-1">計薪模式</label>
-          <select class="text-slate-200 bg-slate-800 w-full px-3 py-2.5 border border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" name="salary_type" id="edit_salary_type" onchange="toggleSalaryMode()">
-            <option value="hourly">時薪制 (按打卡工時計算)</option>
-            <option value="monthly">月薪制 (固定月薪，無視工時)</option>
-          </select>
-        </div>
-
-        <div id="div_hourly_rate">
-          <label class="block text-sm font-bold text-slate-200 mb-1">預設時薪 ($)</label>
-          <input type="number" step="0.1" class="text-slate-200 bg-slate-800 w-full px-3 py-2.5 border border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" name="hourly_rate" id="edit_hr">
-        </div>
-
-        <div id="div_monthly_salary" style="display: none;">
-          <label class="block text-sm font-bold text-slate-200 mb-1">固定月薪 ($)</label>
-          <input type="number" step="0.1" class="text-slate-200 bg-slate-800 w-full px-3 py-2.5 border border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" name="monthly_salary" id="edit_monthly_salary">
-        </div>
-
-        <div>
-          <label class="block text-sm font-bold text-blue-300 mb-1">本月覆寫時薪</label>
-          <div class="flex rounded-xl overflow-hidden border border-slate-600"><span class="inline-flex items-center px-3 bg-slate-700 text-sm text-slate-400">$</span><input type="number" step="0.1" name="monthly_hourly_rate" id="edit_monthly_hr" class="text-slate-200 bg-slate-800 w-full px-3 py-2.5 outline-none" placeholder="留空則使用預設"></div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block text-sm font-bold text-slate-200 mb-1">津貼 (Allowance)</label>
-            <div class="flex rounded-xl overflow-hidden border border-slate-600"><span class="inline-flex items-center px-3 bg-slate-700 text-sm text-slate-400">$</span><input type="number" step="0.1" name="allowance" id="edit_allow" class="text-slate-200 bg-slate-800 w-full px-3 py-2.5 outline-none" required></div>
-            <div class="text-sm text-slate-500 mt-1">時薪制：按日計算；月薪制：一筆過全勤津貼。</div>
-          </div>
-          <div>
-            <label class="block text-sm font-bold text-slate-200 mb-1">預設佣金比例</label>
-            <input type="number" step="0.001" name="commission_rate" id="edit_comm" class="text-slate-200 bg-slate-800 w-full px-3 py-2.5 border border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required>
-            <div class="text-sm text-slate-500 mt-1">小數表示，例如 3% 請輸入 0.03</div>
-          </div>
-          <div>
-            <label class="block text-sm font-bold text-blue-300 mb-1">本月覆寫佣金</label>
-            <input type="number" step="0.001" name="monthly_commission_rate" id="edit_monthly_comm" class="text-slate-200 bg-slate-800 w-full px-3 py-2.5 border border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="留空則使用預設">
-            <div class="text-sm text-slate-500 mt-1">小數表示，例如 5% 請輸入 0.05</div>
-          </div>
-        </div>
-
-        <hr class="border-slate-700 my-2">
-        <div>
-          <label class="block text-sm font-bold text-slate-200 mb-1">MPF 生效起始月份</label>
-          <input type="month" name="mpf_start_month" id="edit_mpf" class="text-slate-200 bg-slate-800 w-full px-3 py-2.5 border border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
-          <div class="text-sm text-slate-500 mt-1">💡 留空代表該員工為 Part-time，免扣 MPF。</div>
+          <label class="block text-sm font-semibold text-slate-300 mb-1">API Key</label>
+          <input type="text" name="api_key" value="{{ external_api_config.api_key }}"
+                 class="w-full px-3 py-2 text-sm bg-slate-900 border border-slate-600 rounded-xl text-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+                 placeholder="my-secret-api-key-123">
         </div>
       </div>
-      <div class="px-5 py-4 bg-slate-700 flex justify-end gap-2 rounded-b-2xl">
-        <button type="button" class="px-4 py-2 text-sm font-semibold text-slate-300 border border-slate-600 rounded-xl hover:bg-slate-700 transition-colors" onclick="closeModal(this)">取消</button>
-        <button type="submit" class="px-5 py-2 text-sm font-bold text-slate-100 bg-blue-600 rounded-xl hover:bg-blue-700 shadow-sm transition-colors">儲存修改</button>
-      </div>
+      <button type="submit" class="px-5 py-2 text-sm font-bold text-slate-100 bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors">
+        💾 儲存外部 API 設定
+      </button>
     </form>
   </div>
 </div>
+{% endif %}
 
-<script>
-function toggleSalaryMode() {
-    const isMonthly = document.getElementById('edit_salary_type').value === 'monthly';
-    document.getElementById('div_hourly_rate').style.display = isMonthly ? 'none' : 'flex';
-    document.getElementById('div_monthly_salary').style.display = isMonthly ? 'flex' : 'none';
-}
-    
-// ✅ 參數列表包含 salaryType 與 monthlySalary
-function openEmpModal(id, name, fullName, hr, monthlyHr, allow, comm, monthlyComm, mpf, salaryType, monthlySalary) {
-    document.getElementById('edit_emp_id').value = id;
-    document.getElementById('display_emp_name').innerText = name;
-    document.getElementById('edit_full_name').value = fullName || '';
-    
-    document.getElementById('edit_hr').value = hr;
-    document.getElementById('edit_monthly_hr').value = monthlyHr;
-    document.getElementById('edit_allow').value = allow;
-    
-    // ✅ 填入佣金設定
-    document.getElementById('edit_comm').value = comm;
-    document.getElementById('edit_monthly_comm').value = monthlyComm !== null ? monthlyComm : '';
-    
-    document.getElementById('edit_mpf').value = (mpf && mpf !== 'None') ? mpf : '';
-    
-    const modal = document.getElementById('editEmpModal');
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    document.getElementById('edit_salary_type').value = salaryType || 'hourly';
-    document.getElementById('edit_monthly_salary').value = monthlySalary || 0;
-    toggleSalaryMode();
-}
-
-function closeModal(el) {
-  const modal = el.closest('.modal');
-  if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
-}
-</script>
 {% endblock %}

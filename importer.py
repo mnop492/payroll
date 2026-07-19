@@ -751,3 +751,148 @@ def dispatch_import(file_path, payroll_month, brand_code="century_field", update
         return process_toshiba_import(file_path, payroll_month, brand_code=brand_code, update_emp=update_emp)
     # 其他品牌（包含 century_field）走通用版
     return process_excel_import(file_path, payroll_month, brand_code=brand_code, update_emp=update_emp)
+
+
+# ==============================================================================
+# Toshiba API 同步（外部數據管理系統 → 本機 SQLite）
+# ==============================================================================
+
+def sync_toshiba_from_api(payroll_month, brand_code="toshiba"):
+    """從外部 API 同步 Toshiba 品牌的銷售與出勤資料。
+
+    不走 Excel，直接呼叫 API_SUMMARY.md 描述的 port 5000 API，
+    將銷售 / 出勤 / 員工資料寫入 SQLite 的 Sales、DailyAttendance、Attendance 表。
+
+    Args:
+        payroll_month: 計薪月份，格式 "YYYY-MM"
+        brand_code: 品牌代碼，固定為 toshiba
+
+    Returns:
+        (success: bool, message: str)
+    """
+    from external_api.api_client import ExternalAPIClient
+    from external_api.transforms import (
+        transform_duty_report,
+        transform_profile_report,
+        transform_sales_report,
+    )
+
+    client = ExternalAPIClient()
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    imported_parts = []
+
+    try:
+        # ── 1. 員工資料 ─────────────────────────────────────────────
+        try:
+            profile_data = client.get_report("profile")
+            emp_rows = transform_profile_report(profile_data, brand_code)
+            for emp in emp_rows:
+                cursor.execute(
+                    """
+                    INSERT INTO Employees (brand_code, nick_name, full_name, hourly_rate, allowance, commission_rate, salary_type, monthly_salary)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    ON CONFLICT(brand_code, nick_name) DO UPDATE SET
+                        full_name          = COALESCE(excluded.full_name, Employees.full_name),
+                        hourly_rate        = COALESCE(NULLIF(excluded.hourly_rate, 0), Employees.hourly_rate),
+                        allowance          = COALESCE(NULLIF(excluded.allowance, 0), Employees.allowance),
+                        commission_rate    = COALESCE(NULLIF(excluded.commission_rate, 0), Employees.commission_rate),
+                        salary_type        = COALESCE(NULLIF(excluded.salary_type, ''), Employees.salary_type),
+                        monthly_salary     = COALESCE(NULLIF(excluded.monthly_salary, 0), Employees.monthly_salary)
+                    """,
+                    (brand_code, emp["nick_name"], emp["full_name"], emp["hourly_rate"],
+                     emp["allowance"], emp["commission_rate"], emp["salary_type"], emp["monthly_salary"]),
+                )
+                # 同步 MonthlyRates
+                cursor.execute(
+                    """
+                    INSERT INTO MonthlyRates (brand_code, payroll_month, nick_name, hourly_rate, allowance, commission_rate)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                    ON CONFLICT(brand_code, payroll_month, nick_name) DO UPDATE SET
+                        hourly_rate      = excluded.hourly_rate,
+                        allowance        = excluded.allowance,
+                        commission_rate  = excluded.commission_rate
+                    """,
+                    (brand_code, payroll_month, emp["nick_name"], emp["hourly_rate"], emp["allowance"], emp["commission_rate"]),
+                )
+            if emp_rows:
+                imported_parts.append(f"員工資料（{len(emp_rows)} 人）")
+        except Exception as exc:
+            print(f"API 員工資料同步跳過: {exc}")
+
+        # ── 2. 銷售資料 ─────────────────────────────────────────────
+        try:
+            sales_data = client.get_report("sale")
+            sales_rows = transform_sales_report(sales_data, brand_code, payroll_month)
+            cursor.execute(
+                "DELETE FROM Sales WHERE brand_code = ? AND payroll_month = ?",
+                (brand_code, payroll_month),
+            )
+            for s in sales_rows:
+                cursor.execute(
+                    "INSERT OR IGNORE INTO Products (brand_code, model, product_line) VALUES (?, ?, '未分類')",
+                    (brand_code, s["model"]),
+                )
+                cursor.execute(
+                    """
+                    INSERT INTO Sales (brand_code, payroll_month, date, promoter_name, location, model, quantity, price)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (s["brand_code"], s["payroll_month"], s["date"], s["promoter_name"],
+                     s["location"], s["model"], s["quantity"], s["price"]),
+                )
+            if sales_rows:
+                imported_parts.append(f"銷售紀錄（{len(sales_rows)} 筆）")
+        except Exception as exc:
+            print(f"API 銷售資料同步跳過: {exc}")
+
+        # ── 3. 出勤資料 ─────────────────────────────────────────────
+        try:
+            duty_data = client.get_report("duty")
+            daily_rows, att_totals = transform_duty_report(duty_data, brand_code, payroll_month)
+            cursor.execute(
+                "DELETE FROM DailyAttendance WHERE brand_code = ? AND payroll_month = ?",
+                (brand_code, payroll_month),
+            )
+            cursor.execute(
+                "DELETE FROM Attendance WHERE brand_code = ? AND payroll_month = ?",
+                (brand_code, payroll_month),
+            )
+            for d in daily_rows:
+                cursor.execute(
+                    """
+                    INSERT INTO DailyAttendance (brand_code, payroll_month, work_date, nick_name, location,
+                                                 normal_hours, actual_hours, ot_hours)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (d["brand_code"], d["payroll_month"], d["work_date"], d["nick_name"],
+                     d["location"], d["normal_hours"], d["actual_hours"], d["ot_hours"]),
+                )
+            for (name, loc), totals in att_totals.items():
+                cursor.execute(
+                    """
+                    INSERT INTO Attendance (brand_code, payroll_month, nick_name, location, days_worked, hours, ot_hours)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    ON CONFLICT(brand_code, payroll_month, nick_name, location) DO UPDATE SET
+                        days_worked = excluded.days_worked,
+                        hours       = excluded.hours,
+                        ot_hours    = excluded.ot_hours
+                    """,
+                    (brand_code, payroll_month, name, loc, totals["days"], totals["hours"], totals["ot"]),
+                )
+            if daily_rows:
+                imported_parts.append(f"出勤紀錄（{len(daily_rows)} 日）")
+        except Exception as exc:
+            print(f"API 出勤資料同步跳過: {exc}")
+
+        conn.commit()
+
+        if not imported_parts:
+            return True, "⚠️ API 同步完成，但未收到任何資料（可能遠端暫無 Toshiba 數據）。"
+        return True, f"✅ 已從外部 API 同步 Toshiba 資料：{'、'.join(imported_parts)}。"
+
+    except Exception as exc:
+        conn.rollback()
+        return False, f"❌ API 同步失敗: {str(exc)}"
+    finally:
+        conn.close()

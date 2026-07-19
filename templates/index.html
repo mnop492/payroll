@@ -140,9 +140,27 @@
                     <div class="space-y-2">
                         <button class="w-full text-left px-3 py-2 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" type="button" onclick="openModal('newAttendanceGroupModal')">新增考勤人員 / 打卡資料</button>
                         <button class="w-full text-left px-3 py-2 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" type="button" onclick="clearAttendanceModal(); openModal('newSalesGroupModal')">新增銷售據點 / 單據資料</button>
-                        <a class="block w-full text-left px-3 py-2 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" href="/settings?month={{ current_month }}&brand={{ current_brand }}">設定時薪與佣金覆寫</a>
+                        <a class="block w-full text-left px-3 py-2 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" href="/employees?month={{ current_month }}&brand={{ current_brand }}">設定時薪與佣金覆寫</a>
                     </div>
                 </div>
+
+                {# 外部 API 同步路徑（僅 Toshiba） #}
+                {% if current_brand == 'toshiba' %}
+                <div class="border border-purple-800/50 rounded-lg p-5 hover:border-purple-700 transition-colors">
+                    <div class="flex items-center gap-2 mb-3">
+                        <svg class="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        <span class="font-semibold text-slate-100 text-sm">從外部 API 同步</span>
+                    </div>
+                    <p class="text-sm text-slate-500 mb-4">直接從數據管理系統拉取 Toshiba 銷售與出勤記錄</p>
+                    <form action="/sync_toshiba_api" method="POST">
+                        <input type="hidden" name="calc_month" value="{{ current_month }}">
+                        <input type="hidden" name="brand" value="{{ current_brand }}">
+                        <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium text-sm py-2 rounded-lg shadow-sm transition">
+                            🔄 立即同步
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
             </div>
 
             <div class="border-t border-slate-700 pt-4 flex items-center justify-between">
@@ -181,7 +199,14 @@
                         <option value="web" {% if month_input_source == 'web' %}selected{% endif %}>網頁補充</option>
                     </select>
                     <a href="/validate?month={{ current_month }}&brand={{ current_brand }}" class="px-3 py-1.5 text-sm font-medium text-slate-400 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors">自動校對</a>
-                    <a href="/settings?month={{ current_month }}&brand={{ current_brand }}" class="px-3 py-1.5 text-sm font-medium text-slate-400 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors">時薪覆寫</a>
+                    <a href="/employees?month={{ current_month }}&brand={{ current_brand }}" class="px-3 py-1.5 text-sm font-medium text-slate-400 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors">時薪覆寫</a>
+                    {% if current_brand == 'toshiba' %}
+                    <form action="/sync_toshiba_api" method="POST" class="inline">
+                        <input type="hidden" name="calc_month" value="{{ current_month }}">
+                        <input type="hidden" name="brand" value="{{ current_brand }}">
+                        <button type="submit" class="px-3 py-1.5 text-sm font-medium text-purple-300 border border-purple-800/50 rounded-lg hover:bg-purple-900/30 transition-colors">🔄 API 同步</button>
+                    </form>
+                    {% endif %}
                 </div>
             </div>
 
@@ -218,7 +243,7 @@
                 <div class="space-y-2">
                     <button class="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" type="button" onclick="openModal('newAttendanceGroupModal')">新增考勤人員 / 打卡資料</button>
                     <button class="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" type="button" onclick="clearAttendanceModal(); openModal('newSalesGroupModal')">新增銷售據點 / 單據資料</button>
-                    <a class="block w-full text-left px-4 py-2.5 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" href="/settings?month={{ current_month }}&brand={{ current_brand }}">設定本月時薪 / 佣金覆寫</a>
+                    <a class="block w-full text-left px-4 py-2.5 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" href="/employees?month={{ current_month }}&brand={{ current_brand }}">設定本月時薪 / 佣金覆寫</a>
                 </div>
             </div>
         </div>
@@ -288,7 +313,7 @@
                                 <td class="py-3 px-4 text-sm text-slate-200 font-bold text-blue-300">${{ "{:,.1f}".format(att.estimated_basic) }}</td>
                                 <td class="py-3 px-4 text-sm text-slate-200 whitespace-nowrap">
                                     <button class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-1.5 px-3 rounded-lg transition-colors shadow-sm text-sm"
-                                        onclick="editAttendance('{{ att.nick_name }}', '{{ att.location }}', {{ att.days_worked }}, {{ att.hours }}, {{ att.ot_hours }}, {{ att.expenses or 0 }}, {{ att.adjustment or 0 }}, {{ att.attendance_bonus or 0 }}, {{ att.monthly_hourly_rate if att.monthly_hourly_rate is not none else 'null' }}, {{ att.default_hourly_rate }})">修改</button>
+                                        onclick='editAttendance({{ att.nick_name|tojson }}, {{ att.location|tojson }}, {{ att.days_worked|default(0) }}, {{ att.hours|default(0) }}, {{ att.ot_hours|default(0) }}, {{ att.expenses or 0 }}, {{ att.adjustment or 0 }}, {{ att.attendance_bonus or 0 }}, {{ att.monthly_hourly_rate|tojson }}, {{ att.default_hourly_rate|tojson }})'>修改</button>
                                     <form action="/delete_attendance/{{ att.id }}" method="POST" class="inline" onsubmit="return confirm('確定刪除？')">
                                         <button type="submit" class="border border-red-800/50 text-red-400 hover:bg-red-900/30 text-sm font-medium py-1.5 px-3 rounded-lg transition-colors text-sm">刪除</button>
                                     </form>
@@ -338,7 +363,7 @@
                                 <td class="py-3 px-4 text-sm text-slate-200">${{ "{:,.1f}".format(att.adjustment or 0) }}</td>
                                 <td class="py-3 px-4 text-sm text-slate-200 whitespace-nowrap">
                                     <button class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-1.5 px-3 rounded-lg transition-colors shadow-sm text-sm"
-                                        onclick="editAttendance('{{ att.nick_name }}', '{{ att.location.split('、')[0] }}', {{ att.days_worked }}, {{ att.hours }}, {{ att.ot_hours }}, {{ att.expenses or 0 }}, {{ att.adjustment or 0 }}, {{ att.attendance_bonus or 0 }}, {{ att.monthly_hourly_rate if att.monthly_hourly_rate is not none else 'null' }}, {{ att.default_hourly_rate }})">修改</button>
+                                        onclick='editAttendance({{ att.nick_name|tojson }}, {{ (att.location.split("、")[0] if "、" in (att.location or "") else att.location)|tojson }}, {{ att.days_worked|default(0) }}, {{ att.hours|default(0) }}, {{ att.ot_hours|default(0) }}, {{ att.expenses or 0 }}, {{ att.adjustment or 0 }}, {{ att.attendance_bonus or 0 }}, {{ att.monthly_hourly_rate|tojson }}, {{ att.default_hourly_rate|tojson }})'>修改</button>
                                     <form action="/delete_attendance/{{ att.id }}" method="POST" class="inline" onsubmit="return confirm('確定刪除？')">
                                         <button type="submit" class="border border-red-800/50 text-red-400 hover:bg-red-900/30 text-sm font-medium py-1.5 px-3 rounded-lg transition-colors text-sm">刪除</button>
                                     </form>
@@ -397,9 +422,9 @@
                         <td class="py-3 px-4 text-sm text-slate-200 whitespace-nowrap">
                             <div class="flex justify-center gap-1">
                                 <button class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-1.5 px-3 rounded-lg transition-colors shadow-sm text-sm"
-                                        onclick="openSalesModal('{{ staff.name }}', '{{ staff.main_location }}', {{ staff.monthly_comm if staff.monthly_comm is not none else 'null' }}, {{ staff.default_comm }})">修改</button>
+                                    onclick='openSalesModal({{ staff.name|tojson }}, {{ staff.main_location|tojson }}, {{ staff.monthly_comm|tojson }}, {{ staff.default_comm|tojson }})'>修改</button>
                                 <form action="/delete_sales_group" method="POST" class="inline"
-                                    onsubmit="return confirm('確定要清空 {{ staff.name }} 在 {{ staff.main_location }} 的所有單據嗎？此動作無法復原！');">
+                                    onsubmit="return confirm({{ ('確定要清空 ' ~ staff.name ~ ' 在 ' ~ staff.main_location ~ ' 的所有單據嗎？此動作無法復原！')|tojson }});">
                                     <input type="hidden" name="month" value="{{ current_month }}">
                                     <input type="hidden" name="promoter" value="{{ staff.name }}">
                                     <input type="hidden" name="location" value="{{ staff.main_location }}">
@@ -884,6 +909,11 @@ document.querySelectorAll('.att-tab-btn').forEach(btn => {
   const hoursCanvas = document.getElementById('hoursChart');
   const salaryCanvas = document.getElementById('salaryChart');
   if (!hoursCanvas && !salaryCanvas) return;
+
+  // 銷毀已存在的 Chart 實例，避免 "Canvas is already in use" 錯誤
+  [hoursCanvas, salaryCanvas].forEach(c => {
+    if (c) { const existing = Chart.getChart(c); if (existing) existing.destroy(); }
+  });
 
   {% set hourly_data = [] %}
   {% for att in attendances %}

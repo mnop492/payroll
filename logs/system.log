@@ -14203,3 +14203,419 @@ KeyError: ['Name']
 2026-07-19 00:47:03,132 - INFO - 162.159.98.144 - - [19/Jul/2026 00:47:03] "GET /settings?brand=century_field HTTP/1.1" 200 -
 2026-07-19 00:47:03,899 - INFO - 162.159.98.144 - - [19/Jul/2026 00:47:03] "GET / HTTP/1.1" 200 -
 2026-07-19 00:47:07,542 - INFO - 162.159.98.144 - - [19/Jul/2026 00:47:07] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 00:48:37,738 - INFO - 172.71.214.95 - - [19/Jul/2026 00:48:37] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 00:48:46,415 - INFO - 172.71.214.95 - - [19/Jul/2026 00:48:46] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 00:48:56,787 - INFO - 172.71.214.95 - - [19/Jul/2026 00:48:56] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 00:50:53,111 - INFO - 172.71.218.213 - - [19/Jul/2026 00:50:53] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-19 00:51:06,944 - INFO - 172.71.218.213 - - [19/Jul/2026 00:51:06] "GET /view_payslip/0/2026-02?brand=century_field HTTP/1.1" 200 -
+2026-07-19 00:51:07,219 - INFO - 172.71.210.239 - - [19/Jul/2026 00:51:07] "GET /static/logo.png HTTP/1.1" 200 -
+2026-07-19 00:51:11,508 - INFO - 172.71.218.213 - - [19/Jul/2026 00:51:11] "GET /?month=2026-02&brand=century_field HTTP/1.1" 200 -
+2026-07-19 00:51:14,286 - INFO - 172.71.218.213 - - [19/Jul/2026 00:51:14] "POST /calculate_payroll HTTP/1.1" 200 -
+2026-07-19 00:51:19,761 - INFO - 172.71.218.213 - - [19/Jul/2026 00:51:19] "GET /print_all/2026-02?brand=century_field HTTP/1.1" 200 -
+2026-07-19 00:51:28,829 - INFO - 172.71.218.213 - - [19/Jul/2026 00:51:28] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-19 00:51:33,042 - INFO - 172.71.218.213 - - [19/Jul/2026 00:51:33] "GET /settings?brand=century_field&month=2026-02 HTTP/1.1" 200 -
+2026-07-19 00:51:36,349 - INFO - 172.71.218.213 - - [19/Jul/2026 00:51:36] "GET / HTTP/1.1" 200 -
+2026-07-19 00:51:38,400 - INFO - 172.71.218.213 - - [19/Jul/2026 00:51:38] "GET /?month=2026-01 HTTP/1.1" 200 -
+2026-07-19 00:51:40,630 - INFO - 172.71.218.213 - - [19/Jul/2026 00:51:40] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 00:51:42,188 - INFO - 172.71.218.213 - - [19/Jul/2026 00:51:42] "GET /?month=2026-03 HTTP/1.1" 200 -
+2026-07-19 00:51:44,641 - INFO - 172.71.218.213 - - [19/Jul/2026 00:51:44] "GET /?month=2026-04 HTTP/1.1" 200 -
+2026-07-19 00:51:51,882 - INFO - 172.71.218.213 - - [19/Jul/2026 00:51:51] "GET /?month=2026-05 HTTP/1.1" 200 -
+2026-07-19 00:51:54,529 - INFO - 172.71.218.213 - - [19/Jul/2026 00:51:54] "GET /?month=2026-06 HTTP/1.1" 200 -
+2026-07-19 00:54:26,180 - INFO - 172.71.218.213 - - [19/Jul/2026 00:54:26] "GET /?month=2026-06 HTTP/1.1" 200 -
+2026-07-19 00:55:48,760 - INFO - 172.71.214.95 - - [19/Jul/2026 00:55:48] "GET /?month=2026-06 HTTP/1.1" 200 -
+2026-07-19 00:56:13,057 - INFO - 172.71.214.95 - - [19/Jul/2026 00:56:13] "GET /?month=2026-06 HTTP/1.1" 200 -
+2026-07-19 00:57:30,593 - INFO - 172.71.218.213 - - [19/Jul/2026 00:57:30] "[32mGET /manage_locations?brand=dch_e_com HTTP/1.1[0m" 302 -
+2026-07-19 00:57:30,644 - INFO - 172.71.218.213 - - [19/Jul/2026 00:57:30] "GET /login?next=/manage_locations?brand%3Ddch_e_com HTTP/1.1" 200 -
+2026-07-19 00:57:31,465 - INFO - 162.158.193.145 - - [19/Jul/2026 00:57:31] "GET /login?next=/favicon.ico? HTTP/1.1" 200 -
+2026-07-19 00:57:38,240 - INFO - 162.158.193.252 - - [19/Jul/2026 00:57:38] "GET /?month=2026-05 HTTP/1.1" 200 -
+2026-07-19 00:57:42,995 - INFO - 162.158.193.252 - - [19/Jul/2026 00:57:42] "GET /?month=2025-10 HTTP/1.1" 200 -
+2026-07-19 00:57:46,445 - INFO - 162.158.193.252 - - [19/Jul/2026 00:57:46] "GET /?month=2025-11 HTTP/1.1" 200 -
+2026-07-19 00:57:48,869 - INFO - 162.158.193.252 - - [19/Jul/2026 00:57:48] "GET /?month=2025-12 HTTP/1.1" 200 -
+2026-07-19 00:57:54,609 - INFO - 162.158.193.252 - - [19/Jul/2026 00:57:54] "GET /?month=2026-06 HTTP/1.1" 200 -
+2026-07-19 00:57:57,250 - INFO - 162.158.193.252 - - [19/Jul/2026 00:57:57] "GET /?month=2026-01 HTTP/1.1" 200 -
+2026-07-19 00:57:59,301 - INFO - 162.158.193.252 - - [19/Jul/2026 00:57:59] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 00:58:01,085 - INFO - 162.158.193.252 - - [19/Jul/2026 00:58:01] "GET /?month=2026-03 HTTP/1.1" 200 -
+2026-07-19 00:58:04,044 - INFO - 162.158.193.252 - - [19/Jul/2026 00:58:04] "GET /?month=2026-04 HTTP/1.1" 200 -
+2026-07-19 01:02:35,428 - INFO - 162.159.98.144 - - [19/Jul/2026 01:02:35] "[32mGET / HTTP/1.1[0m" 302 -
+2026-07-19 02:20:31,519 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.123.88:5001
+2026-07-19 02:20:31,519 - INFO - [33mPress CTRL+C to quit[0m
+2026-07-19 02:20:31,520 - INFO -  * Restarting with stat
+2026-07-19 02:20:32,644 - WARNING -  * Debugger is active!
+2026-07-19 02:20:32,646 - INFO -  * Debugger PIN: 680-757-247
+2026-07-19 02:20:43,204 - INFO - 172.68.211.170 - - [19/Jul/2026 02:20:43] "GET /audit_logs HTTP/1.1" 200 -
+2026-07-19 02:20:46,850 - INFO - 172.68.211.170 - - [19/Jul/2026 02:20:46] "GET /settings HTTP/1.1" 200 -
+2026-07-19 02:20:49,797 - INFO - 172.68.211.170 - - [19/Jul/2026 02:20:49] "GET /manage_products?brand=century_field HTTP/1.1" 200 -
+2026-07-19 02:20:52,396 - INFO - 172.68.211.170 - - [19/Jul/2026 02:20:52] "GET / HTTP/1.1" 200 -
+2026-07-19 02:20:56,194 - INFO - 172.68.211.170 - - [19/Jul/2026 02:20:56] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-19 02:21:11,983 - INFO - 172.68.211.170 - - [19/Jul/2026 02:21:11] "GET /?brand=toshiba&month=2026-06 HTTP/1.1" 200 -
+2026-07-19 02:21:39,116 - INFO - 172.68.211.170 - - [19/Jul/2026 02:21:39] "GET /?brand=toshiba&month=2026-03 HTTP/1.1" 200 -
+2026-07-19 02:22:10,500 - INFO - 162.158.178.61 - - [19/Jul/2026 02:22:10] "GET /api/daily_attendance/2026-03/Amy%20Or_1/Tai%20koo%20Broadway HTTP/1.1" 200 -
+2026-07-19 02:22:36,135 - INFO - 162.158.178.61 - - [19/Jul/2026 02:22:36] "GET /api/daily_attendance/2026-03/Amy%20Or_1/Tai%20koo%20Broadway HTTP/1.1" 200 -
+2026-07-19 02:22:38,430 - INFO - 162.158.178.61 - - [19/Jul/2026 02:22:38] "GET /?brand=toshiba&month=2026-03 HTTP/1.1" 200 -
+2026-07-19 02:22:42,513 - INFO - 162.158.178.61 - - [19/Jul/2026 02:22:42] "GET /api/daily_attendance/2026-03/Amy%20Or_1/Tai%20koo%20Broadway HTTP/1.1" 200 -
+2026-07-19 02:22:48,877 - INFO - 162.158.178.61 - - [19/Jul/2026 02:22:48] "GET /api/daily_attendance/2026-03/Yee/YL%20Citistore HTTP/1.1" 200 -
+2026-07-19 02:22:49,270 - INFO - 162.158.178.61 - - [19/Jul/2026 02:22:49] "GET /api/daily_attendance/2026-03/Yee/YL%20Citistore HTTP/1.1" 200 -
+2026-07-19 02:22:58,417 - INFO - 162.158.178.61 - - [19/Jul/2026 02:22:58] "GET /?brand=century_field&month=2026-03 HTTP/1.1" 200 -
+2026-07-19 02:23:00,491 - INFO - 162.158.178.61 - - [19/Jul/2026 02:23:00] "GET /api/daily_attendance/2026-03/Apple/Citistore%20TW HTTP/1.1" 200 -
+2026-07-19 02:23:01,063 - INFO - 162.158.178.61 - - [19/Jul/2026 02:23:01] "GET /api/daily_attendance/2026-03/Apple/Citistore%20TW HTTP/1.1" 200 -
+2026-07-19 02:23:01,420 - INFO - 162.158.178.61 - - [19/Jul/2026 02:23:01] "GET /api/daily_attendance/2026-03/Carol/TW%20Yata HTTP/1.1" 200 -
+2026-07-19 02:23:01,791 - INFO - 162.158.178.61 - - [19/Jul/2026 02:23:01] "GET /api/daily_attendance/2026-03/Carol/TW%20Yata HTTP/1.1" 200 -
+2026-07-19 02:23:04,890 - INFO - 162.158.178.61 - - [19/Jul/2026 02:23:04] "GET /?brand=toshiba&month=2026-03 HTTP/1.1" 200 -
+2026-07-19 02:29:01,138 - INFO -  * Detected change in 'c:\\Users\\Ray\\Documents\\Workspace\\payroll\\app_config.py', reloading
+2026-07-19 02:29:01,579 - INFO -  * Restarting with stat
+2026-07-19 02:29:04,234 - WARNING -  * Debugger is active!
+2026-07-19 02:29:04,236 - INFO -  * Debugger PIN: 680-757-247
+2026-07-19 02:30:57,907 - INFO -  * Detected change in 'c:\\Users\\Ray\\Documents\\Workspace\\payroll\\external_api\\api_client.py', reloading
+2026-07-19 02:30:58,309 - INFO -  * Restarting with stat
+2026-07-19 02:30:59,945 - WARNING -  * Debugger is active!
+2026-07-19 02:30:59,948 - INFO -  * Debugger PIN: 680-757-247
+2026-07-19 02:31:33,262 - INFO - 162.158.178.60 - - [19/Jul/2026 02:31:33] "GET /?brand=toshiba&month=2026-03 HTTP/1.1" 200 -
+2026-07-19 02:31:41,276 - INFO - 162.158.178.60 - - [19/Jul/2026 02:31:41] "GET /?brand=toshiba&month=2026-07 HTTP/1.1" 200 -
+2026-07-19 02:38:03,122 - INFO -  * Detected change in 'c:\\Users\\Ray\\Documents\\Workspace\\payroll\\external_api\\api_client.py', reloading
+2026-07-19 02:38:03,364 - INFO -  * Restarting with stat
+2026-07-19 02:38:04,648 - WARNING -  * Debugger is active!
+2026-07-19 02:38:04,651 - INFO -  * Debugger PIN: 680-757-247
+2026-07-19 02:38:08,765 - INFO -  * Detected change in 'c:\\Users\\Ray\\Documents\\Workspace\\payroll\\external_api\\api_client.py', reloading
+2026-07-19 02:38:08,952 - INFO -  * Restarting with stat
+2026-07-19 02:38:10,120 - WARNING -  * Debugger is active!
+2026-07-19 02:38:10,123 - INFO -  * Debugger PIN: 680-757-247
+2026-07-19 02:39:22,057 - INFO -  * Detected change in 'c:\\Users\\Ray\\Documents\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-19 02:39:22,388 - INFO -  * Restarting with stat
+2026-07-19 02:39:23,740 - WARNING -  * Debugger is active!
+2026-07-19 02:39:23,743 - INFO -  * Debugger PIN: 680-757-247
+2026-07-19 02:39:26,888 - INFO -  * Detected change in 'c:\\Users\\Ray\\Documents\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-19 02:39:27,239 - INFO -  * Restarting with stat
+2026-07-19 02:39:28,383 - WARNING -  * Debugger is active!
+2026-07-19 02:39:28,385 - INFO -  * Debugger PIN: 680-757-247
+2026-07-19 02:40:54,074 - INFO - 172.68.211.171 - - [19/Jul/2026 02:40:54] "GET /?brand=toshiba&month=2026-07 HTTP/1.1" 200 -
+2026-07-19 02:40:58,218 - INFO - 172.68.211.171 - - [19/Jul/2026 02:40:58] "GET /settings?brand=toshiba HTTP/1.1" 200 -
+2026-07-19 02:41:21,172 - INFO - 172.68.211.171 - - [19/Jul/2026 02:41:21] "GET /settings?brand=toshiba HTTP/1.1" 200 -
+2026-07-19 02:41:31,642 - INFO - 172.68.211.171 - - [19/Jul/2026 02:41:31] "GET /manage_products?brand=toshiba HTTP/1.1" 200 -
+2026-07-19 02:41:32,509 - INFO - 172.68.211.171 - - [19/Jul/2026 02:41:32] "GET /manage_locations?brand=toshiba HTTP/1.1" 200 -
+2026-07-19 02:41:33,143 - INFO - 172.68.211.171 - - [19/Jul/2026 02:41:33] "GET /settings?brand=toshiba HTTP/1.1" 200 -
+2026-07-19 02:41:34,739 - INFO - 172.68.211.171 - - [19/Jul/2026 02:41:34] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-19 02:41:36,146 - INFO - 172.68.211.171 - - [19/Jul/2026 02:41:36] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-19 02:42:48,335 - INFO - 172.71.218.213 - - [19/Jul/2026 02:42:48] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-19 02:43:13,668 - INFO - 172.71.218.213 - - [19/Jul/2026 02:43:13] "GET /settings?brand=toshiba HTTP/1.1" 200 -
+2026-07-19 02:43:28,988 - INFO -  * Detected change in 'c:\\Users\\Ray\\Documents\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-19 02:43:29,353 - INFO -  * Restarting with stat
+2026-07-19 02:43:30,654 - WARNING -  * Debugger is active!
+2026-07-19 02:43:30,656 - INFO -  * Debugger PIN: 680-757-247
+2026-07-19 02:45:10,589 - INFO - 162.158.193.252 - - [19/Jul/2026 02:45:10] "GET /settings?brand=toshiba HTTP/1.1" 200 -
+2026-07-19 02:46:28,426 - INFO - 162.158.178.61 - - [19/Jul/2026 02:46:28] "GET /settings?brand=toshiba HTTP/1.1" 200 -
+2026-07-19 02:46:32,691 - INFO - 162.158.178.61 - - [19/Jul/2026 02:46:32] "GET /manage_products?brand=toshiba HTTP/1.1" 200 -
+2026-07-19 02:46:33,954 - INFO - 162.158.178.61 - - [19/Jul/2026 02:46:33] "GET /manage_locations?brand=toshiba HTTP/1.1" 200 -
+2026-07-19 02:46:35,516 - INFO - 162.158.178.61 - - [19/Jul/2026 02:46:35] "GET /settings?brand=toshiba HTTP/1.1" 200 -
+2026-07-19 02:46:36,761 - INFO - 162.158.178.61 - - [19/Jul/2026 02:46:36] "GET / HTTP/1.1" 200 -
+2026-07-19 02:46:41,591 - INFO - 162.158.178.61 - - [19/Jul/2026 02:46:41] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-19 02:54:09,500 - INFO -  * Detected change in 'c:\\Users\\Ray\\Documents\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-19 02:54:09,649 - INFO -  * Restarting with stat
+2026-07-19 02:54:11,093 - WARNING -  * Debugger is active!
+2026-07-19 02:54:11,095 - INFO -  * Debugger PIN: 680-757-247
+2026-07-19 02:54:57,082 - INFO - 162.158.178.60 - - [19/Jul/2026 02:54:57] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-19 02:55:03,815 - INFO - 162.158.178.60 - - [19/Jul/2026 02:55:03] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-19 02:55:17,117 - INFO - 162.158.178.60 - - [19/Jul/2026 02:55:17] "GET /employees?brand=toshiba HTTP/1.1" 200 -
+2026-07-19 02:55:43,575 - INFO -  * Detected change in 'c:\\Users\\Ray\\Documents\\Workspace\\payroll\\blueprints\\settings.py', reloading
+2026-07-19 02:55:43,926 - INFO -  * Restarting with stat
+2026-07-19 02:55:46,320 - WARNING -  * Debugger is active!
+2026-07-19 02:55:46,323 - INFO -  * Debugger PIN: 680-757-247
+2026-07-19 02:56:19,199 - INFO - 172.71.214.94 - - [19/Jul/2026 02:56:19] "GET /employees?brand=toshiba HTTP/1.1" 200 -
+2026-07-19 02:56:24,787 - INFO - 172.71.214.94 - - [19/Jul/2026 02:56:24] "GET /settings HTTP/1.1" 200 -
+2026-07-19 02:56:52,658 - INFO - 172.71.214.94 - - [19/Jul/2026 02:56:52] "GET /settings HTTP/1.1" 200 -
+2026-07-19 02:57:00,225 - INFO - 172.71.214.94 - - [19/Jul/2026 02:57:00] "GET /settings?brand=century_field HTTP/1.1" 200 -
+2026-07-19 02:57:02,333 - INFO - 172.71.214.94 - - [19/Jul/2026 02:57:02] "GET /settings?brand=dch_e_com HTTP/1.1" 200 -
+2026-07-19 02:57:04,002 - INFO - 172.71.214.94 - - [19/Jul/2026 02:57:04] "GET /settings?brand=toshiba HTTP/1.1" 200 -
+2026-07-19 02:57:15,472 - INFO - 172.71.214.94 - - [19/Jul/2026 02:57:15] "GET /employees?brand=toshiba HTTP/1.1" 200 -
+2026-07-19 02:57:16,769 - INFO - 172.71.214.94 - - [19/Jul/2026 02:57:16] "GET /manage_brands HTTP/1.1" 200 -
+2026-07-19 02:57:17,980 - INFO - 172.71.214.94 - - [19/Jul/2026 02:57:17] "GET /employees HTTP/1.1" 200 -
+2026-07-19 02:57:19,398 - INFO - 172.71.214.94 - - [19/Jul/2026 02:57:19] "GET /settings HTTP/1.1" 200 -
+2026-07-19 02:57:27,537 - INFO - 172.71.214.94 - - [19/Jul/2026 02:57:27] "GET /validate HTTP/1.1" 200 -
+2026-07-19 02:57:28,269 - INFO - 172.71.214.94 - - [19/Jul/2026 02:57:28] "GET /employees?brand=century_field HTTP/1.1" 200 -
+2026-07-19 02:57:30,025 - INFO - 172.71.214.94 - - [19/Jul/2026 02:57:30] "GET / HTTP/1.1" 200 -
+2026-07-19 02:57:35,766 - INFO - 172.71.214.94 - - [19/Jul/2026 02:57:35] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 02:57:37,763 - INFO - 172.71.214.94 - - [19/Jul/2026 02:57:37] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 02:57:38,204 - INFO - 172.71.214.94 - - [19/Jul/2026 02:57:38] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 02:59:39,204 - INFO - 172.68.211.170 - - [19/Jul/2026 02:59:39] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:06:17,339 - INFO - 172.71.210.46 - - [19/Jul/2026 03:06:17] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:07:13,908 - INFO - 172.71.214.94 - - [19/Jul/2026 03:07:13] "GET /settings HTTP/1.1" 200 -
+2026-07-19 03:07:15,095 - INFO - 172.71.214.94 - - [19/Jul/2026 03:07:15] "GET /manage_backups HTTP/1.1" 200 -
+2026-07-19 03:07:17,218 - INFO - 172.71.214.94 - - [19/Jul/2026 03:07:17] "[32mPOST /create_backup HTTP/1.1[0m" 302 -
+2026-07-19 03:07:17,242 - INFO - 172.71.214.94 - - [19/Jul/2026 03:07:17] "GET /manage_backups HTTP/1.1" 200 -
+2026-07-19 03:07:22,013 - INFO - 172.71.214.94 - - [19/Jul/2026 03:07:22] "GET /settings HTTP/1.1" 200 -
+2026-07-19 03:07:24,761 - INFO - 172.71.214.94 - - [19/Jul/2026 03:07:24] "GET / HTTP/1.1" 200 -
+2026-07-19 03:07:31,619 - INFO - 172.71.214.94 - - [19/Jul/2026 03:07:31] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:07:38,164 - INFO - 172.71.214.94 - - [19/Jul/2026 03:07:38] "[32mPOST /delete_attendance/49 HTTP/1.1[0m" 302 -
+2026-07-19 03:07:38,303 - INFO - 172.71.214.94 - - [19/Jul/2026 03:07:38] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:07:43,677 - INFO - 172.71.214.94 - - [19/Jul/2026 03:07:43] "GET /manage_backups HTTP/1.1" 200 -
+2026-07-19 03:08:00,298 - INFO - 172.71.214.94 - - [19/Jul/2026 03:08:00] "[32mPOST /restore_backup HTTP/1.1[0m" 302 -
+2026-07-19 03:08:00,336 - INFO - 172.71.214.94 - - [19/Jul/2026 03:08:00] "GET /manage_backups HTTP/1.1" 200 -
+2026-07-19 03:08:02,613 - INFO - 172.71.214.94 - - [19/Jul/2026 03:08:02] "GET /employees HTTP/1.1" 200 -
+2026-07-19 03:08:05,385 - INFO - 172.71.214.94 - - [19/Jul/2026 03:08:05] "GET /employees?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:08:16,179 - INFO - 172.71.214.94 - - [19/Jul/2026 03:08:16] "GET /employees?month=2026-03 HTTP/1.1" 200 -
+2026-07-19 03:08:19,554 - INFO - 172.71.214.94 - - [19/Jul/2026 03:08:19] "GET /employees?month=2026-04 HTTP/1.1" 200 -
+2026-07-19 03:08:23,247 - INFO - 172.71.214.94 - - [19/Jul/2026 03:08:23] "GET /employees?month=2026-05 HTTP/1.1" 200 -
+2026-07-19 03:08:26,056 - INFO - 172.71.214.94 - - [19/Jul/2026 03:08:26] "GET /employees?month=2026-06 HTTP/1.1" 200 -
+2026-07-19 03:08:31,185 - INFO - 172.71.214.94 - - [19/Jul/2026 03:08:31] "GET /manage_products?brand=century_field HTTP/1.1" 200 -
+2026-07-19 03:08:32,203 - INFO - 172.71.214.94 - - [19/Jul/2026 03:08:32] "GET /employees?brand=century_field HTTP/1.1" 200 -
+2026-07-19 03:08:34,615 - INFO - 172.71.214.94 - - [19/Jul/2026 03:08:34] "GET /employees?brand=century_field&month=2026-01 HTTP/1.1" 200 -
+2026-07-19 03:08:37,528 - INFO - 172.71.214.94 - - [19/Jul/2026 03:08:37] "GET /employees?brand=century_field&month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:08:43,551 - INFO - 172.71.214.94 - - [19/Jul/2026 03:08:43] "GET /employees?brand=century_field&month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:08:52,769 - INFO - 172.71.214.94 - - [19/Jul/2026 03:08:52] "GET /employees?brand=century_field&month=2026-09 HTTP/1.1" 200 -
+2026-07-19 03:08:55,721 - INFO - 172.71.214.94 - - [19/Jul/2026 03:08:55] "GET /employees?brand=century_field&month=2026-05 HTTP/1.1" 200 -
+2026-07-19 03:08:57,199 - INFO - 172.71.214.94 - - [19/Jul/2026 03:08:57] "GET / HTTP/1.1" 200 -
+2026-07-19 03:08:59,988 - INFO - 172.71.214.94 - - [19/Jul/2026 03:08:59] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:15:55,415 - INFO - 172.71.218.212 - - [19/Jul/2026 03:15:55] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:15:58,589 - INFO - 172.71.218.212 - - [19/Jul/2026 03:15:58] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 03:16:28,784 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.123.88:5001
+2026-07-19 03:16:28,784 - INFO - [33mPress CTRL+C to quit[0m
+2026-07-19 03:16:28,785 - INFO -  * Restarting with stat
+2026-07-19 03:16:30,277 - WARNING -  * Debugger is active!
+2026-07-19 03:16:30,280 - INFO -  * Debugger PIN: 680-757-247
+2026-07-19 03:16:35,522 - INFO - 172.68.211.171 - - [19/Jul/2026 03:16:35] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:16:37,749 - INFO - 172.68.211.171 - - [19/Jul/2026 03:16:37] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 03:16:39,918 - INFO - 172.68.211.171 - - [19/Jul/2026 03:16:39] "GET /api/daily_attendance/2026-02/Connie/Tuen%20Wan%20Aeon HTTP/1.1" 200 -
+2026-07-19 03:16:40,510 - INFO - 172.68.211.171 - - [19/Jul/2026 03:16:40] "GET /api/daily_attendance/2026-02/Irene/SW%20Wing%20On HTTP/1.1" 200 -
+2026-07-19 03:19:25,972 - INFO - 172.68.211.171 - - [19/Jul/2026 03:19:25] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:19:26,854 - INFO - 162.158.193.145 - - [19/Jul/2026 03:19:26] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:19:26,890 - INFO - 162.158.193.145 - - [19/Jul/2026 03:19:26] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:19:26,928 - INFO - 162.158.193.145 - - [19/Jul/2026 03:19:26] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:19:27,003 - INFO - 162.158.193.145 - - [19/Jul/2026 03:19:27] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:19:27,046 - INFO - 162.158.193.145 - - [19/Jul/2026 03:19:27] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:19:27,076 - INFO - 162.158.193.145 - - [19/Jul/2026 03:19:27] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:19:27,117 - INFO - 162.158.193.145 - - [19/Jul/2026 03:19:27] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:19:27,152 - INFO - 162.158.193.145 - - [19/Jul/2026 03:19:27] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:19:27,194 - INFO - 162.158.193.145 - - [19/Jul/2026 03:19:27] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:19:27,244 - INFO - 162.158.193.145 - - [19/Jul/2026 03:19:27] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:19:37,781 - INFO - 172.68.211.171 - - [19/Jul/2026 03:19:37] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 03:20:47,271 - INFO - 172.68.211.171 - - [19/Jul/2026 03:20:47] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:20:48,028 - INFO - 162.158.193.145 - - [19/Jul/2026 03:20:48] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:20:48,083 - INFO - 162.158.193.145 - - [19/Jul/2026 03:20:48] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:20:48,116 - INFO - 162.158.193.145 - - [19/Jul/2026 03:20:48] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:20:48,152 - INFO - 162.158.193.145 - - [19/Jul/2026 03:20:48] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:20:48,189 - INFO - 162.158.193.145 - - [19/Jul/2026 03:20:48] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:20:48,227 - INFO - 162.158.193.145 - - [19/Jul/2026 03:20:48] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:20:48,317 - INFO - 162.158.193.145 - - [19/Jul/2026 03:20:48] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:20:48,369 - INFO - 162.158.193.145 - - [19/Jul/2026 03:20:48] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:20:48,415 - INFO - 162.158.193.145 - - [19/Jul/2026 03:20:48] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:20:48,456 - INFO - 162.158.193.145 - - [19/Jul/2026 03:20:48] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:20:51,442 - INFO - 172.68.211.171 - - [19/Jul/2026 03:20:51] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 03:20:52,784 - INFO - 172.68.211.171 - - [19/Jul/2026 03:20:52] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 03:20:53,527 - INFO - 172.68.211.171 - - [19/Jul/2026 03:20:53] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 03:20:54,081 - INFO - 172.68.211.171 - - [19/Jul/2026 03:20:54] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 03:20:54,446 - INFO - 172.68.211.171 - - [19/Jul/2026 03:20:54] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 03:20:54,857 - INFO - 172.68.211.171 - - [19/Jul/2026 03:20:54] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 03:21:18,562 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.123.88:5001
+2026-07-19 03:21:18,563 - INFO - [33mPress CTRL+C to quit[0m
+2026-07-19 03:21:18,564 - INFO -  * Restarting with stat
+2026-07-19 03:21:19,949 - WARNING -  * Debugger is active!
+2026-07-19 03:21:19,951 - INFO -  * Debugger PIN: 680-757-247
+2026-07-19 03:21:24,526 - INFO - 172.68.211.171 - - [19/Jul/2026 03:21:24] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:21:25,336 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:25] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:25,385 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:25] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:25,450 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:25] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:25,498 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:25] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:25,587 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:25] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:25,619 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:25] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:25,669 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:25] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:25,709 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:25] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:25,744 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:25] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:25,791 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:25] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:28,609 - INFO - 172.68.211.171 - - [19/Jul/2026 03:21:28] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:21:29,462 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:29] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:29,542 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:29] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:29,656 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:29] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:29,723 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:29] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:29,776 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:29] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:29,818 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:29] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:29,882 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:29] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:29,936 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:29] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:30,007 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:30] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:30,080 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:30] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:32,790 - INFO - 172.68.211.171 - - [19/Jul/2026 03:21:32] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 03:21:33,666 - INFO - 172.68.211.171 - - [19/Jul/2026 03:21:33] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 03:21:56,460 - INFO - 172.68.211.171 - - [19/Jul/2026 03:21:56] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:21:57,279 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:57] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:57,394 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:57] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:57,732 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:57] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:57,807 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:57] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:57,851 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:57] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:57,890 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:57] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:57,946 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:57] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:58,007 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:58] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:58,059 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:58] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:21:58,103 - INFO - 162.158.193.145 - - [19/Jul/2026 03:21:58] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:22:01,273 - INFO - 172.68.211.171 - - [19/Jul/2026 03:22:01] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 03:22:02,168 - INFO - 172.68.211.171 - - [19/Jul/2026 03:22:02] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 03:23:22,858 - INFO - 162.159.98.144 - - [19/Jul/2026 03:23:22] "[32mGET /?month=2026-02 HTTP/1.1[0m" 302 -
+2026-07-19 03:23:22,886 - INFO - 162.159.98.144 - - [19/Jul/2026 03:23:22] "GET /login?next=/?month%3D2026-02 HTTP/1.1" 200 -
+2026-07-19 03:23:23,475 - INFO - 162.158.193.145 - - [19/Jul/2026 03:23:23] "GET /login?next=/favicon.ico? HTTP/1.1" 200 -
+2026-07-19 03:23:33,530 - INFO - 162.159.98.144 - - [19/Jul/2026 03:23:33] "[32mPOST /login?next=/?month%3D2026-02 HTTP/1.1[0m" 302 -
+2026-07-19 03:23:33,678 - INFO - 162.159.98.144 - - [19/Jul/2026 03:23:33] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:23:34,939 - INFO - 162.158.193.145 - - [19/Jul/2026 03:23:34] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:23:35,140 - INFO - 162.158.193.145 - - [19/Jul/2026 03:23:35] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:23:35,288 - INFO - 162.158.193.145 - - [19/Jul/2026 03:23:35] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:23:35,395 - INFO - 162.158.193.145 - - [19/Jul/2026 03:23:35] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:23:35,481 - INFO - 162.158.193.145 - - [19/Jul/2026 03:23:35] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:23:35,653 - INFO - 162.158.193.145 - - [19/Jul/2026 03:23:35] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:23:35,684 - INFO - 162.158.193.145 - - [19/Jul/2026 03:23:35] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:23:35,728 - INFO - 162.158.193.145 - - [19/Jul/2026 03:23:35] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:23:35,797 - INFO - 162.158.193.145 - - [19/Jul/2026 03:23:35] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:23:35,849 - INFO - 162.158.193.145 - - [19/Jul/2026 03:23:35] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:23:37,135 - INFO - 162.159.98.144 - - [19/Jul/2026 03:23:37] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 03:23:38,287 - INFO - 162.159.98.144 - - [19/Jul/2026 03:23:38] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 03:27:44,126 - INFO - 172.71.219.45 - - [19/Jul/2026 03:27:44] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:27:44,846 - INFO - 162.158.193.144 - - [19/Jul/2026 03:27:44] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:27:44,872 - INFO - 162.158.193.144 - - [19/Jul/2026 03:27:44] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:27:44,893 - INFO - 162.158.193.144 - - [19/Jul/2026 03:27:44] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:27:44,923 - INFO - 162.158.193.144 - - [19/Jul/2026 03:27:44] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:27:44,944 - INFO - 162.158.193.144 - - [19/Jul/2026 03:27:44] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:27:44,966 - INFO - 162.158.193.144 - - [19/Jul/2026 03:27:44] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:27:44,985 - INFO - 162.158.193.144 - - [19/Jul/2026 03:27:44] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:27:45,009 - INFO - 162.158.193.144 - - [19/Jul/2026 03:27:45] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:27:45,029 - INFO - 162.158.193.144 - - [19/Jul/2026 03:27:45] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:27:45,069 - INFO - 162.158.193.144 - - [19/Jul/2026 03:27:45] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:27:59,508 - INFO - 172.71.219.45 - - [19/Jul/2026 03:27:59] "GET / HTTP/1.1" 200 -
+2026-07-19 03:28:00,206 - INFO - 162.158.193.144 - - [19/Jul/2026 03:28:00] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:28:00,257 - INFO - 162.158.193.144 - - [19/Jul/2026 03:28:00] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:28:00,282 - INFO - 162.158.193.144 - - [19/Jul/2026 03:28:00] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:28:00,321 - INFO - 162.158.193.144 - - [19/Jul/2026 03:28:00] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:28:00,339 - INFO - 162.158.193.144 - - [19/Jul/2026 03:28:00] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:28:00,369 - INFO - 162.158.193.144 - - [19/Jul/2026 03:28:00] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:28:00,387 - INFO - 162.158.193.144 - - [19/Jul/2026 03:28:00] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:28:00,412 - INFO - 162.158.193.144 - - [19/Jul/2026 03:28:00] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:28:00,432 - INFO - 162.158.193.144 - - [19/Jul/2026 03:28:00] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:28:00,463 - INFO - 162.158.193.144 - - [19/Jul/2026 03:28:00] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:28:03,017 - INFO - 172.71.219.45 - - [19/Jul/2026 03:28:03] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:28:03,472 - INFO - 162.158.193.144 - - [19/Jul/2026 03:28:03] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:28:03,541 - INFO - 162.158.193.144 - - [19/Jul/2026 03:28:03] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:28:03,563 - INFO - 162.158.193.144 - - [19/Jul/2026 03:28:03] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:28:03,590 - INFO - 162.158.193.144 - - [19/Jul/2026 03:28:03] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:28:03,611 - INFO - 162.158.193.144 - - [19/Jul/2026 03:28:03] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:28:03,667 - INFO - 162.158.193.144 - - [19/Jul/2026 03:28:03] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:28:03,689 - INFO - 162.158.193.144 - - [19/Jul/2026 03:28:03] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:28:03,729 - INFO - 162.158.193.144 - - [19/Jul/2026 03:28:03] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:28:03,762 - INFO - 162.158.193.144 - - [19/Jul/2026 03:28:03] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:28:03,805 - INFO - 162.158.193.144 - - [19/Jul/2026 03:28:03] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:28:05,063 - INFO - 172.71.219.45 - - [19/Jul/2026 03:28:05] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 03:29:51,559 - INFO - 127.0.0.1 - - [19/Jul/2026 03:29:51] "[32mGET / HTTP/1.1[0m" 302 -
+2026-07-19 03:29:51,564 - INFO - 127.0.0.1 - - [19/Jul/2026 03:29:51] "GET /login?next=/? HTTP/1.1" 200 -
+2026-07-19 03:29:51,722 - INFO - 127.0.0.1 - - [19/Jul/2026 03:29:51] "GET /static/app.css HTTP/1.1" 200 -
+2026-07-19 03:29:51,996 - INFO - 127.0.0.1 - - [19/Jul/2026 03:29:51] "[32mGET /favicon.ico HTTP/1.1[0m" 302 -
+2026-07-19 03:29:52,005 - INFO - 127.0.0.1 - - [19/Jul/2026 03:29:52] "GET /login?next=/favicon.ico? HTTP/1.1" 200 -
+2026-07-19 03:30:02,822 - INFO - 127.0.0.1 - - [19/Jul/2026 03:30:02] "[32mPOST /login?next=/? HTTP/1.1[0m" 302 -
+2026-07-19 03:30:02,857 - INFO - 127.0.0.1 - - [19/Jul/2026 03:30:02] "GET / HTTP/1.1" 200 -
+2026-07-19 03:30:02,889 - INFO - 127.0.0.1 - - [19/Jul/2026 03:30:02] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-19 03:30:02,903 - INFO - 127.0.0.1 - - [19/Jul/2026 03:30:02] "GET /static/index.js HTTP/1.1" 200 -
+2026-07-19 03:30:03,322 - INFO - 127.0.0.1 - - [19/Jul/2026 03:30:03] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-07-19 03:30:07,591 - INFO - 127.0.0.1 - - [19/Jul/2026 03:30:07] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:30:07,614 - INFO - 127.0.0.1 - - [19/Jul/2026 03:30:07] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-19 03:30:07,617 - INFO - 127.0.0.1 - - [19/Jul/2026 03:30:07] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-19 03:30:09,625 - INFO - 127.0.0.1 - - [19/Jul/2026 03:30:09] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 03:32:40,332 - INFO - 162.159.98.144 - - [19/Jul/2026 03:32:40] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:32:41,489 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:41] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:41,519 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:41] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:41,590 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:41] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:41,646 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:41] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:41,693 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:41] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:41,726 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:41] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:41,762 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:41] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:41,799 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:41] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:41,847 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:41] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:41,888 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:41] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:45,350 - INFO - 162.159.98.144 - - [19/Jul/2026 03:32:45] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:32:45,770 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:45] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:45,801 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:45] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:45,849 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:45] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:45,877 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:45] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:45,910 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:45] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:45,940 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:45] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:45,970 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:45] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:45,989 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:45] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:46,015 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:46] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:46,043 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:46] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:47,644 - INFO - 162.159.98.144 - - [19/Jul/2026 03:32:47] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 03:32:51,688 - INFO - 162.159.98.144 - - [19/Jul/2026 03:32:51] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:32:52,091 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:52] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:52,120 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:52] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:52,152 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:52] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:52,187 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:52] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:52,216 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:52] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:52,243 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:52] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:52,268 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:52] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:52,298 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:52] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:52,329 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:52] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:52,387 - INFO - 162.158.193.144 - - [19/Jul/2026 03:32:52] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:32:55,330 - INFO - 162.159.98.144 - - [19/Jul/2026 03:32:55] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 03:32:55,993 - INFO - 162.159.98.144 - - [19/Jul/2026 03:32:55] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 03:32:56,240 - INFO - 162.159.98.144 - - [19/Jul/2026 03:32:56] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 03:32:56,381 - INFO - 162.159.98.144 - - [19/Jul/2026 03:32:56] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 03:39:14,593 - INFO - 172.71.214.95 - - [19/Jul/2026 03:39:14] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:39:15,273 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:15] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:15,331 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:15] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:15,443 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:15] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:15,498 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:15] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:15,520 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:15] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:15,543 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:15] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:15,564 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:15] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:15,583 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:15] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:15,627 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:15] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:15,647 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:15] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:19,267 - INFO - 172.71.214.95 - - [19/Jul/2026 03:39:19] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 03:39:20,017 - INFO - 172.71.214.95 - - [19/Jul/2026 03:39:20] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 03:39:21,227 - INFO - 172.71.214.95 - - [19/Jul/2026 03:39:21] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:39:21,571 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:21] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:21,596 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:21] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:21,614 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:21] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:21,635 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:21] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:21,655 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:21] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:21,673 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:21] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:21,696 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:21] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:21,716 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:21] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:21,740 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:21] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:21,761 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:21] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:30,508 - INFO - 172.71.214.95 - - [19/Jul/2026 03:39:30] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:39:30,830 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:30] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:30,859 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:30] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:30,887 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:30] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:30,908 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:30] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:30,924 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:30] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:30,948 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:30] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:30,969 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:30] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:30,987 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:30] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:31,013 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:31] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:31,032 - INFO - 162.158.193.144 - - [19/Jul/2026 03:39:31] "[32mGET /login?next=/favicon.ico? HTTP/1.1[0m" 302 -
+2026-07-19 03:39:36,942 - INFO - 172.71.214.95 - - [19/Jul/2026 03:39:36] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:39:37,031 - INFO - 162.158.193.213 - - [19/Jul/2026 03:39:37] "GET /static/app.css HTTP/1.1" 200 -
+2026-07-19 03:39:37,240 - INFO - 172.68.211.6 - - [19/Jul/2026 03:39:37] "GET /static/index.js HTTP/1.1" 200 -
+2026-07-19 03:39:37,562 - INFO - 162.159.98.199 - - [19/Jul/2026 03:39:37] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-07-19 03:39:37,970 - INFO - 172.71.214.95 - - [19/Jul/2026 03:39:37] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:39:38,033 - INFO - 162.158.193.213 - - [19/Jul/2026 03:39:38] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-19 03:39:38,036 - INFO - 172.68.211.6 - - [19/Jul/2026 03:39:38] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-19 03:39:38,575 - INFO - 172.71.214.95 - - [19/Jul/2026 03:39:38] "GET /?month=2026-02 HTTP/1.1" 200 -
+2026-07-19 03:39:38,641 - INFO - 162.158.193.213 - - [19/Jul/2026 03:39:38] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
+2026-07-19 03:39:38,644 - INFO - 172.68.211.6 - - [19/Jul/2026 03:39:38] "[36mGET /static/index.js HTTP/1.1[0m" 304 -
+2026-07-19 03:39:41,155 - INFO - 172.71.214.95 - - [19/Jul/2026 03:39:41] "GET /api/daily_attendance/2026-02/Chau/¶}·| HTTP/1.1" 200 -
+2026-07-19 03:39:55,881 - INFO - 172.71.214.95 - - [19/Jul/2026 03:39:55] "GET /api/sales_records/2026-02/Connie/Tuen%20Wan%20Aeon HTTP/1.1" 200 -
+2026-07-19 03:40:15,186 - INFO - 172.71.214.95 - - [19/Jul/2026 03:40:15] "GET /settings HTTP/1.1" 200 -
+2026-07-19 03:40:19,986 - INFO - 172.71.214.95 - - [19/Jul/2026 03:40:19] "GET /settings?brand=toshiba HTTP/1.1" 200 -
+2026-07-19 16:32:24,982 - INFO - 172.71.218.213 - - [19/Jul/2026 16:32:24] "GET /settings?brand=toshiba HTTP/1.1" 200 -
+2026-07-19 16:32:25,265 - INFO - 162.158.193.212 - - [19/Jul/2026 16:32:25] "GET /static/app.css HTTP/1.1" 200 -
+2026-07-19 16:32:26,936 - INFO - 172.71.218.213 - - [19/Jul/2026 16:32:26] "GET /employees?brand=toshiba HTTP/1.1" 200 -
+2026-07-19 16:32:30,547 - INFO - 172.71.218.213 - - [19/Jul/2026 16:32:30] "GET /settings HTTP/1.1" 200 -
+2026-07-19 16:32:35,173 - INFO - 172.71.218.213 - - [19/Jul/2026 16:32:35] "GET / HTTP/1.1" 200 -
+2026-07-19 16:32:35,465 - INFO - 172.68.211.7 - - [19/Jul/2026 16:32:35] "GET /static/index.js HTTP/1.1" 200 -
+2026-07-19 16:32:39,759 - INFO - 172.71.218.213 - - [19/Jul/2026 16:32:39] "GET /?brand=toshiba HTTP/1.1" 200 -
+2026-07-19 16:32:45,808 - ERROR - API get_report(profile) ¥¢±Ñ: 401 Client Error: UNAUTHORIZED for url: http://localhost:5000/api/v1/report/profile
+2026-07-19 16:32:47,842 - ERROR - API get_report(sale) ¥¢±Ñ: 401 Client Error: UNAUTHORIZED for url: http://localhost:5000/api/v1/report/sale
+2026-07-19 16:32:49,886 - ERROR - API get_report(duty) ¥¢±Ñ: 401 Client Error: UNAUTHORIZED for url: http://localhost:5000/api/v1/report/duty
+2026-07-19 16:32:49,898 - INFO - 172.71.218.213 - - [19/Jul/2026 16:32:49] "[32mPOST /sync_toshiba_api HTTP/1.1[0m" 302 -
+2026-07-19 16:32:49,986 - INFO - 172.71.218.213 - - [19/Jul/2026 16:32:49] "GET /?month=2026-07&brand=toshiba HTTP/1.1" 200 -

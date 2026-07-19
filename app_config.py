@@ -26,3 +26,7 @@ else:
 	SESSION_COOKIE_SECURE = ENABLE_HTTPS or TRUST_PROXY_HEADERS
 MAX_LOGIN_ATTEMPTS = int(os.environ.get("PAYROLL_MAX_LOGIN_ATTEMPTS", "5"))
 LOGIN_LOCK_MINUTES = int(os.environ.get("PAYROLL_LOGIN_LOCK_MINUTES", "15"))
+
+# ── 外部 API 設定（Toshiba 品牌從遠端數據管理系統拉取銷售 / 出勤資料） ──
+EXTERNAL_API_BASE_URL = os.environ.get("EXTERNAL_API_BASE_URL", "http://localhost:5000").rstrip("/")
+EXTERNAL_API_KEY = os.environ.get("EXTERNAL_API_KEY", "")

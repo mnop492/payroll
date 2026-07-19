@@ -6,7 +6,7 @@ import pandas as pd
 from flask import Blueprint, flash, redirect, render_template, request, send_file, session, url_for
 
 from app_config import DEFAULT_BRAND_CODE, HISTORY_FOLDER
-from importer import dispatch_import, validate_import_brand, validate_import_month
+from importer import dispatch_import, sync_toshiba_from_api, validate_import_brand, validate_import_month
 from payroll_engine import process_payroll_from_db
 from repository import fetch_index_context, get_brand_name, set_month_input_source
 from services import (
@@ -320,6 +320,35 @@ def upload_and_import():
         flash("✅ 檔案已上傳至 history 並成功匯入數據！", "success")
     else:
         flash(f"⚠️ 檔案已上傳至 history 但匯入失敗: {message}", "warning")
+    return redirect(url_for("main.index", month=calc_month, brand=brand_code))
+
+
+@bp.route("/sync_toshiba_api", methods=["POST"])
+def sync_toshiba_api():
+    """從外部 API 同步 Toshiba 品牌的銷售與出勤資料。"""
+    calc_month = request.form.get("calc_month")
+    brand_code = resolve_brand_code(request.form.get("brand"))
+    success, message = sync_toshiba_from_api(calc_month, brand_code=brand_code)
+    try:
+        log_audit(
+            "api_sync",
+            "PayrollImport",
+            new_value={
+                "month": calc_month,
+                "brand": brand_code,
+                "success": bool(success),
+                "message": message,
+            },
+            user=session.get("user"),
+            ip=get_request_ip(),
+        )
+    except Exception:
+        pass
+    if success:
+        set_month_input_source(calc_month, "web", brand_code=brand_code)
+        flash(message, "success")
+    else:
+        flash(message, "danger")
     return redirect(url_for("main.index", month=calc_month, brand=brand_code))
 
 

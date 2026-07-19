@@ -110,9 +110,23 @@ def _resolve_brand_code():
 def settings():
     current_month = request.args.get("month", pd.Timestamp.now().strftime("%Y-%m"))
     brand_code = _resolve_brand_code()
-    employees, monthly_map, monthly_comm_map = fetch_settings_context(current_month, brand_code=brand_code)
     return render_template(
         "settings.html",
+        current_month=current_month,
+        current_brand=brand_code,
+        current_brand_name=get_brand_name(brand_code),
+        available_brands=get_current_user_available_brands(),
+        external_api_config=_read_external_api_config(),
+    )
+
+
+@bp.route("/employees")
+def employees():
+    current_month = request.args.get("month", pd.Timestamp.now().strftime("%Y-%m"))
+    brand_code = _resolve_brand_code()
+    employees, monthly_map, monthly_comm_map = fetch_settings_context(current_month, brand_code=brand_code)
+    return render_template(
+        "employee.html",
         employees=employees,
         current_month=current_month,
         current_brand=brand_code,
@@ -1167,3 +1181,38 @@ def audit_logs_export():
             "Content-Disposition": 'attachment; filename="audit_logs.csv"',
         },
     )
+
+
+# ── 外部 API 設定頁面 ──────────────────────────────────────────────────
+
+_EXTERNAL_API_CONFIG_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)), "external_api_config.json"
+)
+
+
+def _read_external_api_config():
+    """讀取 external_api_config.json，若不存在則回傳預設值。"""
+    defaults = {"base_url": "http://localhost:5000", "api_key": "my-secret-api-key-123"}
+    try:
+        with open(_EXTERNAL_API_CONFIG_PATH, "r", encoding="utf-8") as fh:
+            saved = json.load(fh)
+            defaults["base_url"] = saved.get("base_url", defaults["base_url"])
+            defaults["api_key"] = saved.get("api_key", defaults["api_key"])
+    except (FileNotFoundError, json.JSONDecodeError):
+        pass
+    return defaults
+
+
+@bp.route("/save_external_api_config", methods=["POST"])
+@admin_required
+def save_external_api_config():
+    base_url = (request.form.get("base_url") or "").strip().rstrip("/")
+    api_key = (request.form.get("api_key") or "").strip()
+    if not base_url:
+        flash("⚠️ 請輸入 API 主機位址", "warning")
+        return redirect(url_for("settings.settings"))
+    config = {"base_url": base_url, "api_key": api_key}
+    with open(_EXTERNAL_API_CONFIG_PATH, "w", encoding="utf-8") as fh:
+        json.dump(config, fh, indent=2, ensure_ascii=False)
+    flash("✅ 外部 API 設定已儲存，下次同步時生效", "success")
+    return redirect(url_for("settings.settings"))

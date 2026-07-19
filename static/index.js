@@ -101,29 +101,30 @@ function refreshDailyTable(name, location) {
             tbody.innerHTML = '';
 
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" class="text-muted py-3">此地點尚無打卡明細。</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" class="text-slate-500 py-3 text-center text-sm">此地點尚無打卡明細。</td></tr>';
                 return;
             }
 
             data.forEach((record, index) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="align-middle text-muted small">${index + 1}</td> <td class="fw-bold align-middle">${record.work_date}</td>
-                    <td class="align-middle"><span class="badge bg-secondary">${record.location}</span></td>
+                    <td class="text-center text-sm text-slate-500">${index + 1}</td>
+                    <td class="text-center font-bold text-sm">${record.work_date}</td>
+                    <td class="text-center"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-sm font-medium bg-slate-700 text-slate-200">${record.location}</span></td>
                     <td>
                         <input type="hidden" name="record_id[]" value="${record.id}">
-                        <input type="time" name="in_time[]" class="form-control form-control-sm" value="${record.in_time}">
+                        <input type="time" name="in_time[]" class="bg-slate-800 border border-slate-600 rounded-lg px-2 py-1 text-sm text-slate-200 w-full" value="${record.in_time}">
                     </td>
                     <td>
-                        <input type="time" name="out_time[]" class="form-control form-control-sm" value="${record.out_time}">
+                        <input type="time" name="out_time[]" class="bg-slate-800 border border-slate-600 rounded-lg px-2 py-1 text-sm text-slate-200 w-full" value="${record.out_time}">
                     </td>
                     <td>
-                        <input type="number" step="0.5" name="normal_hours[]" class="form-control form-control-sm" value="${parseFloat(record.normal_hours || 8.0).toFixed(1)}">
+                        <input type="number" step="0.5" name="normal_hours[]" class="bg-slate-800 border border-slate-600 rounded-lg px-2 py-1 text-sm text-slate-200 w-full" value="${parseFloat(record.normal_hours || 8.0).toFixed(1)}">
                     </td>
-                    <td class="fw-bold align-middle">${parseFloat(record.actual_hours).toFixed(2)}</td>
-                    <td class="text-danger align-middle">${parseFloat(record.ot_hours).toFixed(2)}</td>
-                    <td class="align-middle">
-                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteRecord(${record.id}, '${name}', '${location}')">🗑️</button>
+                    <td class="text-center font-bold text-sm">${parseFloat(record.actual_hours).toFixed(2)}</td>
+                    <td class="text-center text-red-400 text-sm">${parseFloat(record.ot_hours).toFixed(2)}</td>
+                    <td class="text-center">
+                        <button type="button" class="border border-red-800/50 text-red-400 hover:bg-red-900/30 text-sm font-medium py-1 px-2 rounded-lg transition-colors" onclick="deleteRecord(${record.id}, '${name}', '${location}')">🗑️</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -244,7 +245,7 @@ function refreshSalesTable(name, location) {
             tbody.innerHTML = '';
 
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="text-muted py-3">此地點尚無銷售紀錄。</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="text-slate-500 py-3 text-center text-sm">此地點尚無銷售紀錄。</td></tr>';
                 return;
             }
 
@@ -256,23 +257,24 @@ function refreshSalesTable(name, location) {
                 }
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="align-middle text-muted small">${index + 1}</td> <td class="align-middle">
-                        <input type="date" class="form-control form-control-sm edit-sales-date" value="${safeDate}" min="${range.min}" max="${range.max}">
+                    <td class="text-center text-sm text-slate-500">${index + 1}</td>
+                    <td class="text-center">
+                        <input type="date" class="edit-sales-date bg-slate-800 border border-slate-600 rounded-lg px-2 py-1 text-sm text-slate-200 w-full" value="${safeDate}" min="${range.min}" max="${range.max}">
                     </td>
-                    <td class="align-middle"><span class="badge bg-secondary">${record.location}</span></td>
-                    <td class="align-middle">
-                        <input list="productModels" type="text" class="form-control form-control-sm edit-sales-model" value="${record.model || ''}" placeholder="輸入或選擇型號">
+                    <td class="text-center"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-sm font-medium bg-slate-700 text-slate-200">${record.location}</span></td>
+                    <td class="text-center">
+                        <input list="productModels" type="text" class="edit-sales-model bg-slate-800 border border-slate-600 rounded-lg px-2 py-1 text-sm text-slate-200 w-full" value="${record.model || ''}" placeholder="輸入或選擇型號">
                     </td>
-                    <td class="align-middle">
-                        <input type="number" min="1" class="form-control form-control-sm edit-sales-qty" value="${record.quantity || 1}">
+                    <td class="text-center">
+                        <input type="number" min="1" class="edit-sales-qty bg-slate-800 border border-slate-600 rounded-lg px-2 py-1 text-sm text-slate-200 w-full" value="${record.quantity || 1}">
                     </td>
-                    <td class="align-middle">
-                        <input type="number" step="0.1" class="form-control form-control-sm edit-sales-price" value="${parseFloat(record.price || 0).toFixed(2)}">
+                    <td class="text-center">
+                        <input type="number" step="0.1" class="edit-sales-price bg-slate-800 border border-slate-600 rounded-lg px-2 py-1 text-sm text-slate-200 w-full" value="${parseFloat(record.price || 0).toFixed(2)}">
                     </td>
-                    <td class="align-middle">
-                        <div class="d-flex gap-1">
-                            <button type="button" class="btn btn-sm btn-outline-primary w-50" onclick="saveSalesRecord(${record.id})">💾 修改</button>
-                            <button type="button" class="btn btn-sm btn-outline-danger w-50" onclick="deleteSalesRecord(${record.id}, '${name}', '${location}')">🗑️ 刪除</button>
+                    <td class="text-center">
+                        <div class="flex gap-1 justify-center">
+                            <button type="button" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-1 px-2 rounded-lg transition-colors" onclick="saveSalesRecord(${record.id})">💾 修改</button>
+                            <button type="button" class="border border-red-800/50 text-red-400 hover:bg-red-900/30 text-sm font-medium py-1 px-2 rounded-lg transition-colors" onclick="deleteSalesRecord(${record.id}, '${name}', '${location}')">🗑️ 刪除</button>
                         </div>
                     </td>
                 `;
@@ -393,17 +395,5 @@ function startNewSalesGroup() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    const attModalEl = document.getElementById('attendanceModal');
-    if (attModalEl) {
-        attModalEl.addEventListener('hidden.bs.modal', function() {
-            window.location.reload();
-        });
-    }
-
-    const salesModalEl = document.getElementById('salesModal');
-    if (salesModalEl) {
-        salesModalEl.addEventListener('hidden.bs.modal', function() {
-            window.location.reload();
-        });
-    }
+    // 已改用 Tailwind modal（手動 closeModal），不再依賴 Bootstrap hidden.bs.modal 事件
 });

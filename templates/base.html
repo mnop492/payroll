@@ -31,8 +31,8 @@
     </div>
     <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
       {% if session.get('user') %}
-      <a href="/settings{% if current_brand %}?brand={{ current_brand }}{% endif %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-700/70 transition-colors {% if request.path == '/settings' %}bg-slate-700/70 font-semibold{% endif %}">
-        <span>👤</span> <span>人事設定</span>
+      <a href="/employees{% if current_brand %}?brand={{ current_brand }}{% endif %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-700/70 transition-colors {% if request.path == '/employees' %}bg-slate-700/70 font-semibold{% endif %}">
+        <span>👤</span> <span>員工管理</span>
       </a>
       <a href="/manage_products{% if current_brand %}?brand={{ current_brand }}{% endif %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-700/70 transition-colors {% if request.path == '/manage_products' %}bg-slate-700/70 font-semibold{% endif %}">
         <span>📦</span> <span>產品佣金</span>
@@ -45,6 +45,7 @@
         <span>🔍</span> <span>校對(Excel vs 系統)</span>
       </a>
       {% if session.get('is_admin') %}
+      <div class="border-t border-slate-700 my-3"></div>
       <a href="/audit_logs" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-700/70 transition-colors">
         <span>📝</span> <span>稽核紀錄</span>
       </a>
@@ -56,6 +57,9 @@
       </a>
       <a href="/manage_brands" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-700/70 transition-colors">
         <span>🏷️</span> <span>品牌管理</span>
+      </a>
+      <a href="/settings" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-700/70 transition-colors {% if request.path == '/settings' %}bg-slate-700/70 font-semibold{% endif %}">
+        <span>⚙️</span> <span>系統設定</span>
       </a>
       {% endif %}
       {% endif %}
