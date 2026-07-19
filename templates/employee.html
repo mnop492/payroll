@@ -18,20 +18,20 @@
     {% set monthly_emps = employees | selectattr('salary_type', 'equalto', 'monthly') | list %}
 
     {# === 員工卡片含頁籤 === #}
-    <div class="bg-slate-800 rounded-2xl shadow-sm border border-amber-800/40 overflow-hidden" data-tabs>
-        <div class="px-5 py-3.5 bg-amber-900/30 text-amber-200 font-bold text-base border-b border-amber-800/40">
+    <div class="bg-slate-800 rounded-2xl shadow-sm border border-slate-700 overflow-hidden" data-tabs>
+        <div class="px-5 py-3.5 bg-slate-900 text-slate-100 font-bold text-base border-b border-slate-700">
             📋 員工基礎薪酬與 MPF 設定
         </div>
 
-        {# 頁籤按鈕 #}
-        <div class="flex border-b border-slate-700 px-4 pt-3 gap-1" role="tablist">
-            <button class="tab-btn px-4 py-2.5 text-sm font-semibold rounded-t-xl border border-b-0 border-slate-700 -mb-px bg-slate-800 text-slate-200"
+        {# 頁籤按鈕 (改用底線設計，與主控台統一) #}
+        <div class="flex border-b border-slate-700 gap-0 px-5 pt-2" role="tablist">
+            <button class="tab-btn px-4 py-2.5 text-sm font-medium text-slate-200 border-b-2 border-cyan-500 text-cyan-400 transition-colors"
                     data-tab="hourly" role="tab">
-                ⏱️ 時薪制員工 <span class="ml-1.5 inline-block bg-cyan-900/40 text-cyan-300 text-sm px-3 py-0.5 rounded-full">{{ hourly_emps | length }}</span>
+                ⏱️ 時薪制員工 <span class="ml-1.5 inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-cyan-900/40 text-cyan-300">{{ hourly_emps | length }}</span>
             </button>
-            <button class="tab-btn px-4 py-2.5 text-sm font-semibold rounded-t-xl border border-b-0 border-slate-700 -mb-px bg-slate-700 text-slate-400"
+            <button class="tab-btn px-4 py-2.5 text-sm font-medium text-slate-500 border-b-2 border-transparent hover:text-slate-100 hover:border-slate-600 transition-colors"
                     data-tab="monthly" role="tab">
-                📅 月薪制員工 <span class="ml-1.5 inline-block bg-amber-900/40 text-amber-300 text-sm px-3 py-0.5 rounded-full">{{ monthly_emps | length }}</span>
+                📅 月薪制員工 <span class="ml-1.5 inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-amber-900/40 text-amber-300">{{ monthly_emps | length }}</span>
             </button>
         </div>
 
@@ -178,9 +178,16 @@
   function activateTab(name) {
     btns.forEach(b => {
       const isActive = b.getAttribute('data-tab') === name;
-      b.className = isActive
-        ? 'tab-btn px-4 py-2.5 text-sm font-semibold rounded-t-xl border border-b-0 border-slate-700 -mb-px bg-slate-800 text-slate-200'
-        : 'tab-btn px-4 py-2.5 text-sm font-semibold rounded-t-xl border border-b-0 border-slate-700 -mb-px bg-slate-700 text-slate-400';
+
+      if (isActive) {
+          if (name === 'hourly') {
+              b.className = 'tab-btn px-4 py-2.5 text-sm font-medium text-slate-200 border-b-2 border-cyan-500 text-cyan-400 transition-colors';
+          } else {
+              b.className = 'tab-btn px-4 py-2.5 text-sm font-medium text-slate-200 border-b-2 border-amber-500 text-amber-400 transition-colors';
+          }
+      } else {
+          b.className = 'tab-btn px-4 py-2.5 text-sm font-medium text-slate-500 border-b-2 border-transparent hover:text-slate-100 hover:border-slate-600 transition-colors';
+      }
     });
     Object.keys(panes).forEach(k => {
       panes[k].classList.toggle('hidden', k !== name);

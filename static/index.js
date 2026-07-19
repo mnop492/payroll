@@ -23,11 +23,13 @@ function openNewAttendanceModal() {
     document.getElementById('att_loc_hidden').value = '';
     const nl = document.getElementById('new_loc');
     if (nl) nl.value = '';
-    ['att_exp','att_adj','att_bonus','att_monthly_hr'].forEach(id => {
+    ['att_exp','att_adj','att_bonus','att_monthly_hr','att_monthly_salary'].forEach(id => {
         const el = document.getElementById(id); if (el) el.value = '';
     });
     const hint = document.getElementById('att_hr_hint');
     if (hint) hint.innerHTML = 'ℹ️ 請先選擇推廣員以檢視預設時薪';
+    const salHint = document.getElementById('att_salary_hint');
+    if (salHint) salHint.innerHTML = '';
     setDateRange(document.getElementById('new_date'), currentMonth, true);
     const tbody = document.getElementById('daily_records_body');
     if (tbody) tbody.innerHTML = '<tr><td colspan="9" class="text-center text-slate-500 py-6">請完整選擇上方「推廣員」與「地點」以開始新增紀錄。</td></tr>';
@@ -65,7 +67,7 @@ function handleAttModalChange() {
     updateSaveAllButtons();
 }
 
-function editAttendance(name, loc, days, hours, ot, exp, adj, bonus, monthly_hr, default_hr) {
+function editAttendance(name, loc, days, hours, ot, exp, adj, bonus, monthly_hr, default_hr, monthly_sal, default_sal) {
     document.getElementById('att_modal_promoter').value = name;
     document.getElementById('att_modal_loc').value = loc;
     document.getElementById('att_name_hidden').value = name;
@@ -83,6 +85,17 @@ function editAttendance(name, loc, days, hours, ot, exp, adj, bonus, monthly_hr,
     hrInput.placeholder = `預設 $${default_hr}`;
     const hrHint = document.getElementById('att_hr_hint');
     if (hrHint) hrHint.innerHTML = `ℹ️ 該員工預設：$${default_hr}`;
+
+    // 本月專屬月薪
+    const salInput = document.getElementById('att_monthly_salary');
+    if (salInput) {
+        salInput.value = (monthly_sal !== null && monthly_sal !== undefined) ? monthly_sal : '';
+        salInput.placeholder = default_sal ? `預設 $${default_sal}` : '';
+    }
+    const salHint = document.getElementById('att_salary_hint');
+    if (salHint) {
+        salHint.innerHTML = default_sal ? `ℹ️ 預設：$${default_sal}` : '';
+    }
 
     const tbody = document.getElementById('daily_records_body');
     if (tbody) tbody.innerHTML = '<tr><td colspan="9" class="text-center text-slate-400 py-6">載入中...</td></tr>';
@@ -193,10 +206,12 @@ function clearAttendanceEditModal() {
     const tbody = document.getElementById('daily_records_body');
     if (tbody) tbody.innerHTML = '<tr><td colspan="9" class="text-center text-slate-500 py-6">尚無紀錄。</td></tr>';
     // Clear adjustment form fields
-    const fields = ['att_name_hidden', 'att_loc_hidden', 'att_monthly_hr', 'att_exp', 'att_bonus', 'att_adj'];
+    const fields = ['att_name_hidden', 'att_loc_hidden', 'att_monthly_hr', 'att_monthly_salary', 'att_exp', 'att_bonus', 'att_adj'];
     fields.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
     const hrHint = document.getElementById('att_hr_hint');
     if (hrHint) hrHint.textContent = '';
+    const salHint = document.getElementById('att_salary_hint');
+    if (salHint) salHint.textContent = '';
     updateSaveAllButtons();
 }
 

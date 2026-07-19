@@ -19,6 +19,7 @@ def process_payroll_from_db(calc_month, brand_code='century_field', db_path='pay
                e.monthly_salary AS monthly_salary,   -- ✅ 新增
                mr.hourly_rate AS monthly_hourly_rate,
                mr.commission_rate AS monthly_comm,
+               mr.monthly_salary AS monthly_salary_override,
                e.allowance,
                e.commission_rate AS default_comm,
                e.require_mpf,
@@ -221,13 +222,15 @@ def process_payroll_from_db(calc_month, brand_code='century_field', db_path='pay
     # 4. 智能彈性計算邏輯 (把微調金額加進去)
     # ==========================================
     def calculate_basic_pay(row):
-        # 如果是月薪制，直接返回固定月薪 (無視工時)
+        # 如果是月薪制，優先使用本月專屬月薪，否則使用預設月薪
         if row.get('salary_type') == 'monthly':
             # 跨多店只計一次月薪，其餘店鋪歸零
             if row.get('_monthly_seq', 0) > 0:
                 return 0
-            return row.get('monthly_salary', 0)
-            
+            # 優先抓取 MonthlyRates 的 Override
+            override_salary = row.get('monthly_salary_override')
+            return override_salary if pd.notna(override_salary) else row.get('monthly_salary', 0)
+
         # 否則維持原來的時薪計算邏輯
         effective_hr = row.get('monthly_hourly_rate') if pd.notna(row.get('monthly_hourly_rate')) else row.get('hourly_rate', 0)
         return row.get('hours', 0) * effective_hr

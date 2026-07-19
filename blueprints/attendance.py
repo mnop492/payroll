@@ -244,6 +244,7 @@ def update_attendance():
     adjustment = float(request.form.get("adjustment", 0) or 0)
     bonus = float(request.form.get("attendance_bonus", 0) or 0)
     monthly_rate_str = request.form.get("monthly_hourly_rate", "").strip()
+    monthly_salary_str = request.form.get("monthly_salary_override", "").strip()
 
     conn = get_db_connection()
     old = conn.execute(
@@ -265,27 +266,20 @@ def update_attendance():
         """,
         (expenses, adjustment, bonus, brand_code, month, name, location),
     )
-    if monthly_rate_str == "":
-        conn.execute(
-            "DELETE FROM MonthlyRates WHERE brand_code = ? AND payroll_month = ? AND nick_name = ?",
-            (brand_code, month, name),
-        )
-    else:
-        monthly_rate = float(monthly_rate_str)
-        existing = conn.execute(
-            "SELECT id FROM MonthlyRates WHERE brand_code = ? AND payroll_month = ? AND nick_name = ?",
-            (brand_code, month, name),
-        ).fetchone()
-        if existing:
-            conn.execute(
-                "UPDATE MonthlyRates SET hourly_rate = ? WHERE brand_code = ? AND payroll_month = ? AND nick_name = ?",
-                (monthly_rate, brand_code, month, name),
-            )
-        else:
-            conn.execute(
-                "INSERT INTO MonthlyRates (brand_code, payroll_month, nick_name, hourly_rate) VALUES (?, ?, ?, ?)",
-                (brand_code, month, name, monthly_rate),
-            )
+
+    hr_val = float(monthly_rate_str) if monthly_rate_str != "" else None
+    salary_val = float(monthly_salary_str) if monthly_salary_str != "" else None
+
+    conn.execute(
+        """
+        INSERT INTO MonthlyRates (brand_code, payroll_month, nick_name, hourly_rate, monthly_salary)
+        VALUES (?, ?, ?, ?, ?)
+        ON CONFLICT(brand_code, payroll_month, nick_name) DO UPDATE SET
+            hourly_rate = excluded.hourly_rate,
+            monthly_salary = excluded.monthly_salary
+        """,
+        (brand_code, month, name, hr_val, salary_val)
+    )
     conn.commit()
     set_month_input_source(month, "web", brand_code=brand_code)
     new = conn.execute(

@@ -43,6 +43,7 @@ def ensure_monthly_rates_table():
             hourly_rate REAL,
             allowance REAL,
             commission_rate REAL,
+            monthly_salary REAL,
             UNIQUE(brand_code, payroll_month, nick_name),
             FOREIGN KEY (brand_code) REFERENCES Brands(brand_code)
         )
@@ -248,6 +249,7 @@ def ensure_brand_columns_for_core_tables():
                 hourly_rate REAL,
                 allowance REAL,
                 commission_rate REAL,
+                monthly_salary REAL,
                 UNIQUE(brand_code, payroll_month, nick_name),
                 FOREIGN KEY (brand_code) REFERENCES Brands(brand_code)
             )
@@ -255,13 +257,17 @@ def ensure_brand_columns_for_core_tables():
         )
         conn.execute(
             """
-            INSERT INTO MonthlyRates (id, brand_code, payroll_month, nick_name, hourly_rate, allowance, commission_rate)
+            INSERT INTO MonthlyRates (id, brand_code, payroll_month, nick_name, hourly_rate, allowance, commission_rate, monthly_salary)
             SELECT id, ?, payroll_month, nick_name, hourly_rate, allowance, commission_rate
             FROM MonthlyRates_legacy
             """,
             (DEFAULT_BRAND_CODE,),
         )
         conn.execute("DROP TABLE MonthlyRates_legacy")
+
+    # 檢查並新增 monthly_salary 欄位至 MonthlyRates
+    if _table_exists(conn, "MonthlyRates") and not _has_column(conn, "MonthlyRates", "monthly_salary"):
+        conn.execute("ALTER TABLE MonthlyRates ADD COLUMN monthly_salary REAL")
 
     # Attendance requires unique key upgrade to include brand_code.
     if _table_exists(conn, "Attendance") and not _has_column(conn, "Attendance", "brand_code"):
@@ -900,7 +906,7 @@ def fetch_index_context(current_month, payroll_results, brand_code=DEFAULT_BRAND
         (brand_code,),
     ).fetchall()
     monthly_rates_rows = conn.execute(
-        "SELECT nick_name, hourly_rate, commission_rate FROM MonthlyRates WHERE brand_code = ? AND payroll_month = ?",
+        "SELECT nick_name, hourly_rate, commission_rate, monthly_salary FROM MonthlyRates WHERE brand_code = ? AND payroll_month = ?",
         (brand_code, current_month),
     ).fetchall()
     conn.close()
@@ -936,6 +942,10 @@ def fetch_index_context(current_month, payroll_results, brand_code=DEFAULT_BRAND
         row["nick_name"]: float(row["commission_rate"]) if row["commission_rate"] is not None else None
         for row in monthly_rates_rows
     }
+    monthly_salary_override_map = {
+        row["nick_name"]: float(row["monthly_salary"]) if row["monthly_salary"] is not None else None
+        for row in monthly_rates_rows
+    }
     emp_full_map = {row["nick_name"]: (row["full_name"] or "") for row in employees_rows}
     emp_default_hr_map = {row["nick_name"]: float(row["hourly_rate"] or 0) for row in employees_rows}
     emp_default_comm_map = {
@@ -951,6 +961,7 @@ def fetch_index_context(current_month, payroll_results, brand_code=DEFAULT_BRAND
     for attendance in attendances:
         attendance["full_name"] = emp_full_map.get(attendance.get("nick_name"), "")
         attendance["monthly_hourly_rate"] = monthly_rate_map.get(attendance.get("nick_name"))
+        attendance["monthly_salary_override"] = monthly_salary_override_map.get(attendance.get("nick_name"))
         attendance["default_hourly_rate"] = emp_default_hr_map.get(attendance.get("nick_name"), 0)
         attendance["salary_type"] = emp_salary_type_map.get(attendance.get("nick_name"), "hourly")
         attendance["monthly_salary"] = emp_monthly_salary_map.get(attendance.get("nick_name"), 0)
