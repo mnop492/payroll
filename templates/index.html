@@ -54,36 +54,79 @@
     </div>
 
     {# === Chart.js 圖表區 === #}
+    {# === Chart.js 圖表區 === #}
     <div class="bg-slate-800 rounded-xl shadow-sm border border-slate-700 p-0 overflow-hidden mb-6" id="chart-section">
         <div class="flex justify-between items-center px-5 py-3.5 border-b border-slate-700">
             <h5 class="text-lg font-semibold text-slate-100">📈 薪資與出勤趨勢概覽</h5>
             <span class="text-sm text-slate-500">{{ current_month }}</span>
         </div>
-        <div class="p-5">
-            {% set hourly_data = attendances | selectattr("salary_type", "equalto", "hourly") | list %}
+        
+        {% set hourly_data = attendances | selectattr("salary_type", "equalto", "hourly") | list %}
+        {% set monthly_data = attendances | selectattr("salary_type", "equalto", "monthly") | list %}
+        
+        {% if hourly_data or monthly_data %}
+        
+        {# 圖表專屬頁籤 #}
+        <div class="flex border-b border-slate-700 gap-0 px-5 bg-slate-900/50">
             {% if hourly_data %}
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div>
-                    <h6 class="text-sm font-bold text-slate-500 mb-3">時薪制員工工時分佈</h6>
-                    <div class="relative" style="height: 260px;">
-                        <canvas id="hoursChart"></canvas>
-                    </div>
-                </div>
-                <div>
-                    <h6 class="text-sm font-bold text-slate-500 mb-3">各員工預估薪資比較</h6>
-                    <div class="relative" style="height: 260px;">
-                        <canvas id="salaryChart"></canvas>
-                    </div>
-                </div>
-            </div>
-            {% else %}
-            <div class="py-10 text-center text-slate-500">
-                <div class="text-5xl mb-3">📊</div>
-                <p class="text-sm font-semibold">本月無時薪制員工資料</p>
-                <p class="text-sm mt-1">匯入考勤或切換品牌後圖表將自動顯示</p>
-            </div>
+            <button class="chart-tab-btn px-4 py-2.5 text-sm font-medium text-slate-200 border-b-2 border-blue-600 text-blue-600 transition-colors" data-target="chart-pane-hourly">
+                🕐 時薪制數據
+            </button>
+            {% endif %}
+            {% if monthly_data %}
+            <button class="chart-tab-btn px-4 py-2.5 text-sm font-medium text-slate-500 border-b-2 border-transparent hover:text-slate-100 hover:border-slate-600 transition-colors" data-target="chart-pane-monthly">
+                💰 月薪制數據
+            </button>
             {% endif %}
         </div>
+
+        <div class="p-5">
+            {# 時薪制圖表區 #}
+            <div id="chart-pane-hourly" class="chart-tab-pane {% if hourly_data %}block{% else %}hidden{% endif %}">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <h6 class="text-sm font-bold text-slate-500 mb-3">時薪制員工工時分佈</h6>
+                        <div class="relative" style="height: 260px;">
+                            <canvas id="hoursChart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <h6 class="text-sm font-bold text-slate-500 mb-3">各員工預估薪資比較</h6>
+                        <div class="relative" style="height: 260px;">
+                            <canvas id="salaryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# 月薪制圖表區 #}
+            <div id="chart-pane-monthly" class="chart-tab-pane {% if hourly_data %}hidden{% else %}block{% endif %}">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <h6 class="text-sm font-bold text-slate-500 mb-3">月薪制出勤與加班分佈</h6>
+                        <div class="relative" style="height: 260px;">
+                            <canvas id="monthlyAttChart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <h6 class="text-sm font-bold text-slate-500 mb-3">薪資結構 (固定月薪 + 支出 + 佣金)</h6>
+                        <div class="relative" style="height: 260px;">
+                            <canvas id="monthlySalaryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% else %}
+        <div class="p-5">
+            <div class="py-10 text-center text-slate-500">
+                <div class="text-5xl mb-3">📊</div>
+                <p class="text-sm font-semibold">本月尚無任何員工考勤資料</p>
+                <p class="text-sm mt-1">匯入考勤或切換品牌後圖表將自動顯示</p>
+            </div>
+        </div>
+        {% endif %}
     </div>
 
     {# === 薪資結算工作流 === #}
@@ -138,8 +181,8 @@
                     </div>
                     <p class="text-sm text-slate-500 mb-4">直接在系統中建立考勤與銷售資料</p>
                     <div class="space-y-2">
-                        <button class="w-full text-left px-3 py-2 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" type="button" onclick="openModal('newAttendanceGroupModal')">新增考勤人員 / 打卡資料</button>
-                        <button class="w-full text-left px-3 py-2 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" type="button" onclick="clearAttendanceModal(); openModal('newSalesGroupModal')">新增銷售據點 / 單據資料</button>
+                        <button class="w-full text-left px-3 py-2 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" type="button" onclick="openNewAttendanceModal()">新增考勤人員 / 打卡資料</button>
+                        <button class="w-full text-left px-3 py-2 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" type="button" onclick="openNewSalesModal()">新增銷售據點 / 單據資料</button>
                         <a class="block w-full text-left px-3 py-2 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" href="/employees?month={{ current_month }}&brand={{ current_brand }}">設定時薪與佣金覆寫</a>
                     </div>
                 </div>
@@ -241,8 +284,8 @@
             <!-- 可展開的網頁補充區 -->
             <div id="webInputPanel" class="mt-4 {% if month_input_source != 'web' %}hidden{% endif %}">
                 <div class="space-y-2">
-                    <button class="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" type="button" onclick="openModal('newAttendanceGroupModal')">新增考勤人員 / 打卡資料</button>
-                    <button class="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" type="button" onclick="clearAttendanceModal(); openModal('newSalesGroupModal')">新增銷售據點 / 單據資料</button>
+                    <button class="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" type="button" onclick="openNewAttendanceModal()">新增考勤人員 / 打卡資料</button>
+                    <button class="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" type="button" onclick="openNewSalesModal()">新增銷售據點 / 單據資料</button>
                     <a class="block w-full text-left px-4 py-2.5 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" href="/employees?month={{ current_month }}&brand={{ current_brand }}">設定本月時薪 / 佣金覆寫</a>
                 </div>
             </div>
@@ -256,9 +299,12 @@
 {% set monthly_attendances = attendances | selectattr("salary_type", "equalto", "monthly") | list %}
 
 <div class="bg-slate-800 rounded-xl shadow-sm border border-slate-700 p-0 overflow-hidden mb-6" id="attendance-overview">
-    <div class="flex justify-between items-center px-5 py-3.5 border-b border-slate-700">
+    <div class="flex flex-wrap justify-between items-center gap-3 px-5 py-3.5 border-b border-slate-700">
         <h5 class="text-lg font-semibold text-slate-100">📋 考勤總覽 {{ current_month }}</h5>
-        <button class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors shadow-sm" onclick="openModal('newAttendanceGroupModal')">+ 新增考勤人員</button>
+        <div class="flex gap-2">
+            <button class="bg-indigo-900/50 border border-indigo-700 text-indigo-300 hover:bg-indigo-800/50 text-sm font-medium py-2 px-4 rounded-lg transition-colors shadow-sm" onclick="openModal('globalAttPasteModal')">📋 跨店批次貼上</button>
+            <button class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors shadow-sm" onclick="openNewAttendanceModal()">+ 新增考勤人員</button>
+        </div>
     </div>
     <div class="p-0">
         {# --- 頁籤導航 --- #}
@@ -381,9 +427,12 @@
 </div>
 
 <div class="bg-slate-800 rounded-xl shadow-sm border border-slate-700 p-0 overflow-hidden mb-6" id="sales-overview">
-    <div class="flex justify-between items-center px-5 py-3.5 border-b border-slate-700">
+    <div class="flex flex-wrap justify-between items-center gap-3 px-5 py-3.5 border-b border-slate-700">
         <h5 class="text-lg font-semibold text-slate-100">📊 銷售管理中心 {{ current_month }}</h5>
-        <button class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors shadow-sm" onclick="clearAttendanceModal(); openModal('newSalesGroupModal')">+ 新增 {{ current_month }} 銷售據點</button>
+        <div class="flex gap-2">
+            <button class="bg-emerald-900/50 border border-emerald-700 text-emerald-300 hover:bg-emerald-800/50 text-sm font-medium py-2 px-4 rounded-lg transition-colors shadow-sm" onclick="openModal('globalSalesPasteModal')">📋 跨店批次貼上</button>
+            <button class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors shadow-sm" onclick="openNewSalesModal()">+ 新增 {{ current_month }} 銷售據點</button>
+        </div>
     </div>
     <div class="p-0">
         <div class="overflow-x-auto">
@@ -548,11 +597,67 @@
 <div class="fixed inset-0 z-50 items-start justify-center py-8 hidden modal overflow-y-auto" id="attendanceModal">
   <div class="absolute inset-0 bg-black/40" onclick="closeModal(this)"></div>
   <div class="relative bg-slate-800 rounded-2xl shadow-xl w-full max-w-4xl mx-4 z-10">
-    <div class="sticky top-0 z-10 px-5 py-4 bg-slate-900 text-slate-100 font-semibold text-lg flex items-center justify-between rounded-t-2xl border-b border-slate-700">
-      <span>📅 編輯考勤明細：<span id="att_name_display" class="text-blue-300"></span> <span class="text-sm text-slate-500">📍 <span id="att_loc_display"></span></span></span>
+    <div class="sticky top-0 z-20 px-5 py-3 bg-slate-900 rounded-t-2xl border-b border-slate-700 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3 flex-1">
+        <span class="text-lg font-semibold text-slate-100 whitespace-nowrap">📅 編輯考勤明細</span>
+        <select id="att_modal_promoter" class="text-blue-300 bg-slate-800 px-3 py-1.5 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-40 text-sm font-bold" onchange="handleAttModalChange()">
+          <option value="" data-hr="">-- 選擇推廣員 --</option>
+          {% for emp in employees %}
+          <option value="{{ emp.nick_name }}" data-hr="{{ emp.hourly_rate }}">{{ emp.nick_name }}</option>
+          {% endfor %}
+        </select>
+        <span class="text-slate-500">📍</span>
+        <select id="att_modal_loc" class="text-slate-300 bg-slate-800 px-3 py-1.5 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-48 text-sm" onchange="handleAttModalChange()">
+          <option value="">-- 選擇地點 --</option>
+          {% for loc in locations %}
+          <option value="{{ loc.name }}">{{ loc.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
       <button class="text-slate-500 hover:text-slate-400 text-2xl leading-none" onclick="closeModal(this)">&times;</button>
     </div>
     <div class="p-0">
+      <!-- 💡 考勤 Excel 貼上提示框 -->
+      <div class="mx-5 mt-4 mb-2 p-3 bg-blue-900/20 border border-blue-800/50 rounded-xl text-sm">
+        <div class="flex items-start gap-3">
+          <div class="text-xl leading-none mt-0.5">💡</div>
+          <div class="flex-1">
+            <strong class="text-blue-300 font-bold tracking-wide">支援 Excel 批次貼上！</strong>
+            <p class="mt-1 text-slate-400 text-xs">
+              點開下方選單，將 Excel 資料貼入文字框即可秒速新增。
+            </p>
+            <details class="mt-2 group">
+              <summary class="text-xs font-semibold text-blue-400 hover:text-blue-300 cursor-pointer select-none outline-none">
+                展開貼上區與格式要求 ▾
+              </summary>
+              <div class="mt-3 p-3 bg-slate-900/70 rounded-lg border border-slate-700">
+                <table class="w-full text-xs text-left text-slate-300 border-collapse mb-3">
+                  <thead>
+                    <tr class="border-b border-slate-700 text-slate-500">
+                      <th class="pb-1.5 w-1/5">第 1 欄</th><th class="pb-1.5 w-1/5">第 2 欄</th><th class="pb-1.5 w-1/5">第 3 欄</th><th class="pb-1.5 w-1/5">第 4 欄</th><th class="pb-1.5 w-1/5">第 5 欄</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="pt-2 font-semibold text-blue-300">日期</td>
+                      <td class="pt-2">地點 <span class="text-slate-500 font-normal">(選填)</span></td>
+                      <td class="pt-2 font-semibold text-blue-300">簽到</td>
+                      <td class="pt-2 font-semibold text-blue-300">簽退</td>
+                      <td class="pt-2">工時 <span class="text-slate-500 font-normal">(選填)</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="flex flex-col sm:flex-row gap-2">
+                  <textarea id="att_bulk_paste" rows="2" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2 text-sm text-slate-300 focus:ring-2 focus:ring-blue-500 outline-none resize-y" placeholder="請將 Excel 複製的資料貼在此處..."></textarea>
+                  <button type="button" class="shrink-0 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-4 py-2 rounded-lg transition-colors" onclick="processAttendancePaste()">⬇️ 解析並新增</button>
+                </div>
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+      <!-- 提示框結束 -->
+      <!-- 提示框結束 -->
       <div class="overflow-x-auto">
         <table class="w-full text-sm border-collapse">
           <thead class="sticky top-0 z-10">
@@ -614,7 +719,9 @@
         </form>
       </div>
     </div>
-    <div class="px-5 py-3 bg-slate-700 flex justify-end rounded-b-2xl">
+    <div class="px-5 py-3 bg-slate-700 flex items-center justify-between rounded-b-2xl">
+      <button id="saveAllAttBtn" class="px-4 py-2 text-sm font-bold text-white bg-green-600 rounded-xl hover:bg-green-700 transition-colors hidden" onclick="saveAllAttendanceRecords()">💾 儲存全部打卡紀錄</button>
+      <span class="text-sm text-slate-500"></span>
       <button class="px-4 py-2 text-sm font-semibold text-slate-400 border border-slate-600 rounded-xl hover:bg-slate-900 transition-colors" onclick="closeModal(this)">關閉</button>
     </div>
   </div>
@@ -623,11 +730,67 @@
 <div class="fixed inset-0 z-50 items-start justify-center py-8 hidden modal overflow-y-auto" id="salesModal">
   <div class="absolute inset-0 bg-black/40" onclick="closeModal(this)"></div>
   <div class="relative bg-slate-800 rounded-2xl shadow-xl w-full max-w-5xl mx-4 z-10">
-    <div class="sticky top-0 z-10 px-5 py-4 bg-slate-900 text-slate-100 font-semibold text-lg flex items-center justify-between rounded-t-2xl border-b border-slate-700">
-      <span>🛒 編輯銷售明細：<span id="sales_name_display" class="text-slate-500"></span> <span class="text-sm text-slate-500">📍 <span id="sales_loc_display"></span></span></span>
+    <div class="sticky top-0 z-20 px-5 py-3 bg-slate-900 rounded-t-2xl border-b border-slate-700 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3 flex-1">
+        <span class="text-lg font-semibold text-slate-100 whitespace-nowrap">🛒 編輯銷售明細</span>
+        <select id="sales_modal_promoter" class="text-blue-300 bg-slate-800 px-3 py-1.5 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-40 text-sm font-bold" onchange="handleSalesModalChange()">
+          <option value="" data-comm="">-- 選擇推廣員 --</option>
+          {% for emp in employees %}
+          <option value="{{ emp.nick_name }}" data-comm="{{ emp.commission_rate }}">{{ emp.nick_name }}</option>
+          {% endfor %}
+        </select>
+        <span class="text-slate-500">📍</span>
+        <select id="sales_modal_loc" class="text-slate-300 bg-slate-800 px-3 py-1.5 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-48 text-sm" onchange="handleSalesModalChange()">
+          <option value="">-- 選擇地點 --</option>
+          {% for loc in locations %}
+          <option value="{{ loc.name }}">{{ loc.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
       <button class="text-slate-500 hover:text-slate-400 text-2xl leading-none" onclick="closeModal(this)">&times;</button>
     </div>
     <div class="p-0">
+      <!-- 💡 銷售 Excel 貼上提示框 -->
+      <div class="mx-5 mt-4 mb-2 p-3 bg-emerald-900/20 border border-emerald-800/50 rounded-xl text-sm">
+        <div class="flex items-start gap-3">
+          <div class="text-xl leading-none mt-0.5">💡</div>
+          <div class="flex-1">
+            <strong class="text-emerald-300 font-bold tracking-wide">支援 Excel 批次貼上！</strong>
+            <p class="mt-1 text-slate-400 text-xs">
+              點開下方選單，將 Excel 資料貼入文字框即可秒速新增。
+            </p>
+            <details class="mt-2 group">
+              <summary class="text-xs font-semibold text-emerald-400 hover:text-emerald-300 cursor-pointer select-none outline-none">
+                展開貼上區與格式要求 ▾
+              </summary>
+              <div class="mt-3 p-3 bg-slate-900/70 rounded-lg border border-slate-700">
+                <table class="w-full text-xs text-left text-slate-300 border-collapse mb-3">
+                  <thead>
+                    <tr class="border-b border-slate-700 text-slate-500">
+                      <th class="pb-1.5 w-1/5">第 1 欄</th><th class="pb-1.5 w-1/5">第 2 欄</th><th class="pb-1.5 w-1/5">第 3 欄</th><th class="pb-1.5 w-1/5">第 4 欄</th><th class="pb-1.5 w-1/5">第 5 欄</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="pt-2 font-semibold text-emerald-300">銷售日期</td>
+                      <td class="pt-2">地點 <span class="text-slate-500 font-normal">(選填)</span></td>
+                      <td class="pt-2 font-semibold text-emerald-300">型號</td>
+                      <td class="pt-2">數量 <span class="text-slate-500 font-normal">(選填)</span></td>
+                      <td class="pt-2">單價 <span class="text-slate-500 font-normal">(選填)</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="flex flex-col sm:flex-row gap-2">
+                  <textarea id="sales_bulk_paste" rows="2" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2 text-sm text-slate-300 focus:ring-2 focus:ring-emerald-500 outline-none resize-y" placeholder="請將 Excel 複製的資料貼在此處..."></textarea>
+                  <button type="button" class="shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold px-4 py-2 rounded-lg transition-colors" onclick="processSalesPaste()">⬇️ 解析並新增</button>
+                </div>
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+      <!-- 提示框結束 -->
+      <!-- 提示框結束 -->
       <div class="overflow-x-auto">
         <table class="w-full text-sm border-collapse">
           <thead class="sticky top-0 z-10">
@@ -666,73 +829,99 @@
       </div>
     </div>
     <div class="px-5 py-3 bg-slate-700 flex items-center justify-between rounded-b-2xl">
-      <span class="text-sm text-slate-500">💡 系統會自動將未知的新型號加入產品目錄中。修改後請重新結算薪資。</span>
+      <button id="saveAllSalesBtn" class="px-4 py-2 text-sm font-bold text-white bg-green-600 rounded-xl hover:bg-green-700 transition-colors hidden" onclick="saveAllSalesRecords()">💾 儲存全部單據</button>
+      <span class="text-sm text-slate-500"></span>
       <button class="px-4 py-2 text-sm font-semibold text-slate-400 border border-slate-600 rounded-xl hover:bg-slate-900 transition-colors" onclick="closeModal(this)">關閉</button>
     </div>
   </div>
 </div>
 
 {# 新增考勤 Modal #}
-<div class="fixed inset-0 z-50 items-center justify-center hidden modal" id="newAttendanceGroupModal">
-  <div class="absolute inset-0 bg-black/40" onclick="closeModal(this)"></div>
-  <div class="relative bg-slate-800 rounded-2xl shadow-xl w-full max-w-md mx-4 z-10">
+<!-- 全域考勤批次貼上 Modal -->
+<div class="fixed inset-0 z-50 items-start justify-center py-12 hidden modal overflow-y-auto" id="globalAttPasteModal">
+  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeModal(this)"></div>
+  <div class="relative bg-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl mx-4 z-10 border border-indigo-800/50">
     <div class="px-5 py-4 bg-slate-900 text-slate-100 font-semibold text-lg flex items-center justify-between rounded-t-2xl border-b border-slate-700">
-      ➕ 新增考勤人員與據點
+      <span>📋 跨店 / 跨員工 考勤批次匯入</span>
       <button class="text-slate-500 hover:text-slate-400 text-2xl leading-none" onclick="closeModal(this)">&times;</button>
     </div>
-    <div class="p-5 space-y-4">
-      <div>
-        <label class="block text-sm font-medium text-slate-200 mb-1">1. 選擇推廣員</label>
-        <select id="init_att_promoter" class="text-slate-200 bg-slate-800 w-full px-3 py-2.5 border border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"><option value="">-- 請選擇系統員工 --</option>{% for emp in employees %}<option value="{{ emp.nick_name }}">{{ emp.nick_name }}</option>{% endfor %}</select>
+    <div class="p-6">
+      <div class="bg-indigo-900/20 border border-indigo-800/50 rounded-xl p-4 mb-4">
+        <p class="text-indigo-300 font-bold mb-2">⚠️ 資料格式要求 (請確保 Excel 欄位順序完全一致)</p>
+        <table class="w-full text-sm text-left text-slate-300 border-collapse bg-slate-900/50 rounded-lg overflow-hidden">
+          <thead>
+            <tr class="border-b border-slate-700 text-slate-400">
+              <th class="py-2 px-3 w-1/6">第 1 欄</th><th class="py-2 px-3 w-1/6">第 2 欄</th><th class="py-2 px-3 w-1/6">第 3 欄</th><th class="py-2 px-3 w-1/6">第 4 欄</th><th class="py-2 px-3 w-1/6">第 5 欄</th><th class="py-2 px-3 w-1/6">第 6 欄</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="py-3 px-3 font-bold text-indigo-400">推廣員<br><span class="text-xs font-normal text-slate-500">(Nick Name)</span></td>
+              <td class="py-3 px-3 font-bold text-indigo-400">地點</td>
+              <td class="py-3 px-3 font-bold text-indigo-400">日期<br><span class="text-xs font-normal text-slate-500">YYYY-MM-DD</span></td>
+              <td class="py-3 px-3 font-bold text-indigo-400">簽到</td>
+              <td class="py-3 px-3 font-bold text-indigo-400">簽退</td>
+              <td class="py-3 px-3">常規工時<br><span class="text-xs text-slate-500">(預設 8.0)</span></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <div>
-        <label class="block text-sm font-medium text-slate-200 mb-1">2. 選擇地點</label>
-        <select id="init_att_loc" class="text-slate-200 bg-slate-800 w-full px-3 py-2.5 border border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"><option value="">-- 請選地點 --</option>{% for loc in locations %}<option value="{{ loc.name }}">{{ loc.name }}</option>{% endfor %}</select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-blue-300 mb-1">3. 本月專屬時薪 (選填)</label>
-        <div class="flex shadow-sm rounded-xl overflow-hidden border border-slate-600"><span class="inline-flex items-center px-3 bg-slate-700 text-sm">$</span><input type="number" step="0.1" id="init_att_monthly_hr" class="text-slate-200 bg-slate-800 w-full px-3 py-2.5 outline-none" placeholder="若留空則使用系統預設時薪"></div>
-        <div class="text-sm text-slate-500 mt-1" id="init_att_hr_hint">請先選擇推廣員以檢視預設時薪</div>
+      <textarea id="global_att_textarea" rows="8" class="w-full bg-slate-900 border border-slate-600 rounded-xl p-4 text-sm text-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none leading-relaxed font-mono whitespace-pre" placeholder="請將 Excel 選取的多行資料直接貼在這裡 (Ctrl+V)&#10;範例：&#10;Amy    CWB Yoho    2026-06-01    09:00    18:00    8.0&#10;Ben    CWB Yoho    2026-06-02    12:00    20:00"></textarea>
+
+      <div id="global_att_progress" class="hidden mt-4 bg-slate-900 border border-slate-700 rounded-lg p-3 text-center text-sm font-medium text-slate-300">
+        正在寫入資料庫，請勿關閉視窗... <span id="global_att_status" class="text-indigo-400">0 / 0</span>
       </div>
     </div>
-    <div class="px-5 py-4 bg-slate-900 flex justify-end gap-2 rounded-b-2xl">
-      <button class="px-4 py-2 text-sm font-medium text-slate-400 border border-slate-600 rounded-xl hover:bg-slate-900 transition-colors" onclick="closeModal(this)">取消</button>
-      <button class="px-4 py-2 text-sm font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors" onclick="startNewAttendanceGroup()">🚀 開始打卡</button>
+    <div class="px-5 py-4 bg-slate-900 flex justify-end gap-3 rounded-b-2xl border-t border-slate-700">
+      <button class="px-5 py-2 text-sm font-semibold text-slate-400 border border-slate-600 rounded-xl hover:bg-slate-800 transition-colors" onclick="closeModal(this)">取消</button>
+      <button id="global_att_btn" class="px-6 py-2 text-sm font-bold text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 transition-colors shadow-md" onclick="executeGlobalAttPaste()">🚀 解析並直接寫入</button>
+    </div>
+  </div>
+</div>
+
+<!-- 全域銷售批次貼上 Modal -->
+<div class="fixed inset-0 z-50 items-start justify-center py-12 hidden modal overflow-y-auto" id="globalSalesPasteModal">
+  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeModal(this)"></div>
+  <div class="relative bg-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl mx-4 z-10 border border-emerald-800/50">
+    <div class="px-5 py-4 bg-slate-900 text-slate-100 font-semibold text-lg flex items-center justify-between rounded-t-2xl border-b border-slate-700">
+      <span>🛒 跨店 / 跨員工 銷售批次匯入</span>
+      <button class="text-slate-500 hover:text-slate-400 text-2xl leading-none" onclick="closeModal(this)">&times;</button>
+    </div>
+    <div class="p-6">
+      <div class="bg-emerald-900/20 border border-emerald-800/50 rounded-xl p-4 mb-4">
+        <p class="text-emerald-300 font-bold mb-2">⚠️ 資料格式要求 (請確保 Excel 欄位順序完全一致)</p>
+        <table class="w-full text-sm text-left text-slate-300 border-collapse bg-slate-900/50 rounded-lg overflow-hidden">
+          <thead>
+            <tr class="border-b border-slate-700 text-slate-400">
+              <th class="py-2 px-3 w-1/6">第 1 欄</th><th class="py-2 px-3 w-1/6">第 2 欄</th><th class="py-2 px-3 w-1/6">第 3 欄</th><th class="py-2 px-3 w-1/6">第 4 欄</th><th class="py-2 px-3 w-1/6">第 5 欄</th><th class="py-2 px-3 w-1/6">第 6 欄</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="py-3 px-3 font-bold text-emerald-400">推廣員<br><span class="text-xs font-normal text-slate-500">(Nick Name)</span></td>
+              <td class="py-3 px-3 font-bold text-emerald-400">地點</td>
+              <td class="py-3 px-3 font-bold text-emerald-400">銷售日期<br><span class="text-xs font-normal text-slate-500">YYYY-MM-DD</span></td>
+              <td class="py-3 px-3 font-bold text-emerald-400">型號</td>
+              <td class="py-3 px-3">數量<br><span class="text-xs text-slate-500">(預設 1)</span></td>
+              <td class="py-3 px-3 font-bold text-emerald-400">單價</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <textarea id="global_sales_textarea" rows="8" class="w-full bg-slate-900 border border-slate-600 rounded-xl p-4 text-sm text-slate-300 focus:ring-2 focus:ring-emerald-500 outline-none leading-relaxed font-mono whitespace-pre" placeholder="請將 Excel 選取的多行資料直接貼在這裡 (Ctrl+V)&#10;範例：&#10;Amy    CWB Yoho    2026-06-01    RC-18AMXH    1    3500&#10;Ben    MK Moko     2026-06-01    GR-RM469WE   2    15200"></textarea>
+
+      <div id="global_sales_progress" class="hidden mt-4 bg-slate-900 border border-slate-700 rounded-lg p-3 text-center text-sm font-medium text-slate-300">
+        正在寫入資料庫，請勿關閉視窗... <span id="global_sales_status" class="text-emerald-400">0 / 0</span>
+      </div>
+    </div>
+    <div class="px-5 py-4 bg-slate-900 flex justify-end gap-3 rounded-b-2xl border-t border-slate-700">
+      <button class="px-5 py-2 text-sm font-semibold text-slate-400 border border-slate-600 rounded-xl hover:bg-slate-800 transition-colors" onclick="closeModal(this)">取消</button>
+      <button id="global_sales_btn" class="px-6 py-2 text-sm font-bold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-colors shadow-md" onclick="executeGlobalSalesPaste()">🚀 解析並直接寫入</button>
     </div>
   </div>
 </div>
 
 {# 新增銷售 Modal #}
-<div class="fixed inset-0 z-50 items-center justify-center hidden modal" id="newSalesGroupModal">
-  <div class="absolute inset-0 bg-black/40" onclick="closeModal(this)"></div>
-  <div class="relative bg-slate-800 rounded-2xl shadow-xl w-full max-w-md mx-4 z-10">
-    <div class="px-5 py-4 bg-slate-900 text-slate-100 font-semibold text-lg flex items-center justify-between rounded-t-2xl border-b border-slate-700">
-      ➕ 開啟新銷售據點
-      <button class="text-slate-500 hover:text-slate-400 text-2xl leading-none" onclick="closeModal(this)">&times;</button>
-    </div>
-    <div class="p-5 space-y-4">
-      <div>
-        <label class="block text-sm font-medium text-slate-200 mb-1">1. 選擇推廣員</label>
-        <select id="init_sales_promoter" class="text-slate-200 bg-slate-800 w-full px-3 py-2.5 border border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" onchange="updateInitSalesDefaultComm()"><option value="" data-comm="">-- 請選擇系統員工 --</option>{% for emp in employees %}<option value="{{ emp.nick_name }}" data-comm="{{ emp.commission_rate }}">{{ emp.nick_name }}</option>{% endfor %}</select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-blue-300 mb-1">3. 本月專屬佣金 (選填)</label>
-        <div class="flex shadow-sm rounded-xl overflow-hidden border border-slate-600"><input type="number" step="0.001" id="init_sales_monthly_comm" class="text-slate-200 bg-slate-800 w-full px-3 py-2.5 outline-none" placeholder="留空則使用預設"></div>
-        <div class="text-sm text-slate-500 mt-1">請先選擇推廣員，小數表示 (例: 3% 輸入 0.03)</div>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-slate-200 mb-1">2. 選擇主戰場</label>
-        <select id="init_sales_loc" class="text-slate-200 bg-slate-800 w-full px-3 py-2.5 border border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"><option value="">-- 請選擇標準店鋪 --</option>{% for loc in locations %}<option value="{{ loc.name }}">{{ loc.name }}</option>{% endfor %}</select>
-      </div>
-      <div class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-400">選擇後將自動開啟明細表，您可直接開始輸入單據。</div>
-    </div>
-    <div class="px-5 py-4 bg-slate-900 flex justify-end gap-2 rounded-b-2xl">
-      <button class="px-4 py-2 text-sm font-semibold text-slate-400 border border-slate-600 rounded-xl hover:bg-slate-900 transition-colors" onclick="closeModal(this)">取消</button>
-      <button class="px-4 py-2 text-sm font-bold text-white bg-green-600 rounded-xl hover:bg-green-700 transition-colors" onclick="startNewSalesGroup()">🚀 開始輸入單據</button>
-    </div>
-  </div>
-</div>
-
 <script id="index-page-data" type="application/json">{{ index_page_data | tojson }}</script>
 <script id="brand-list-data" type="application/json">{{ available_brands | tojson }}</script>
 <script src="{{ url_for('static', filename='index.js') }}"></script>
@@ -879,12 +1068,42 @@ function openModal(id) {
 }
 function closeModal(btn) {
   const modal = btn.closest('.modal');
-  if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+  if (!modal) return;
+  if (!clearFormForModal(modal.id)) return;
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+function clearFormForModal(modalId) {
+  if (modalId === 'attendanceModal') {
+    const name = typeof getActiveAttName !== 'undefined' ? getActiveAttName() : '';
+    const loc = typeof getActiveAttLoc !== 'undefined' ? getActiveAttLoc() : '';
+    const pending = (typeof pendingAttendanceRows !== 'undefined' ? pendingAttendanceRows : []).filter(r => r.nick_name === name && r.location === loc);
+    if (pending.length > 0 && !confirm(`⚠️ 你有 ${pending.length} 筆未儲存的打卡紀錄將被捨棄，確定要關閉嗎？`)) {
+      return false;
+    }
+    clearAttendanceEditModal();
+    return true;
+  }
+  if (modalId === 'salesModal') {
+    const name = typeof getActiveSalesName !== 'undefined' ? getActiveSalesName() : '';
+    const loc = typeof getActiveSalesLoc !== 'undefined' ? getActiveSalesLoc() : '';
+    const pending = (typeof pendingSalesRows !== 'undefined' ? pendingSalesRows : []).filter(r => r.promoter_name === name && r.location === loc);
+    if (pending.length > 0 && !confirm(`⚠️ 你有 ${pending.length} 筆未儲存的銷售單據將被捨棄，確定要關閉嗎？`)) {
+      return false;
+    }
+    clearSalesEditModal();
+    return true;
+  }
+  return true;
 }
 // Close modals by clicking backdrop
 document.querySelectorAll('.modal').forEach(m => {
   m.addEventListener('click', function(e) {
-    if (e.target === this) { this.classList.add('hidden'); this.classList.remove('flex'); }
+    if (e.target === this) {
+      if (!clearFormForModal(this.id)) return;
+      this.classList.add('hidden');
+      this.classList.remove('flex');
+    }
   });
 });
 // === 考勤頁籤切換 ===
@@ -904,17 +1123,37 @@ document.querySelectorAll('.att-tab-btn').forEach(btn => {
   });
 });
 
+// === 圖表頁籤切換 ===
+document.querySelectorAll('.chart-tab-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const targetId = this.getAttribute('data-target');
+    document.querySelectorAll('.chart-tab-btn').forEach(b => {
+      const isActive = b.getAttribute('data-target') === targetId;
+      b.className = isActive
+        ? 'chart-tab-btn px-4 py-2.5 text-sm font-medium text-slate-200 border-b-2 border-blue-600 text-blue-600 transition-colors'
+        : 'chart-tab-btn px-4 py-2.5 text-sm font-medium text-slate-500 border-b-2 border-transparent hover:text-slate-100 hover:border-slate-600 transition-colors';
+    });
+    document.querySelectorAll('.chart-tab-pane').forEach(p => {
+      p.classList.toggle('hidden', p.id !== targetId);
+      p.classList.toggle('block', p.id === targetId);
+    });
+  });
+});
+
 // === Chart.js 初始化 ===
 (function() {
   const hoursCanvas = document.getElementById('hoursChart');
   const salaryCanvas = document.getElementById('salaryChart');
-  if (!hoursCanvas && !salaryCanvas) return;
+  const monthlyAttCanvas = document.getElementById('monthlyAttChart');
+  const monthlySalaryCanvas = document.getElementById('monthlySalaryChart');
+  if (!hoursCanvas && !salaryCanvas && !monthlyAttCanvas && !monthlySalaryCanvas) return;
 
-  // 銷毀已存在的 Chart 實例，避免 "Canvas is already in use" 錯誤
-  [hoursCanvas, salaryCanvas].forEach(c => {
+  // 銷毀已存在的 Chart 實例
+  [hoursCanvas, salaryCanvas, monthlyAttCanvas, monthlySalaryCanvas].forEach(c => {
     if (c) { const existing = Chart.getChart(c); if (existing) existing.destroy(); }
   });
 
+  // --- 1. 時薪制資料準備 ---
   {% set hourly_data = [] %}
   {% for att in attendances %}
     {% if att.salary_type == 'hourly' %}
@@ -926,29 +1165,44 @@ document.querySelectorAll('.att-tab-btn').forEach(btn => {
   const hourValues = {{ hourly_data | map(attribute='hours') | list | tojson }};
   const basicValues = {{ hourly_data | map(attribute='basic') | list | tojson }};
 
+  // --- 2. 月薪制資料準備 ---
+  {% set monthly_chart_data = [] %}
+  {% for att in attendances %}
+    {% if att.salary_type == 'monthly' %}
+        {% set emp_comm = namespace(val=0) %}
+        {% for staff in staff_summary %}
+            {% if staff.name == att.nick_name %}
+                {% set emp_comm.val = staff.total_comm | float %}
+            {% endif %}
+        {% endfor %}
+        {% set extra_pay = (att.expenses | default(0) | float) + (att.adjustment | default(0) | float) + (att.attendance_bonus | default(0) | float) %}
+        {% set _ = monthly_chart_data.append({
+            'name': att.nick_name,
+            'days': att.days_worked | default(0) | int,
+            'ot': att.ot_hours | default(0) | float,
+            'basic': att.monthly_salary | default(0) | float,
+            'extra': extra_pay,
+            'comm': emp_comm.val
+        }) %}
+    {% endif %}
+  {% endfor %}
+
+  const monthlyLabels = {{ monthly_chart_data | map(attribute='name') | list | tojson }};
+  const monthlyDays = {{ monthly_chart_data | map(attribute='days') | list | tojson }};
+  const monthlyOT = {{ monthly_chart_data | map(attribute='ot') | list | tojson }};
+  const monthlyBasic = {{ monthly_chart_data | map(attribute='basic') | list | tojson }};
+  const monthlyExtra = {{ monthly_chart_data | map(attribute='extra') | list | tojson }};
+  const monthlyComm = {{ monthly_chart_data | map(attribute='comm') | list | tojson }};
+
+  // --- 繪製時薪制圖表 ---
   if (hoursCanvas && hourLabels.length > 0) {
     new Chart(hoursCanvas, {
       type: 'bar',
       data: {
         labels: hourLabels,
-        datasets: [{
-          label: '本月工時 (h)',
-          data: hourValues,
-          backgroundColor: 'rgba(99, 102, 241, 0.7)',
-          borderColor: 'rgba(99, 102, 241, 1)',
-          borderWidth: 1,
-          borderRadius: 6,
-        }]
+        datasets: [{ label: '本月工時 (h)', data: hourValues, backgroundColor: 'rgba(99, 102, 241, 0.7)', borderColor: 'rgba(99, 102, 241, 1)', borderWidth: 1, borderRadius: 6 }]
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { font: { size: 12 }, color: '#cbd5e1' } },
-          x: { ticks: { font: { size: 12, weight: '500' }, color: '#cbd5e1', maxRotation: 45 } }
-        }
-      }
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { font: { size: 12 }, color: '#cbd5e1' } }, x: { ticks: { font: { size: 12, weight: '500' }, color: '#cbd5e1', maxRotation: 45 } } } }
     });
   }
 
@@ -957,22 +1211,45 @@ document.querySelectorAll('.att-tab-btn').forEach(btn => {
       type: 'bar',
       data: {
         labels: hourLabels,
-        datasets: [{
-          label: '預估底薪 ($)',
-          data: basicValues,
-          backgroundColor: 'rgba(16, 185, 129, 0.7)',
-          borderColor: 'rgba(16, 185, 129, 1)',
-          borderWidth: 1,
-          borderRadius: 6,
-        }]
+        datasets: [{ label: '預估底薪 ($)', data: basicValues, backgroundColor: 'rgba(16, 185, 129, 0.7)', borderColor: 'rgba(16, 185, 129, 1)', borderWidth: 1, borderRadius: 6 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { font: { size: 12 }, color: '#cbd5e1', callback: v => '$' + v.toLocaleString() } }, x: { ticks: { font: { size: 12, weight: '500' }, color: '#cbd5e1', maxRotation: 45 } } } }
+    });
+  }
+
+  // --- 繪製月薪制圖表 ---
+  if (monthlyAttCanvas && monthlyLabels.length > 0) {
+    new Chart(monthlyAttCanvas, {
+      type: 'bar',
+      data: {
+        labels: monthlyLabels,
+        datasets: [
+          { label: '出勤天數', data: monthlyDays, backgroundColor: 'rgba(14, 165, 233, 0.7)', borderColor: 'rgba(14, 165, 233, 1)', borderWidth: 1, borderRadius: 4 },
+          { label: '加班時數 (OT)', data: monthlyOT, backgroundColor: 'rgba(244, 63, 94, 0.7)', borderColor: 'rgba(244, 63, 94, 1)', borderWidth: 1, borderRadius: 4 }
+        ]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#cbd5e1' } } }, scales: { y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { font: { size: 12 }, color: '#cbd5e1' } }, x: { ticks: { font: { size: 12, weight: '500' }, color: '#cbd5e1' } } } }
+    });
+  }
+
+  if (monthlySalaryCanvas && monthlyLabels.length > 0) {
+    new Chart(monthlySalaryCanvas, {
+      type: 'bar',
+      data: {
+        labels: monthlyLabels,
+        datasets: [
+          { label: '固定月薪', data: monthlyBasic, backgroundColor: 'rgba(168, 85, 247, 0.7)', borderColor: 'rgba(168, 85, 247, 1)', borderWidth: 1 },
+          { label: '各項支出/微調', data: monthlyExtra, backgroundColor: 'rgba(234, 179, 8, 0.7)', borderColor: 'rgba(234, 179, 8, 1)', borderWidth: 1 },
+          { label: '總佣金', data: monthlyComm, backgroundColor: 'rgba(16, 185, 129, 0.7)', borderColor: 'rgba(16, 185, 129, 1)', borderWidth: 1, borderRadius: { topLeft: 4, topRight: 4 } }
+        ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
+        plugins: { legend: { labels: { color: '#cbd5e1' } } },
         scales: {
-          y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { font: { size: 12 }, color: '#cbd5e1', callback: v => '$' + v.toLocaleString() } },
-          x: { ticks: { font: { size: 12, weight: '500' }, color: '#cbd5e1', maxRotation: 45 } }
+          x: { stacked: true, ticks: { font: { size: 12, weight: '500' }, color: '#cbd5e1' } },
+          y: { stacked: true, beginAtZero: true, grid: { color: '#334155' }, ticks: { font: { size: 12 }, color: '#cbd5e1', callback: v => '$' + v.toLocaleString() } }
         }
       }
     });
