@@ -14619,6 +14619,7 @@ KeyError: ['Name']
 2026-07-19 16:32:49,886 - ERROR - API get_report(duty) ¥¢±Ñ: 401 Client Error: UNAUTHORIZED for url: http://localhost:5000/api/v1/report/duty
 2026-07-19 16:32:49,898 - INFO - 172.71.218.213 - - [19/Jul/2026 16:32:49] "[32mPOST /sync_toshiba_api HTTP/1.1[0m" 302 -
 2026-07-19 16:32:49,986 - INFO - 172.71.218.213 - - [19/Jul/2026 16:32:49] "GET /?month=2026-07&brand=toshiba HTTP/1.1" 200 -
+<<<<<<< HEAD
 2026-07-19 16:54:57,744 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5001
@@ -14969,3 +14970,5 @@ KeyError: ['Name']
 2026-07-20 02:02:47,381 - INFO - 127.0.0.1 - - [20/Jul/2026 02:02:47] "GET /api/daily_attendance/2026-06/Amy/CWB%20Yoho HTTP/1.1" 200 -
 2026-07-20 02:03:10,615 - INFO - 127.0.0.1 - - [20/Jul/2026 02:03:10] "[36mGET /static/app.css HTTP/1.1[0m" 304 -
 2026-07-20 02:03:10,701 - INFO - 127.0.0.1 - - [20/Jul/2026 02:03:10] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+=======
+>>>>>>> bbdfbcb960c133728864b5a3e50fe65fa422c0e8

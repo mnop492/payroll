@@ -181,8 +181,13 @@
                     </div>
                     <p class="text-sm text-slate-500 mb-4">直接在系統中建立考勤與銷售資料</p>
                     <div class="space-y-2">
+<<<<<<< HEAD
                         <button class="w-full text-left px-3 py-2 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" type="button" onclick="openNewAttendanceModal()">新增考勤人員 / 打卡資料</button>
                         <button class="w-full text-left px-3 py-2 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" type="button" onclick="openNewSalesModal()">新增銷售據點 / 單據資料</button>
+=======
+                        <button class="w-full text-left px-3 py-2 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" type="button" onclick="openModal('newAttendanceGroupModal')">新增考勤人員 / 打卡資料</button>
+                        <button class="w-full text-left px-3 py-2 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" type="button" onclick="clearAttendanceModal(); openModal('newSalesGroupModal')">新增銷售據點 / 單據資料</button>
+>>>>>>> bbdfbcb960c133728864b5a3e50fe65fa422c0e8
                         <a class="block w-full text-left px-3 py-2 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-900 transition-colors" href="/employees?month={{ current_month }}&brand={{ current_brand }}">設定時薪與佣金覆寫</a>
                     </div>
                 </div>
