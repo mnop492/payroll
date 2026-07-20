@@ -1,3 +1,50 @@
+// ── DOM 快取 ──
+const domCache = {
+    attModalPromoter: null,
+    attModalLoc: null,
+    dailyRecordsBody: null,
+    attendanceCalendarGrid: null,
+    attendanceCalendarContent: null,
+    attendanceCalendarToggle: null,
+    init() {
+        this.attModalPromoter = document.getElementById('att_modal_promoter');
+        this.attModalLoc = document.getElementById('att_modal_loc');
+        this.dailyRecordsBody = document.getElementById('daily_records_body');
+        this.attendanceCalendarGrid = document.getElementById('attendance_calendar_grid');
+        this.attendanceCalendarContent = document.getElementById('attendanceCalendarContent');
+        this.attendanceCalendarToggle = document.getElementById('attendanceCalendarToggle');
+    }
+};
+
+// ── 防抖工具 ──
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+let handleAttModalChangeDebounced = null;
+let handleSalesModalChangeDebounced = null;
+
+// 初始化 DOM 快取和防抖
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        domCache.init();
+        handleAttModalChangeDebounced = debounce(handleAttModalChangeImpl, 150);
+        handleSalesModalChangeDebounced = debounce(handleSalesModalChangeImpl, 150);
+    });
+} else {
+    domCache.init();
+    handleAttModalChangeDebounced = debounce(handleAttModalChangeImpl, 150);
+    handleSalesModalChangeDebounced = debounce(handleSalesModalChangeImpl, 150);
+}
+
 const pageDataElement = document.getElementById('index-page-data');
 const pageData = pageDataElement ? JSON.parse(pageDataElement.textContent) : {};
 const currentMonth = pageData.currentMonth || '';
@@ -5,6 +52,312 @@ const currentMonth = pageData.currentMonth || '';
 // ── 暫存陣列：批次寫入用 ──
 let pendingAttendanceRows = [];
 let pendingSalesRows = [];
+
+// ── 智慧地點排序工具 ──
+function getLocMap(id) {
+    try { return JSON.parse(document.getElementById(id)?.textContent || '{}'); } 
+    catch(e) { return {}; }
+}
+
+function reorderLocationDropdown(selectId, activeLocs) {
+    const sel = document.getElementById(selectId);
+    if (!sel) return;
+
+    const currentVal = sel.value; // 記住當前選擇
+    const options = Array.from(sel.options).slice(1); // 排除第一個 "-- 選擇地點 --"
+
+    const activeOptions = [];
+    const inactiveOptions = [];
+
+    options.forEach(opt => {
+        // 先還原最純淨的文字與樣式
+        let pureVal = opt.value;
+        opt.text = pureVal;
+        
+        if (activeLocs.includes(pureVal)) {
+            opt.text = '⭐ ' + pureVal;
+            opt.style.backgroundColor = '#1e293b'; // 深色背景 (slate-800)
+            opt.style.color = '#fbbf24';           // 琥珀亮黃字體 (amber-400)
+            opt.style.fontWeight = 'bold';
+            activeOptions.push(opt);
+        } else {
+            opt.style.backgroundColor = '';
+            opt.style.color = '';
+            opt.style.fontWeight = '';
+            inactiveOptions.push(opt);
+        }
+    });
+
+    // 清空並依序塞回：Placeholder -> 活躍地點 -> 其他地點
+    sel.options.length = 1;
+    activeOptions.forEach(opt => sel.add(opt));
+    inactiveOptions.forEach(opt => sel.add(opt));
+
+    sel.value = currentVal; // 恢復選擇
+}
+let currentAttendanceRecords = [];
+let selectedAttendanceDates = new Set();
+let isAttendanceCalendarCollapsed = true;
+
+function toggleAttendanceCalendar() {
+    isAttendanceCalendarCollapsed = !isAttendanceCalendarCollapsed;
+    const content = domCache.attendanceCalendarContent;
+    const toggle = domCache.attendanceCalendarToggle;
+    if (!content || !toggle) return;
+    
+    if (isAttendanceCalendarCollapsed) {
+        content.classList.add('collapsed');
+        toggle.classList.add('collapsed');
+    } else {
+        content.classList.remove('collapsed');
+        toggle.classList.remove('collapsed');
+    }
+}
+
+// ── 桌機版：側邊欄 (Sidebar) 收合控制 ──
+let isSidebarCollapsed = false;
+
+function toggleAttendanceSidebar() {
+    isSidebarCollapsed = !isSidebarCollapsed;
+    const sidebar = document.getElementById('attendanceSidebar');
+    const icon = document.getElementById('sidebarToggleIcon');
+    const textEl = document.getElementById('sidebarToggleText'); // 💡 新增文字元素
+    
+    if (sidebar) sidebar.classList.toggle('is-collapsed', isSidebarCollapsed);
+    if (icon) icon.classList.toggle('rotate-180', isSidebarCollapsed);
+    
+    // 💡 根據狀態動態切換按鈕文字
+    if (textEl) {
+        textEl.textContent = isSidebarCollapsed ? '展開月曆' : '收起月曆';
+    }
+}
+
+function parseTimeToMinutes(value) {
+    if (!value) return null;
+    const match = String(value).match(/^(\d{1,2}):(\d{2})/);
+    if (!match) return null;
+    return parseInt(match[1], 10) * 60 + parseInt(match[2], 10);
+}
+
+function getAttendanceStatus(record) {
+    const status = {
+        onDuty: !!record,
+        isLate: false,
+        isEarlyLeave: false,
+        hasOt: false,
+    };
+    if (!record) return status;
+
+    const rosterIn = parseTimeToMinutes(record.roster_in);
+    const rosterOut = parseTimeToMinutes(record.roster_out);
+    const inTime = parseTimeToMinutes(record.in_time);
+    const outTime = parseTimeToMinutes(record.out_time);
+    const otHours = parseFloat(record.ot_hours || 0);
+
+    status.isLate = rosterIn !== null && inTime !== null && inTime > rosterIn;
+    status.isEarlyLeave = rosterOut !== null && outTime !== null && outTime < rosterOut;
+    status.hasOt = !Number.isNaN(otHours) && otHours > 0;
+    return status;
+}
+
+function getPendingAttendanceRow(name, location, workDate) {
+    return pendingAttendanceRows.find(r => r.nick_name === name && r.location === location && r.work_date === workDate);
+}
+
+function getExistingAttendanceRecord(workDate) {
+    return currentAttendanceRecords.find(r => r.work_date === workDate);
+}
+
+function updateAttendanceCalendarSummary() {
+    const monthLabel = document.getElementById('attendance_calendar_month');
+    const summary = document.getElementById('attendance_selected_dates');
+    if (monthLabel) monthLabel.textContent = currentMonth || '';
+    if (!summary) return;
+
+    const dates = Array.from(selectedAttendanceDates).sort();
+    if (dates.length === 0) {
+        summary.textContent = '未選取日期';
+        return;
+    }
+
+    const preview = dates.length <= 3 ? dates.join(', ') : `${dates.slice(0, 3).join(', ')} 等 ${dates.length} 天`;
+    summary.textContent = `已選 ${dates.length} 天: ${preview}`;
+}
+
+function clearAttendanceCalendarSelection() {
+    selectedAttendanceDates.clear();
+    updateAttendanceCalendarSummary();
+    renderAttendanceCalendar(getActiveAttName(), getActiveAttLoc(), currentAttendanceRecords);
+}
+
+function focusAttendanceRowByDate(workDate) {
+    document.querySelectorAll('#daily_records_body tr').forEach(row => row.classList.remove('attendance-row-focus'));
+    const row = document.querySelector(`#daily_records_body tr[data-att-date="${workDate}"]`);
+    if (!row) return;
+    row.classList.add('attendance-row-focus');
+    row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    window.setTimeout(() => row.classList.remove('attendance-row-focus'), 1800);
+}
+
+function toggleAttendanceCalendarDate(workDate) {
+    if (!workDate) return;
+    if (selectedAttendanceDates.has(workDate)) selectedAttendanceDates.delete(workDate);
+    else selectedAttendanceDates.add(workDate);
+
+    const dateInput = document.getElementById('new_date');
+    if (dateInput) dateInput.value = workDate;
+
+    if (getExistingAttendanceRecord(workDate)) {
+        focusAttendanceRowByDate(workDate);
+    }
+
+    updateAttendanceCalendarSummary();
+    renderAttendanceCalendar(getActiveAttName(), getActiveAttLoc(), currentAttendanceRecords);
+}
+
+function applyAttendanceSelectionBulk() {
+    const name = getActiveAttName();
+    const location = getActiveAttLoc();
+    if (!name || !location) {
+        alert('請先選擇推廣員與地點。');
+        return;
+    }
+    if (selectedAttendanceDates.size === 0) {
+        alert('請先在月曆中選擇日期。');
+        return;
+    }
+
+    const inInput = document.getElementById('new_in').value;
+    const outInput = document.getElementById('new_out').value;
+    const normalInput = parseFloat(document.getElementById('new_normal').value || 8.0);
+    const rosterIn = document.getElementById('new_roster_in') ? document.getElementById('new_roster_in').value : '';
+    const rosterOut = document.getElementById('new_roster_out') ? document.getElementById('new_roster_out').value : '';
+
+    if (!inInput || !outInput) {
+        alert('請先填好下方新增列的實際簽到與簽退時間。');
+        return;
+    }
+
+    let createdCount = 0;
+    let updatedPendingCount = 0;
+    let skippedExistingCount = 0;
+
+    Array.from(selectedAttendanceDates).sort().forEach(workDate => {
+        const existing = getExistingAttendanceRecord(workDate);
+        if (existing) {
+            skippedExistingCount++;
+            return;
+        }
+
+        const pending = getPendingAttendanceRow(name, location, workDate);
+        if (pending) {
+            pending.roster_in = rosterIn || undefined;
+            pending.roster_out = rosterOut || undefined;
+            pending.in_time = inInput;
+            pending.out_time = outInput;
+            pending.normal_hours = normalInput;
+            updatedPendingCount++;
+            return;
+        }
+
+        pendingAttendanceRows.push({
+            nick_name: name,
+            work_date: workDate,
+            location: location,
+            roster_in: rosterIn || undefined,
+            roster_out: rosterOut || undefined,
+            in_time: inInput,
+            out_time: outInput,
+            normal_hours: normalInput,
+        });
+        createdCount++;
+    });
+
+    refreshDailyTable(name, location);
+    updateSaveAllButtons();
+
+    const messages = [];
+    if (createdCount > 0) messages.push(`新增待儲存 ${createdCount} 天`);
+    if (updatedPendingCount > 0) messages.push(`更新暫存 ${updatedPendingCount} 天`);
+    if (skippedExistingCount > 0) messages.push(`略過已有紀錄 ${skippedExistingCount} 天`);
+    alert(messages.length ? `✅ 批量套用完成：${messages.join('；')}` : '沒有可套用的日期。');
+}
+
+function renderAttendanceCalendar(name, location, data) {
+    const grid = domCache.attendanceCalendarGrid;
+    const hint = document.getElementById('attendance_calendar_hint');
+    if (!grid) return;
+
+    updateAttendanceCalendarSummary();
+
+    if (!name || !location) {
+        if (hint) hint.textContent = '請先選擇上方推廣員與地點。';
+        grid.innerHTML = '<div class="col-span-7 py-8 text-center text-sm text-slate-500">請先選擇推廣員與地點以載入月曆。</div>';
+        return;
+    }
+
+    if (hint) {
+        hint.textContent = '點日期可選取；若該日已有紀錄會自動定位到下方表格。再按「套用下方新增欄位到已選日期」可批量建立暫存。';
+    }
+
+    const [yearText, monthText] = (currentMonth || '').split('-');
+    const year = parseInt(yearText, 10);
+    const month = parseInt(monthText, 10);
+    if (!year || !month) {
+        grid.innerHTML = '<div class="col-span-7 py-8 text-center text-sm text-slate-500">月份資料無效。</div>';
+        return;
+    }
+
+    const firstDay = new Date(year, month - 1, 1);
+    const daysInMonth = new Date(year, month, 0).getDate();
+    const startWeekday = firstDay.getDay();
+    const today = new Date();
+    const todayText = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+    let html = '';
+    for (let i = 0; i < startWeekday; i++) {
+        html += '<div class="attendance-calendar-cell is-empty"></div>';
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        const workDate = `${currentMonth}-${String(day).padStart(2, '0')}`;
+        const record = data.find(r => r.work_date === workDate);
+        const pending = getPendingAttendanceRow(name, location, workDate);
+        const status = getAttendanceStatus(record);
+
+        const classes = ['attendance-calendar-cell'];
+        if (status.onDuty) classes.push('has-duty');
+        if (status.isLate) classes.push('has-late');
+        if (status.isEarlyLeave) classes.push('has-early');
+        if (status.hasOt) classes.push('has-ot');
+        if (pending) classes.push('has-pending');
+        if (selectedAttendanceDates.has(workDate)) classes.push('is-selected');
+        if (workDate === todayText) classes.push('is-today');
+
+        const badges = [];
+        if (pending) badges.push('<span class="attendance-calendar-badge is-pending">待儲存</span>');
+        else if (status.onDuty) badges.push('<span class="attendance-calendar-badge is-duty">On Duty</span>');
+        if (status.isLate) badges.push('<span class="attendance-calendar-badge is-late">遲到</span>');
+        if (status.isEarlyLeave) badges.push('<span class="attendance-calendar-badge is-early">早退</span>');
+        if (status.hasOt) badges.push('<span class="attendance-calendar-badge is-ot">OT</span>');
+
+        let meta = '';
+        if (record) {
+            meta = `<span class="attendance-calendar-meta">${(record.in_time || '--:--').substring(0, 5)}<br>~<br>${(record.out_time || '--:--').substring(0, 5)}</span>`;
+        } else if (pending) {
+            meta = `<span class="attendance-calendar-meta">${pending.in_time || '--:--'}<br>~<br>${pending.out_time || '--:--'}</span>`;
+        }
+
+        html += `
+            <button type="button" class="${classes.join(' ')}" onclick="toggleAttendanceCalendarDate('${workDate}')">
+                <span class="attendance-calendar-date"><span>${day}</span><span class="text-slate-500 text-[10px]">${selectedAttendanceDates.has(workDate) ? '已選' : ''}</span></span>
+                <span class="attendance-calendar-body">${meta}<span class="attendance-calendar-badges">${badges.join('')}</span></span>
+            </button>
+        `;
+    }
+
+    grid.innerHTML = html;
+}
 
 // ── 格式化小幫手：自動將 Excel 貼上的日期與時間標準化 ──
 function formatPasteDate(raw) {
@@ -37,8 +390,8 @@ function formatPasteTime(raw) {
 }
 
 // ── Helper：從下拉選單取得當前選取的員工與地點 ──
-function getActiveAttName() { const el = document.getElementById('att_modal_promoter'); return el ? el.value : ''; }
-function getActiveAttLoc() { const el = document.getElementById('att_modal_loc'); return el ? el.value : ''; }
+function getActiveAttName() { return domCache.attModalPromoter ? domCache.attModalPromoter.value : ''; }
+function getActiveAttLoc() { return domCache.attModalLoc ? domCache.attModalLoc.value : ''; }
 function getActiveSalesName() { const el = document.getElementById('sales_modal_promoter'); return el ? el.value : ''; }
 function getActiveSalesLoc() { const el = document.getElementById('sales_modal_loc'); return el ? el.value : ''; }
 
@@ -47,8 +400,24 @@ function getActiveSalesLoc() { const el = document.getElementById('sales_modal_l
 // ==========================================
 
 function openNewAttendanceModal() {
+    // 確保每次打開 Modal 時，月曆面板都是展開的
+    isSidebarCollapsed = false;
+    document.getElementById('attendanceSidebar')?.classList.remove('is-collapsed');
+    document.getElementById('sidebarToggleIcon')?.classList.remove('rotate-180');
+    if (document.getElementById('sidebarToggleText')) {
+        document.getElementById('sidebarToggleText').textContent = '收起月曆';
+    }
+
+    currentAttendanceRecords = [];
+    selectedAttendanceDates.clear();
+    isAttendanceCalendarCollapsed = true;
+    const content = document.getElementById('attendanceCalendarContent');
+    const toggle = document.getElementById('attendanceCalendarToggle');
+    if (content) content.classList.add('collapsed');
+    if (toggle) toggle.classList.add('collapsed');
     document.getElementById('att_modal_promoter').value = '';
     document.getElementById('att_modal_loc').value = '';
+    reorderLocationDropdown('att_modal_loc', []);
     document.getElementById('att_name_hidden').value = '';
     document.getElementById('att_loc_hidden').value = '';
     const nl = document.getElementById('new_loc');
@@ -60,16 +429,39 @@ function openNewAttendanceModal() {
     if (hint) hint.innerHTML = 'ℹ️ 請先選擇推廣員以檢視預設時薪';
     const salHint = document.getElementById('att_salary_hint');
     if (salHint) salHint.innerHTML = '';
+    const newRosterIn = document.getElementById('new_roster_in');
+    if (newRosterIn) newRosterIn.value = '12:00';
+    const newRosterOut = document.getElementById('new_roster_out');
+    if (newRosterOut) newRosterOut.value = '20:00';
+    const newIn = document.getElementById('new_in');
+    if (newIn) newIn.value = '12:00';
+    const newOut = document.getElementById('new_out');
+    if (newOut) newOut.value = '20:00';
+    const newNormal = document.getElementById('new_normal');
+    if (newNormal) newNormal.value = '8.0';
     setDateRange(document.getElementById('new_date'), currentMonth, true);
     const tbody = document.getElementById('daily_records_body');
     if (tbody) tbody.innerHTML = '<tr><td colspan="9" class="text-center text-slate-500 py-6">請完整選擇上方「推廣員」與「地點」以開始新增紀錄。</td></tr>';
+    renderAttendanceCalendar('', '', []);
     updateSaveAllButtons();
     openModal('attendanceModal');
 }
 
 function handleAttModalChange() {
+    if (handleAttModalChangeDebounced) {
+        handleAttModalChangeDebounced();
+    }
+}
+
+function handleAttModalChangeImpl() {
     const name = getActiveAttName();
     const location = getActiveAttLoc();
+    
+    // 💡 觸發考勤地點排序 (包含資料庫已有的 + 剛暫存的)
+    const attLocMap = getLocMap('att-loc-map');
+    const activeAttLocs = Array.from(new Set([...(attLocMap[name] || []), ...pendingAttendanceRows.filter(r => r.nick_name === name).map(r => r.location)]));
+    reorderLocationDropdown('att_modal_loc', activeAttLocs);
+    
     const sel = document.getElementById('att_modal_promoter');
     const opt = sel ? sel.options[sel.selectedIndex] : null;
     const defaultHr = opt ? (parseFloat(opt.getAttribute('data-hr')) || 0) : 0;
@@ -87,19 +479,35 @@ function handleAttModalChange() {
     const nl = document.getElementById('new_loc');
     if (nl) nl.value = location;
 
-    const tbody = document.getElementById('daily_records_body');
-    if (name && location) {
-        if (tbody) tbody.innerHTML = '<tr><td colspan="9" class="text-center text-slate-400 py-6">載入中...</td></tr>';
-        refreshDailyTable(name, location);
-    } else if (tbody) {
-        tbody.innerHTML = '<tr><td colspan="9" class="text-center text-slate-500 py-6">請完整選擇上方「推廣員」與「地點」以載入資料。</td></tr>';
+    if (domCache.dailyRecordsBody) {
+        if (name && location) {
+            if (domCache.dailyRecordsBody) domCache.dailyRecordsBody.innerHTML = '<tr><td colspan="9" class="text-center text-slate-400 py-6">載入中...</td></tr>';
+            refreshDailyTable(name, location);
+        } else if (domCache.dailyRecordsBody) {
+            domCache.dailyRecordsBody.innerHTML = '<tr><td colspan="9" class="text-center text-slate-500 py-6">請完整選擇上方「推廣員」與「地點」以載入資料。</td></tr>';
+            currentAttendanceRecords = [];
+            selectedAttendanceDates.clear();
+            renderAttendanceCalendar('', '', []);
+        }
     }
     updateSaveAllButtons();
 }
 
 function editAttendance(name, loc, days, hours, ot, exp, adj, bonus, monthly_hr, default_hr, monthly_sal, default_sal) {
+    // 確保每次打開 Modal 時，月曆面板都是展開的
+    isSidebarCollapsed = false;
+    document.getElementById('attendanceSidebar')?.classList.remove('is-collapsed');
+    document.getElementById('sidebarToggleIcon')?.classList.remove('rotate-180');
+    if (document.getElementById('sidebarToggleText')) {
+        document.getElementById('sidebarToggleText').textContent = '收起月曆';
+    }
+
+    currentAttendanceRecords = [];
+    selectedAttendanceDates.clear();
     document.getElementById('att_modal_promoter').value = name;
     document.getElementById('att_modal_loc').value = loc;
+    const attLocMap = getLocMap('att-loc-map');
+    reorderLocationDropdown('att_modal_loc', attLocMap[name] || []);
     document.getElementById('att_name_hidden').value = name;
     document.getElementById('att_loc_hidden').value = loc;
     const nl = document.getElementById('new_loc');
@@ -141,6 +549,7 @@ function editAttendance(name, loc, days, hours, ot, exp, adj, bonus, monthly_hr,
 function openNewSalesModal() {
     document.getElementById('sales_modal_promoter').value = '';
     document.getElementById('sales_modal_loc').value = '';
+    reorderLocationDropdown('sales_modal_loc', []);
     const nsl = document.getElementById('new_sales_loc');
     if (nsl) nsl.value = '';
     const ci = document.getElementById('sales_monthly_comm_input');
@@ -155,8 +564,20 @@ function openNewSalesModal() {
 }
 
 function handleSalesModalChange() {
+    if (handleSalesModalChangeDebounced) {
+        handleSalesModalChangeDebounced();
+    }
+}
+
+function handleSalesModalChangeImpl() {
     const name = getActiveSalesName();
     const location = getActiveSalesLoc();
+    
+    // 💡 觸發銷售地點排序
+    const salesLocMap = getLocMap('sales-loc-map');
+    const activeSalesLocs = Array.from(new Set([...(salesLocMap[name] || []), ...pendingSalesRows.filter(r => r.promoter_name === name).map(r => r.location)]));
+    reorderLocationDropdown('sales_modal_loc', activeSalesLocs);
+    
     const sel = document.getElementById('sales_modal_promoter');
     const opt = sel ? sel.options[sel.selectedIndex] : null;
     const defaultComm = opt ? (parseFloat(opt.getAttribute('data-comm')) || 0) : 0;
@@ -188,6 +609,8 @@ function handleSalesModalChange() {
 function openSalesModal(name, location, monthlyComm, defaultComm) {
     document.getElementById('sales_modal_promoter').value = name;
     document.getElementById('sales_modal_loc').value = location;
+    const salesLocMap = getLocMap('sales-loc-map');
+    reorderLocationDropdown('sales_modal_loc', salesLocMap[name] || []);
 
     const locSelect = document.getElementById('new_sales_loc');
     if (locSelect) locSelect.value = location;
@@ -232,6 +655,8 @@ function clearAttendanceEditModal() {
     if (name && location) {
         pendingAttendanceRows = pendingAttendanceRows.filter(r => !(r.nick_name === name && r.location === location));
     }
+    currentAttendanceRecords = [];
+    selectedAttendanceDates.clear();
     // Clear daily records table body
     const tbody = document.getElementById('daily_records_body');
     if (tbody) tbody.innerHTML = '<tr><td colspan="9" class="text-center text-slate-500 py-6">尚無紀錄。</td></tr>';
@@ -242,6 +667,7 @@ function clearAttendanceEditModal() {
     if (hrHint) hrHint.textContent = '';
     const salHint = document.getElementById('att_salary_hint');
     if (salHint) salHint.textContent = '';
+    renderAttendanceCalendar('', '', []);
     updateSaveAllButtons();
 }
 
@@ -290,12 +716,14 @@ function refreshDailyTable(name, location) {
     fetch(`/api/daily_attendance/${currentMonth}/${encodeURIComponent(name)}/${encodeURIComponent(location)}`)
         .then(response => response.json())
         .then(data => {
+            currentAttendanceRecords = Array.isArray(data) ? data : [];
             const tbody = document.getElementById('daily_records_body');
             tbody.innerHTML = '';
 
             if (data.length === 0) {
                 tbody.innerHTML = '';
                 renderPendingAttendanceRows(tbody, name, location);
+                renderAttendanceCalendar(name, location, currentAttendanceRecords);
                 return;
             }
 
@@ -321,22 +749,25 @@ function refreshDailyTable(name, location) {
 
                 const tr = document.createElement('tr');
                 tr.setAttribute('data-att-id', record.id);
+                tr.setAttribute('data-att-date', record.work_date);
                 tr.innerHTML = `
                     <td class="text-center text-sm text-slate-500 align-middle">${index + 1}</td>
                     <td class="text-center font-bold text-sm align-middle">${record.work_date}</td>
                     <td class="text-center align-middle"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-sm font-medium bg-slate-700 text-slate-200">${record.location}</span><br>${warningBadge}</td>
 
                     <td class="px-1 py-1.5 align-middle">
-                        <div class="space-y-1">
-                            <input type="time" class="edit-roster-in bg-slate-800/50 border border-slate-600 rounded px-1.5 py-1 text-xs text-indigo-300 w-full" value="${rIn}">
-                            <input type="time" class="edit-roster-out bg-slate-800/50 border border-slate-600 rounded px-1.5 py-1 text-xs text-indigo-300 w-full" value="${rOut}">
+                        <div class="flex items-center gap-1">
+                            <input type="time" class="edit-roster-in bg-slate-800/50 border border-slate-600 rounded px-1 py-1 text-[11px] text-indigo-300 w-full text-center" value="${rIn}">
+                            <span class="text-slate-500 text-xs">-</span>
+                            <input type="time" class="edit-roster-out bg-slate-800/50 border border-slate-600 rounded px-1 py-1 text-[11px] text-indigo-300 w-full text-center" value="${rOut}">
                         </div>
                     </td>
 
                     <td class="px-1 py-1.5 align-middle">
-                        <div class="space-y-1">
-                            <input type="time" class="edit-in-time ${inTimeColor} border border-slate-600 rounded px-1.5 py-1 text-xs w-full" value="${aIn}">
-                            <input type="time" class="edit-out-time ${outTimeColor} border border-slate-600 rounded px-1.5 py-1 text-xs w-full" value="${aOut}">
+                        <div class="flex items-center gap-1">
+                            <input type="time" class="edit-in-time ${inTimeColor} border border-slate-600 rounded px-1 py-1 text-[11px] w-full text-center" value="${aIn}">
+                            <span class="text-slate-500 text-xs">-</span>
+                            <input type="time" class="edit-out-time ${outTimeColor} border border-slate-600 rounded px-1 py-1 text-[11px] w-full text-center" value="${aOut}">
                         </div>
                     </td>
 
@@ -345,10 +776,11 @@ function refreshDailyTable(name, location) {
                     </td>
                     <td class="text-center font-bold text-sm align-middle">${parseFloat(record.actual_hours).toFixed(2)}</td>
                     <td class="text-center text-red-400 text-sm align-middle">${parseFloat(record.ot_hours).toFixed(2)}</td>
-                    <td class="text-center align-middle">
-                        <div class="flex flex-col gap-1 justify-center">
-                            <button type="button" class="bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-medium py-1 px-2 rounded transition-colors" onclick="saveDailyRecord(${record.id}, '${name}', '${location}')">💾 修改</button>
-                            <button type="button" class="border border-red-800/50 text-red-400 hover:bg-red-900/30 text-[11px] font-medium py-1 px-2 rounded transition-colors" onclick="deleteRecord(${record.id}, '${name}', '${location}')">🗑️ 刪除</button>
+                    <td class="text-center align-middle px-1">
+                        <!-- 💡 改為 flex items-center 讓按鈕左右並排 -->
+                        <div class="flex items-center gap-1.5 justify-center">
+                            <button type="button" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-medium py-1 px-2 rounded transition-colors whitespace-nowrap" onclick="saveDailyRecord(${record.id}, '${name}', '${location}')">💾 修改</button>
+                            <button type="button" class="flex-1 border border-red-800/50 text-red-400 hover:bg-red-900/30 text-[11px] font-medium py-1 px-2 rounded transition-colors whitespace-nowrap" onclick="deleteRecord(${record.id}, '${name}', '${location}')">🗑️ 刪除</button>
                         </div>
                     </td>
                 `;
@@ -356,6 +788,7 @@ function refreshDailyTable(name, location) {
             });
             // Append pending rows (not yet saved to DB)
             renderPendingAttendanceRows(tbody, name, location);
+            renderAttendanceCalendar(name, location, currentAttendanceRecords);
         });
 }
 
@@ -436,6 +869,10 @@ function addNewRecordFromUI() {
     });
 
     // Reset input fields
+    const newRosterIn = document.getElementById('new_roster_in');
+    if (newRosterIn) newRosterIn.value = '12:00';
+    const newRosterOut = document.getElementById('new_roster_out');
+    if (newRosterOut) newRosterOut.value = '20:00';
     document.getElementById('new_in').value = '12:00';
     document.getElementById('new_out').value = '20:00';
     document.getElementById('new_normal').value = '8.0';
@@ -595,14 +1032,14 @@ function renderPendingAttendanceRows(tbody, name, location) {
     }
     filtered.forEach((row, i) => {
         const tr = document.createElement('tr');
-        tr.className = 'bg-amber-900/20';
+        tr.className = 'bg-amber-900/40 border-b border-amber-800/30';
         tr.innerHTML = `
-            <td class="text-center text-sm text-amber-400">⏳</td>
-            <td class="text-center font-bold text-sm text-amber-200">${row.work_date}</td>
-            <td class="text-center"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-sm font-medium bg-amber-900/50 text-amber-200">${row.location}</span></td>
-            <td class="text-center text-sm text-amber-200">${row.roster_in || ''}<br><span class="text-xs">~</span><br>${row.roster_out || ''}</td>
-            <td class="text-center text-sm text-amber-200">${row.in_time}<br><span class="text-xs">~</span><br>${row.out_time}</td>
-            <td class="text-center text-sm text-amber-200">${row.normal_hours.toFixed(1)}</td>
+            <td class="text-center text-sm text-amber-300 font-bold">⏳</td>
+            <td class="text-center font-bold text-sm text-amber-100">${row.work_date}</td>
+            <td class="text-center"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-sm font-medium bg-amber-900/60 text-amber-100">${row.location}</span></td>
+            <td class="text-center text-sm text-amber-100">${row.roster_in || '—'}<br><span class="text-xs text-amber-700">~</span><br>${row.roster_out || '—'}</td>
+            <td class="text-center text-sm text-amber-100 font-medium">${row.in_time}<br><span class="text-xs text-amber-700">~</span><br>${row.out_time}</td>
+            <td class="text-center text-sm text-amber-100 font-medium">${row.normal_hours.toFixed(1)}</td>
             <td class="text-center text-sm text-amber-300">—</td>
             <td class="text-center text-sm text-amber-300">—</td>
             <td class="text-center">

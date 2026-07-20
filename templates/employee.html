@@ -14,6 +14,59 @@
     </span>
   </div>
 
+  {# === Excel 批量貼上匯入員工 === #}
+  <div class="bg-slate-800 rounded-2xl shadow-sm border border-violet-800/40 overflow-hidden">
+    <div class="px-5 py-3.5 bg-violet-900/20 text-violet-300 font-bold text-base flex items-center justify-between border-b border-violet-800/40">
+      <span>📋 Excel 批量貼上匯入員工</span>
+      <span class="text-xs bg-slate-800 text-violet-300 px-2.5 py-1 rounded-full">{{ current_month }} 月份</span>
+    </div>
+    <div class="p-5">
+      {# 匯入類型頁籤 #}
+      <div class="flex gap-0 border-b border-slate-700 mb-4" role="tablist" id="importTabList">
+        <button class="import-tab-btn px-4 py-2 text-sm font-medium border-b-2 border-cyan-500 text-cyan-400 transition-colors" data-import-tab="hourly-import">⏱️ 時薪制</button>
+        <button class="import-tab-btn px-4 py-2 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-100 hover:border-slate-600 transition-colors" data-import-tab="monthly-import">📅 月薪制</button>
+      </div>
+
+      {# 時薪制匯入 #}
+      <div id="hourly-import" class="import-tab-pane">
+        <p class="text-xs text-slate-400 mb-3">從 Excel 複製時薪制員工資料，欄位順序：<code class="bg-slate-700 px-1 rounded">全名 | 暱稱 | 時薪 | 津貼 | 佣金率(%) | ph_da_comm | MPF | 備註</code></p>
+        <textarea id="hourlyPasteArea" rows="7" class="w-full px-3 py-2.5 text-xs font-mono border border-violet-800/50 rounded-xl bg-slate-700 text-slate-100 focus:ring-2 focus:ring-violet-500 outline-none resize-y" placeholder="在此貼上 Excel 複製的時薪制員工資料..."></textarea>
+        <div class="flex items-center gap-3 mt-3">
+          <button onclick="processEmpPaste('hourly')" class="px-5 py-2 text-sm font-bold text-slate-100 bg-cyan-600 rounded-xl hover:bg-cyan-700 transition-colors shadow-sm">🚀 解析</button>
+          <button onclick="clearEmpPaste('hourly')" class="px-4 py-2 text-sm font-semibold text-slate-400 border border-slate-600 rounded-xl hover:bg-slate-700 transition-colors">✖ 清除</button>
+          <span id="hourlyPasteCount" class="text-xs text-slate-400"></span>
+        </div>
+        <div id="hourlyPastePreview" class="overflow-x-auto mt-3"></div>
+        <form id="hourlyImportForm" action="/bulk_import_employees" method="POST" style="display:none" class="mt-3">
+          <input type="hidden" name="brand" value="{{ current_brand }}">
+          <input type="hidden" name="payroll_month" value="{{ current_month }}">
+          <input type="hidden" name="salary_type" value="hourly">
+          <input type="hidden" name="rows_data" id="hourlyRowsData">
+          <button type="submit" class="px-5 py-2 text-sm font-bold text-slate-100 bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors shadow-sm">💾 確認儲存 (<span id="hourlyImportCount">0</span> 筆)</button>
+        </form>
+      </div>
+
+      {# 月薪制匯入 #}
+      <div id="monthly-import" class="import-tab-pane hidden">
+        <p class="text-xs text-slate-400 mb-3">從 Excel 複製月薪制員工資料，欄位順序：<code class="bg-slate-700 px-1 rounded">編號 | 全名 | 暱稱 | 月薪 | 津貼 | 出勤 | MPF | 獎金(備註)</code></p>
+        <textarea id="monthlyPasteArea" rows="7" class="w-full px-3 py-2.5 text-xs font-mono border border-violet-800/50 rounded-xl bg-slate-700 text-slate-100 focus:ring-2 focus:ring-violet-500 outline-none resize-y" placeholder="在此貼上 Excel 複製的月薪制員工資料..."></textarea>
+        <div class="flex items-center gap-3 mt-3">
+          <button onclick="processEmpPaste('monthly')" class="px-5 py-2 text-sm font-bold text-slate-100 bg-amber-600 rounded-xl hover:bg-amber-700 transition-colors shadow-sm">🚀 解析</button>
+          <button onclick="clearEmpPaste('monthly')" class="px-4 py-2 text-sm font-semibold text-slate-400 border border-slate-600 rounded-xl hover:bg-slate-700 transition-colors">✖ 清除</button>
+          <span id="monthlyPasteCount" class="text-xs text-slate-400"></span>
+        </div>
+        <div id="monthlyPastePreview" class="overflow-x-auto mt-3"></div>
+        <form id="monthlyImportForm" action="/bulk_import_employees" method="POST" style="display:none" class="mt-3">
+          <input type="hidden" name="brand" value="{{ current_brand }}">
+          <input type="hidden" name="payroll_month" value="{{ current_month }}">
+          <input type="hidden" name="salary_type" value="monthly">
+          <input type="hidden" name="rows_data" id="monthlyRowsData">
+          <button type="submit" class="px-5 py-2 text-sm font-bold text-slate-100 bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors shadow-sm">💾 確認儲存 (<span id="monthlyImportCount">0</span> 筆)</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
     {% set hourly_emps = employees | selectattr('salary_type', 'ne', 'monthly') | list %}
     {% set monthly_emps = employees | selectattr('salary_type', 'equalto', 'monthly') | list %}
 
@@ -49,6 +102,7 @@
                             <th class="px-3 py-3 border-b border-slate-600">預設佣金</th>
                             <th class="px-3 py-3 border-b border-slate-600 text-blue-300">本月覆寫佣金</th>
                             <th class="px-3 py-3 border-b border-slate-600">MPF起扣</th>
+                            <th class="px-3 py-3 border-b border-slate-600 text-yellow-300">備註</th>
                             <th class="px-3 py-3 border-b border-slate-600 text-right pr-4">操作</th>
                         </tr>
                     </thead>
@@ -84,13 +138,14 @@
                                 {% else %}<span class="text-slate-500">-</span>{% endif %}
                             </td>
                             <td class="px-3 py-2.5 text-sm">{{ emp.mpf_start_month if emp.mpf_start_month and emp.mpf_start_month != 'None' else '-' }}</td>
+                            <td class="px-3 py-2.5 text-xs text-yellow-300 max-w-[160px] whitespace-normal">{{ monthly_remarks_map.get(emp.nick_name) or '' }}</td>
                             <td class="text-right pr-3 py-2.5 whitespace-nowrap">
                                 <button class="inline-block px-3 py-1.5 text-sm font-semibold text-blue-600 border border-blue-800/40 rounded-xl hover:bg-blue-900/30 transition-colors me-1"
                                         onclick='openEmpModal({{ emp.id|tojson }}, {{ emp.nick_name|tojson }}, {{ (emp.full_name if emp.full_name and emp.full_name != "None" else "")|tojson }}, {{ emp.hourly_rate|tojson }}, {{ monthly_map.get(emp.nick_name, "")|tojson }}, {{ emp.allowance|tojson }}, {{ emp.commission_rate|tojson }}, {{ monthly_comm_map.get(emp.nick_name, "")|tojson }}, {{ emp.mpf_start_month|tojson }}, "hourly", 0)'>✏️ 修改</button>
                                 <form action="/delete_employee/{{ emp.id }}" method="POST" class="inline">
                                     <input type="hidden" name="brand" value="{{ current_brand }}">
                                     <input type="hidden" name="payroll_month" value="{{ current_month }}">
-                                    <button type="submit" class="inline-block px-3 py-1.5 text-sm font-semibold text-red-400 border border-red-800/50 rounded-xl hover:bg-red-900/30 transition-colors" onclick="return confirm('確定刪除員工 {{ emp.nick_name }}？');">�️ 刪除</button>
+                                    <button type="submit" class="inline-block px-3 py-1.5 text-sm font-semibold text-red-400 border border-red-800/50 rounded-xl hover:bg-red-900/30 transition-colors" onclick="return confirm('確定刪除員工 {{ emp.nick_name }}？');">🗑️ 刪除</button>
                                 </form>
                             </td>
                         </tr>
@@ -113,6 +168,7 @@
                             <th class="px-3 py-3 border-b border-slate-600">預設佣金</th>
                             <th class="px-3 py-3 border-b border-slate-600 text-blue-300">本月覆寫佣金</th>
                             <th class="px-3 py-3 border-b border-slate-600">MPF起扣</th>
+                            <th class="px-3 py-3 border-b border-slate-600 text-yellow-300">備註</th>
                             <th class="px-3 py-3 border-b border-slate-600 text-right pr-4">操作</th>
                         </tr>
                     </thead>
@@ -146,6 +202,7 @@
                                 {% else %}<span class="text-slate-500">-</span>{% endif %}
                             </td>
                             <td class="px-3 py-2.5 text-sm">{{ emp.mpf_start_month if emp.mpf_start_month and emp.mpf_start_month != 'None' else '-' }}</td>
+                            <td class="px-3 py-2.5 text-xs text-yellow-300 max-w-[160px] whitespace-normal">{{ monthly_remarks_map.get(emp.nick_name) or '' }}</td>
                             <td class="text-right pr-3 py-2.5 whitespace-nowrap">
                                 <button class="inline-block px-3 py-1.5 text-sm font-semibold text-blue-600 border border-blue-800/40 rounded-xl hover:bg-blue-900/30 transition-colors me-1"
                                         onclick='openEmpModal({{ emp.id|tojson }}, {{ emp.nick_name|tojson }}, {{ (emp.full_name if emp.full_name and emp.full_name != "None" else "")|tojson }}, {{ emp.hourly_rate|tojson }}, {{ monthly_map.get(emp.nick_name, "")|tojson }}, {{ emp.allowance|tojson }}, {{ emp.commission_rate|tojson }}, {{ monthly_comm_map.get(emp.nick_name, "")|tojson }}, {{ emp.mpf_start_month|tojson }}, "monthly", {{ (emp.monthly_salary or 0)|tojson }})'>✏️ 修改</button>
@@ -307,6 +364,108 @@ function openEmpModal(id, name, fullName, hr, monthlyHr, allow, comm, monthlyCom
 function closeModal(el) {
   const modal = el.closest('.modal');
   if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+}
+</script>
+
+<script>
+// ── 匯入頁籤切換 ──
+(function() {
+  const btns = document.querySelectorAll('.import-tab-btn');
+  const panes = { 'hourly-import': document.getElementById('hourly-import'), 'monthly-import': document.getElementById('monthly-import') };
+  function activateImportTab(name) {
+    btns.forEach(b => {
+      const active = b.getAttribute('data-import-tab') === name;
+      b.className = active
+        ? 'import-tab-btn px-4 py-2 text-sm font-medium border-b-2 ' + (name === 'hourly-import' ? 'border-cyan-500 text-cyan-400' : 'border-amber-500 text-amber-400') + ' transition-colors'
+        : 'import-tab-btn px-4 py-2 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-100 hover:border-slate-600 transition-colors';
+    });
+    Object.keys(panes).forEach(k => {
+      if (panes[k]) { panes[k].classList.toggle('hidden', k !== name); }
+    });
+  }
+  btns.forEach(btn => btn.addEventListener('click', () => activateImportTab(btn.getAttribute('data-import-tab'))));
+})();
+
+// ── Excel 批量貼上解析 ──
+function parsePercent(v) {
+  const s = String(v || '').trim().replace('%', '');
+  const f = parseFloat(s);
+  if (isNaN(f)) return 0.03;
+  return f > 1 ? f / 100 : f;
+}
+
+function processEmpPaste(type) {
+  const textarea = document.getElementById(type + 'PasteArea');
+  const raw = textarea.value;
+  if (!raw.trim()) { alert('請先在文字框內貼上 Excel 資料！'); return; }
+
+  const rows = [];
+  raw.split('\n').forEach(line => {
+    if (!line.trim()) return;
+    const cols = line.split('\t').map(c => c.trim());
+    const firstLower = (cols[0] || '').toLowerCase();
+    // 跳過標題列
+    if (['full name', 'full', 'name', 'no', '#'].includes(firstLower) || /^[a-z]/i.test(firstLower) && /name/i.test(firstLower)) return;
+    // 跳過明顯是數字流水號的列（月薪制首欄是 No 數字）
+    if (type === 'hourly') {
+      // Col: Full Name | Nick Name | Hour Rate | Allowance | rate% | ph_da_comm | MPF | Remark
+      const fullName = cols[0] || '';
+      const nickName = cols[1] || '';
+      if (!fullName && !nickName) return;
+      rows.push({
+        full_name: fullName,
+        nick_name: nickName,
+        hourly_rate: parseFloat((cols[2] || '0').replace(/[^0-9.]/g, '')) || 0,
+        allowance: parseFloat((cols[3] || '0').replace(/[^0-9.]/g, '')) || 0,
+        commission_rate: parsePercent(cols[4]),
+        remarks: cols[7] || '',
+      });
+    } else {
+      // Col: No | Full Name | Nick Name | Monthly Salary | Allowance | Attend | MPF | Award(remarks)
+      const fullName = cols[1] || '';
+      const nickName = cols[2] || '';
+      if (!fullName && !nickName) return;
+      rows.push({
+        full_name: fullName,
+        nick_name: nickName,
+        monthly_salary: parseFloat((cols[3] || '0').replace(/[^0-9.]/g, '')) || 0,
+        allowance: parseFloat((cols[4] || '0').replace(/[^0-9.]/g, '')) || 0,
+        remarks: cols[7] || '',
+      });
+    }
+  });
+
+  if (rows.length === 0) { alert('⚠️ 無法解析資料，請確認欄位格式正確。'); return; }
+
+  // 預覽
+  let headers = type === 'hourly'
+    ? ['暱稱', '全名', '時薪', '津貼', '佣金率', '備註']
+    : ['暱稱', '全名', '月薪', '津貼', '備註'];
+  let html = '<table class="w-full text-xs border-collapse mt-2"><thead><tr class="bg-slate-700 text-slate-300">'
+    + headers.map(h => `<th class="px-3 py-2 border border-slate-600 text-left">${h}</th>`).join('')
+    + '</tr></thead><tbody>';
+  rows.forEach(r => {
+    const cells = type === 'hourly'
+      ? [r.nick_name, r.full_name, r.hourly_rate, r.allowance, (r.commission_rate * 100).toFixed(1) + '%', r.remarks || '-']
+      : [r.nick_name, r.full_name, r.monthly_salary, r.allowance, r.remarks || '-'];
+    html += '<tr class="border-b border-slate-600 odd:bg-slate-800 even:bg-slate-700/50">'
+      + cells.map(c => `<td class="px-3 py-1.5 border border-slate-600">${c}</td>`).join('')
+      + '</tr>';
+  });
+  html += '</tbody></table>';
+
+  document.getElementById(type + 'PastePreview').innerHTML = html;
+  document.getElementById(type + 'RowsData').value = JSON.stringify(rows);
+  document.getElementById(type + 'ImportCount').textContent = rows.length;
+  document.getElementById(type + 'PasteCount').textContent = `解析到 ${rows.length} 筆，請確認後儲存。`;
+  document.getElementById(type + 'ImportForm').style.display = '';
+}
+
+function clearEmpPaste(type) {
+  document.getElementById(type + 'PasteArea').value = '';
+  document.getElementById(type + 'PastePreview').innerHTML = '';
+  document.getElementById(type + 'ImportForm').style.display = 'none';
+  document.getElementById(type + 'PasteCount').textContent = '';
 }
 </script>
 {% endblock %}

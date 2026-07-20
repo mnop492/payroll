@@ -44,6 +44,7 @@ def ensure_monthly_rates_table():
             allowance REAL,
             commission_rate REAL,
             monthly_salary REAL,
+            remarks TEXT,
             UNIQUE(brand_code, payroll_month, nick_name),
             FOREIGN KEY (brand_code) REFERENCES Brands(brand_code)
         )
@@ -274,6 +275,10 @@ def ensure_brand_columns_for_core_tables():
     if _table_exists(conn, "MonthlyRates") and not _has_column(conn, "MonthlyRates", "monthly_salary"):
         conn.execute("ALTER TABLE MonthlyRates ADD COLUMN monthly_salary REAL")
 
+    # 檢查並新增 remarks 欄位至 MonthlyRates
+    if _table_exists(conn, "MonthlyRates") and not _has_column(conn, "MonthlyRates", "remarks"):
+        conn.execute("ALTER TABLE MonthlyRates ADD COLUMN remarks TEXT")
+
     # Attendance requires unique key upgrade to include brand_code.
     if _table_exists(conn, "Attendance") and not _has_column(conn, "Attendance", "brand_code"):
         conn.execute("ALTER TABLE Attendance RENAME TO Attendance_legacy")
@@ -401,6 +406,10 @@ def ensure_brand_columns_for_core_tables():
             (DEFAULT_BRAND_CODE,),
         )
         conn.execute("DROP TABLE Products_legacy")
+
+    # Add product_category column to Products if not yet present.
+    if _table_exists(conn, "Products") and not _has_column(conn, "Products", "product_category"):
+        conn.execute("ALTER TABLE Products ADD COLUMN product_category TEXT")
 
     # Special commissions should be isolated by brand.
     if _table_exists(conn, "SpecialCommissions") and not _has_column(conn, "SpecialCommissions", "brand_code"):
@@ -911,7 +920,7 @@ def fetch_index_context(current_month, payroll_results, brand_code=DEFAULT_BRAND
         (brand_code,),
     ).fetchall()
     monthly_rates_rows = conn.execute(
-        "SELECT nick_name, hourly_rate, commission_rate, monthly_salary FROM MonthlyRates WHERE brand_code = ? AND payroll_month = ?",
+        "SELECT nick_name, hourly_rate, commission_rate, monthly_salary, remarks FROM MonthlyRates WHERE brand_code = ? AND payroll_month = ?",
         (brand_code, current_month),
     ).fetchall()
     conn.close()
@@ -949,6 +958,10 @@ def fetch_index_context(current_month, payroll_results, brand_code=DEFAULT_BRAND
     }
     monthly_salary_override_map = {
         row["nick_name"]: float(row["monthly_salary"]) if row["monthly_salary"] is not None else None
+        for row in monthly_rates_rows
+    }
+    monthly_remarks_map = {
+        row["nick_name"]: row["remarks"]
         for row in monthly_rates_rows
     }
     emp_full_map = {row["nick_name"]: (row["full_name"] or "") for row in employees_rows}
@@ -1039,6 +1052,7 @@ def fetch_index_context(current_month, payroll_results, brand_code=DEFAULT_BRAND
         "locations": locations,
         "products": products,
         "employees": employees_rows,
+        "monthly_remarks_map": monthly_remarks_map,
         "month_input_source": month_input_source,
         "has_excel_history": has_excel_history,
     }
@@ -1051,13 +1065,14 @@ def fetch_settings_context(current_month, brand_code=DEFAULT_BRAND_CODE):
         (brand_code,),
     ).fetchall()
     monthly_rates = conn.execute(
-        "SELECT nick_name, hourly_rate, commission_rate FROM MonthlyRates WHERE brand_code = ? AND payroll_month = ?",
+        "SELECT nick_name, hourly_rate, commission_rate, remarks FROM MonthlyRates WHERE brand_code = ? AND payroll_month = ?",
         (brand_code, current_month),
     ).fetchall()
     conn.close()
     monthly_map = {row["nick_name"]: row["hourly_rate"] for row in monthly_rates}
     monthly_comm_map = {row["nick_name"]: row["commission_rate"] for row in monthly_rates}
-    return employees, monthly_map, monthly_comm_map
+    monthly_remarks_map = {row["nick_name"]: row["remarks"] for row in monthly_rates}
+    return employees, monthly_map, monthly_comm_map, monthly_remarks_map
 
 
 def fetch_manage_products_context(brand_code=DEFAULT_BRAND_CODE):
