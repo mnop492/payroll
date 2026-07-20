@@ -236,6 +236,11 @@ def ensure_brand_columns_for_core_tables():
             f"ALTER TABLE {table_name} ADD COLUMN brand_code TEXT NOT NULL DEFAULT '{DEFAULT_BRAND_CODE}'"
         )
 
+    # 為考勤明細表加入表定上班與下班時間
+    if _table_exists(conn, "DailyAttendance") and not _has_column(conn, "DailyAttendance", "roster_in"):
+        conn.execute("ALTER TABLE DailyAttendance ADD COLUMN roster_in TEXT")
+        conn.execute("ALTER TABLE DailyAttendance ADD COLUMN roster_out TEXT")
+
     # MonthlyRates requires unique key upgrade to include brand_code.
     if _table_exists(conn, "MonthlyRates") and not _has_column(conn, "MonthlyRates", "brand_code"):
         conn.execute("ALTER TABLE MonthlyRates RENAME TO MonthlyRates_legacy")
@@ -1083,7 +1088,7 @@ def fetch_daily_attendance(month, nick_name, location, brand_code=DEFAULT_BRAND_
     conn = get_db_connection()
     rows = conn.execute(
         """
-        SELECT id, work_date, in_time, out_time, normal_hours, actual_hours, ot_hours, location
+        SELECT id, work_date, roster_in, roster_out, in_time, out_time, normal_hours, actual_hours, ot_hours, location
         FROM DailyAttendance
         WHERE brand_code = ? AND payroll_month = ? AND nick_name = ? AND location = ?
         ORDER BY work_date

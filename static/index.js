@@ -6,6 +6,36 @@ const currentMonth = pageData.currentMonth || '';
 let pendingAttendanceRows = [];
 let pendingSalesRows = [];
 
+// ── 格式化小幫手：自動將 Excel 貼上的日期與時間標準化 ──
+function formatPasteDate(raw) {
+    if (!raw) return '';
+    // 如果已經是 YYYY-MM-DD 格式，直接回傳
+    if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+    
+    // 處理 Excel 常見的 D/M/YYYY 或 DD/MM/YYYY
+    const parts = raw.split(/[\/\-]/);
+    if (parts.length === 3) {
+        if (parts[2].length === 4) { 
+            // 年份在後 (例如 1/7/2026 -> 2026-07-01)
+            return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+        } else if (parts[0].length === 4) { 
+            // 年份在前 (例如 2026/7/1 -> 2026-07-01)
+            return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+        }
+    }
+    return raw;
+}
+
+function formatPasteTime(raw) {
+    if (!raw) return '';
+    // 只抓取字串前面的 HH:MM，過濾掉秒數 (例如 12:00:00 -> 12:00)
+    const match = raw.trim().match(/^(\d{1,2}):(\d{2})/);
+    if (match) {
+        return `${match[1].padStart(2, '0')}:${match[2]}`;
+    }
+    return raw;
+}
+
 // ── Helper：從下拉選單取得當前選取的員工與地點 ──
 function getActiveAttName() { const el = document.getElementById('att_modal_promoter'); return el ? el.value : ''; }
 function getActiveAttLoc() { const el = document.getElementById('att_modal_loc'); return el ? el.value : ''; }
@@ -270,25 +300,56 @@ function refreshDailyTable(name, location) {
             }
 
             data.forEach((record, index) => {
+                let inTimeColor = "text-slate-200";
+                let outTimeColor = "text-slate-200";
+                let warningBadge = "";
+
+                // 統一 substring(0,5) 濾除秒數，確保比較基準一致
+                const rIn = (record.roster_in || '').substring(0, 5);
+                const rOut = (record.roster_out || '').substring(0, 5);
+                const aIn = (record.in_time || '').substring(0, 5);
+                const aOut = (record.out_time || '').substring(0, 5);
+
+                if (rIn && aIn && aIn > rIn) {
+                    inTimeColor = "text-red-400 font-bold bg-red-900/30";
+                    warningBadge += `<span class="block text-[10px] text-red-400">遲到</span>`;
+                }
+                if (rOut && aOut && aOut < rOut) {
+                    outTimeColor = "text-amber-400 font-bold bg-amber-900/30";
+                    warningBadge += `<span class="block text-[10px] text-amber-400">早退</span>`;
+                }
+
                 const tr = document.createElement('tr');
+                tr.setAttribute('data-att-id', record.id);
                 tr.innerHTML = `
-                    <td class="text-center text-sm text-slate-500">${index + 1}</td>
-                    <td class="text-center font-bold text-sm">${record.work_date}</td>
-                    <td class="text-center"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-sm font-medium bg-slate-700 text-slate-200">${record.location}</span></td>
-                    <td>
-                        <input type="hidden" name="record_id[]" value="${record.id}">
-                        <input type="time" name="in_time[]" class="bg-slate-800 border border-slate-600 rounded-lg px-2 py-1 text-sm text-slate-200 w-full" value="${record.in_time}">
+                    <td class="text-center text-sm text-slate-500 align-middle">${index + 1}</td>
+                    <td class="text-center font-bold text-sm align-middle">${record.work_date}</td>
+                    <td class="text-center align-middle"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-sm font-medium bg-slate-700 text-slate-200">${record.location}</span><br>${warningBadge}</td>
+
+                    <td class="px-1 py-1.5 align-middle">
+                        <div class="space-y-1">
+                            <input type="time" class="edit-roster-in bg-slate-800/50 border border-slate-600 rounded px-1.5 py-1 text-xs text-indigo-300 w-full" value="${rIn}">
+                            <input type="time" class="edit-roster-out bg-slate-800/50 border border-slate-600 rounded px-1.5 py-1 text-xs text-indigo-300 w-full" value="${rOut}">
+                        </div>
                     </td>
-                    <td>
-                        <input type="time" name="out_time[]" class="bg-slate-800 border border-slate-600 rounded-lg px-2 py-1 text-sm text-slate-200 w-full" value="${record.out_time}">
+
+                    <td class="px-1 py-1.5 align-middle">
+                        <div class="space-y-1">
+                            <input type="time" class="edit-in-time ${inTimeColor} border border-slate-600 rounded px-1.5 py-1 text-xs w-full" value="${aIn}">
+                            <input type="time" class="edit-out-time ${outTimeColor} border border-slate-600 rounded px-1.5 py-1 text-xs w-full" value="${aOut}">
+                        </div>
                     </td>
-                    <td>
-                        <input type="number" step="0.5" name="normal_hours[]" class="bg-slate-800 border border-slate-600 rounded-lg px-2 py-1 text-sm text-slate-200 w-full" value="${parseFloat(record.normal_hours || 8.0).toFixed(1)}">
+
+                    <td class="px-1 py-1.5 align-middle">
+                        <input type="number" step="0.5" class="edit-normal-hours bg-slate-800 border border-slate-600 rounded px-2 py-1 text-sm text-slate-200 w-full" value="${parseFloat(record.normal_hours || 8.0).toFixed(1)}">
                     </td>
-                    <td class="text-center font-bold text-sm">${parseFloat(record.actual_hours).toFixed(2)}</td>
-                    <td class="text-center text-red-400 text-sm">${parseFloat(record.ot_hours).toFixed(2)}</td>
-                    <td class="text-center">
-                        <button type="button" class="border border-red-800/50 text-red-400 hover:bg-red-900/30 text-sm font-medium py-1 px-2 rounded-lg transition-colors" onclick="deleteRecord(${record.id}, '${name}', '${location}')">🗑️</button>
+                    <td class="text-center font-bold text-sm align-middle">${parseFloat(record.actual_hours).toFixed(2)}</td>
+                    <td class="text-center text-red-400 text-sm align-middle">${parseFloat(record.ot_hours).toFixed(2)}</td>
+                    <td class="text-center align-middle">
+                        <div class="flex flex-col gap-1 justify-center">
+                            <button type="button" class="bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-medium py-1 px-2 rounded transition-colors" onclick="saveDailyRecord(${record.id}, '${name}', '${location}')">💾 修改</button>
+                            <button type="button" class="border border-red-800/50 text-red-400 hover:bg-red-900/30 text-[11px] font-medium py-1 px-2 rounded transition-colors" onclick="deleteRecord(${record.id}, '${name}', '${location}')">🗑️ 刪除</button>
+                        </div>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -310,6 +371,44 @@ function deleteRecord(id, name, location) {
     }
 }
 
+function saveDailyRecord(id, name, location) {
+    const row = document.querySelector(`tr[data-att-id="${id}"]`);
+    if (!row) return;
+
+    const rosterIn = row.querySelector('.edit-roster-in').value;
+    const rosterOut = row.querySelector('.edit-roster-out').value;
+    const inTime = row.querySelector('.edit-in-time').value;
+    const outTime = row.querySelector('.edit-out-time').value;
+    const normalHrs = row.querySelector('.edit-normal-hours').value;
+
+    if (!inTime || !outTime) {
+        alert('請完整填寫實際簽到與簽退時間！');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('id', id);
+    formData.append('roster_in', rosterIn);
+    formData.append('roster_out', rosterOut);
+    formData.append('in_time', inTime);
+    formData.append('out_time', outTime);
+    formData.append('normal_hours', normalHrs || 8.0);
+
+    fetch('/update_daily_record_api', { method: 'POST', body: formData })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'success') {
+                refreshDailyTable(name, location);
+            } else {
+                alert(result.message || '更新失敗');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('更新發生錯誤，請稍後再試');
+        });
+}
+
 function addNewRecordFromUI() {
     const name = getActiveAttName();
     const location = getActiveAttLoc();
@@ -317,6 +416,8 @@ function addNewRecordFromUI() {
     const inInput = document.getElementById('new_in').value;
     const outInput = document.getElementById('new_out').value;
     const normalInput = document.getElementById('new_normal').value;
+    const ri = document.getElementById('new_roster_in') ? document.getElementById('new_roster_in').value : '';
+    const ro = document.getElementById('new_roster_out') ? document.getElementById('new_roster_out').value : '';
 
     if (!dateInput || !inInput || !outInput) {
         alert('請完整填寫日期與時間！');
@@ -327,6 +428,8 @@ function addNewRecordFromUI() {
         nick_name: name,
         work_date: dateInput,
         location: location,
+        roster_in: ri || undefined,
+        roster_out: ro || undefined,
         in_time: inInput,
         out_time: outInput,
         normal_hours: parseFloat(normalInput || 8.0),
@@ -497,8 +600,8 @@ function renderPendingAttendanceRows(tbody, name, location) {
             <td class="text-center text-sm text-amber-400">⏳</td>
             <td class="text-center font-bold text-sm text-amber-200">${row.work_date}</td>
             <td class="text-center"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-sm font-medium bg-amber-900/50 text-amber-200">${row.location}</span></td>
-            <td class="text-center text-sm text-amber-200">${row.in_time}</td>
-            <td class="text-center text-sm text-amber-200">${row.out_time}</td>
+            <td class="text-center text-sm text-amber-200">${row.roster_in || ''}<br><span class="text-xs">~</span><br>${row.roster_out || ''}</td>
+            <td class="text-center text-sm text-amber-200">${row.in_time}<br><span class="text-xs">~</span><br>${row.out_time}</td>
             <td class="text-center text-sm text-amber-200">${row.normal_hours.toFixed(1)}</td>
             <td class="text-center text-sm text-amber-300">—</td>
             <td class="text-center text-sm text-amber-300">—</td>
@@ -581,6 +684,10 @@ async function saveAllAttendanceRecords() {
         formData.append('nick_name', name);
         formData.append('location', row.location);
         formData.append('work_date', row.work_date);
+        formData.append('roster_in', row.roster_in || '');
+        formData.append('roster_out', row.roster_out || '');
+        formData.append('roster_in', row.roster_in || '');
+        formData.append('roster_out', row.roster_out || '');
         formData.append('in_time', row.in_time);
         formData.append('out_time', row.out_time);
         formData.append('normal_hours', row.normal_hours);
@@ -683,14 +790,18 @@ document.addEventListener('DOMContentLoaded', function() {
             lines.forEach(row => {
                 if (!row.trim()) return;
                 const cols = row.split('\t').map(c => c.trim());
-                if (cols.length >= 4) {
+                if (cols[0].toLowerCase().includes('date')) return; // 自動跳過標題列
+
+                if (cols.length >= 11) { // 確保有足夠的欄位
                     pendingAttendanceRows.push({
-                        nick_name: name,
-                        work_date: cols[0],
-                        location: cols[1] || location,
-                        in_time: cols[2],
-                        out_time: cols[3],
-                        normal_hours: parseFloat(cols[4] || 8.0),
+                        nick_name: name, // 維持使用畫面上選定的名字
+                        work_date: formatPasteDate(cols[0]),
+                        location: cols[2] || location,
+                        in_time: formatPasteTime(cols[4]),         // 實際簽到
+                        out_time: formatPasteTime(cols[5]),        // 實際簽退
+                        roster_in: formatPasteTime(cols[8]),       // 表定簽到
+                        roster_out: formatPasteTime(cols[9]),      // 表定簽退
+                        normal_hours: parseFloat(cols[10] || 8.0), // 常規工時
                     });
                     count++;
                 }
@@ -720,14 +831,27 @@ document.addEventListener('DOMContentLoaded', function() {
             lines.forEach(row => {
                 if (!row.trim()) return;
                 const cols = row.split('\t').map(c => c.trim());
-                if (cols.length >= 3) {
+                if (cols[0].toLowerCase().includes('shop')) return; // 自動跳過標題列
+
+                if (cols.length >= 10) { // 確保有 10 個欄位
+                    let pastedDate = formatPasteDate(cols[4]); // 第 5 欄: date
+                    if (/^\d{1,2}$/.test(pastedDate)) {
+                        pastedDate = `${currentMonth}-${pastedDate.padStart(2, '0')}`;
+                    }
+
+                    // 💡 智慧除錯：如果 Model 是 #N/A，就改抓 Input 欄位 (第 8 欄)
+                    let finalModel = cols[5];
+                    if (!finalModel || finalModel.toUpperCase() === '#N/A') {
+                        finalModel = cols[7]; 
+                    }
+
                     pendingSalesRows.push({
-                        promoter_name: name,
-                        date: cols[0],
-                        location: cols[1] || location,
-                        model: cols[2],
-                        quantity: parseInt(cols[3] || 1),
-                        price: parseFloat(cols[4] || 0),
+                        promoter_name: name,                
+                        location: location,                 
+                        date: pastedDate,                   
+                        model: finalModel,                  
+                        quantity: parseInt(cols[8] || 1),   // 第 9 欄: quantity
+                        price: parseFloat(cols[9] || 0),    // 第 10 欄: price
                     });
                     count++;
                 }
@@ -758,14 +882,18 @@ function processAttendancePaste() {
     rows.forEach(row => {
         if (!row.trim()) return;
         const cols = row.split('\t').map(c => c.trim());
-        if (cols.length >= 4) {
+        if (cols[0].toLowerCase().includes('date')) return; // 自動跳過標題列
+
+        if (cols.length >= 11) {
             pendingAttendanceRows.push({
                 nick_name: name,
-                work_date: cols[0],
-                location: cols[1] || location,
-                in_time: cols[2],
-                out_time: cols[3],
-                normal_hours: parseFloat(cols[4] || 8.0),
+                work_date: formatPasteDate(cols[0]),
+                location: cols[2] || location,
+                in_time: formatPasteTime(cols[4]),         // 實際簽到
+                out_time: formatPasteTime(cols[5]),        // 實際簽退
+                roster_in: formatPasteTime(cols[8]),       // 表定簽到
+                roster_out: formatPasteTime(cols[9]),      // 表定簽退
+                normal_hours: parseFloat(cols[10] || 8.0),
             });
             addedCount++;
         }
@@ -777,7 +905,7 @@ function processAttendancePaste() {
         textarea.value = '';
         alert(`✅ 成功匯入 ${addedCount} 筆打卡資料！請確認後點擊「儲存全部打卡紀錄」。`);
     } else {
-        alert('⚠️ 無法解析資料，請檢查貼上的格式是否符合對照表要求（至少 4 欄）。');
+        alert('⚠️ 無法解析資料，請檢查貼上的格式是否符合對照表要求（至少 11 欄：Date, Nick Name, Location, Name, In-Time, Out-Time, Hours, OT, In-Time2, Out-Time2, Normal working hours）。');
     }
 }
 
@@ -794,14 +922,26 @@ function processSalesPaste() {
     rows.forEach(row => {
         if (!row.trim()) return;
         const cols = row.split('\t').map(c => c.trim());
-        if (cols.length >= 3) {
+        if (cols[0].toLowerCase().includes('shop')) return; // 自動跳過標題列
+
+        if (cols.length >= 10) {
+            let pastedDate = formatPasteDate(cols[4]);
+            if (/^\d{1,2}$/.test(pastedDate)) {
+                pastedDate = `${currentMonth}-${pastedDate.padStart(2, '0')}`;
+            }
+
+            let finalModel = cols[5];
+            if (!finalModel || finalModel.toUpperCase() === '#N/A') {
+                finalModel = cols[7];
+            }
+
             pendingSalesRows.push({
                 promoter_name: name,
-                date: cols[0],
-                location: cols[1] || location,
-                model: cols[2],
-                quantity: parseInt(cols[3] || 1),
-                price: parseFloat(cols[4] || 0),
+                location: location,
+                date: pastedDate,
+                model: finalModel,
+                quantity: parseInt(cols[8] || 1),
+                price: parseFloat(cols[9] || 0),
             });
             addedCount++;
         }
@@ -813,7 +953,7 @@ function processSalesPaste() {
         textarea.value = '';
         alert(`✅ 成功匯入 ${addedCount} 筆銷售單據！請確認後點擊「儲存全部單據」。`);
     } else {
-        alert('⚠️ 無法解析資料，請檢查貼上的格式是否符合對照表要求（至少 3 欄）。');
+        alert('⚠️ 無法解析資料，請檢查貼上的格式是否符合對照表要求（至少 10 欄）。');
     }
 }
 
@@ -831,14 +971,18 @@ async function executeGlobalAttPaste() {
     rows.forEach((row, index) => {
         if (!row.trim()) return;
         const cols = row.split('\t').map(c => c.trim());
-        if (cols.length >= 5) {
+        if (cols[0].toLowerCase().includes('date')) return; // 自動跳過標題列
+
+        if (cols.length >= 11) { 
             parsedRows.push({
-                nick_name: cols[0],
-                location: cols[1],
-                work_date: cols[2],
-                in_time: cols[3],
-                out_time: cols[4],
-                normal_hours: parseFloat(cols[5] || 8.0),
+                work_date: formatPasteDate(cols[0]),
+                nick_name: cols[1],                        // 從 Excel 抓取名字
+                location: cols[2],                         // 從 Excel 抓取地點
+                in_time: formatPasteTime(cols[4]),         // 實際簽到
+                out_time: formatPasteTime(cols[5]),        // 實際簽退
+                roster_in: formatPasteTime(cols[8]),       // 表定簽到
+                roster_out: formatPasteTime(cols[9]),      // 表定簽退
+                normal_hours: parseFloat(cols[10] || 8.0),
             });
         } else {
             console.warn(`第 ${index + 1} 行欄位不足，已略過:`, row);
@@ -891,14 +1035,30 @@ async function executeGlobalSalesPaste() {
     rows.forEach((row, index) => {
         if (!row.trim()) return;
         const cols = row.split('\t').map(c => c.trim());
-        if (cols.length >= 5) {
+        if (cols[0].toLowerCase().includes('shop')) return; // 自動跳過標題列
+
+        if (cols.length >= 10) {
+            const shop = cols[0] || '';
+            const loc = cols[1] || '';
+            const fullLocation = (shop + " " + loc).trim(); // 組合 Shop + Location
+            
+            let pastedDate = formatPasteDate(cols[4]);
+            if (/^\d{1,2}$/.test(pastedDate)) {
+                pastedDate = `${currentMonth}-${pastedDate.padStart(2, '0')}`;
+            }
+
+            let finalModel = cols[5];
+            if (!finalModel || finalModel.toUpperCase() === '#N/A') {
+                finalModel = cols[7];
+            }
+
             parsedRows.push({
-                promoter_name: cols[0],
-                location: cols[1],
-                date: cols[2],
-                model: cols[3],
-                quantity: parseInt(cols[4] || 1),
-                price: parseFloat(cols[5] || 0),
+                promoter_name: cols[2], // 第 3 欄: Promoter
+                location: fullLocation,
+                date: pastedDate,
+                model: finalModel,
+                quantity: parseInt(cols[8] || 1),
+                price: parseFloat(cols[9] || 0),
             });
         } else {
             console.warn(`第 ${index + 1} 行欄位不足，已略過:`, row);

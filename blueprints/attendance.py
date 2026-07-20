@@ -2,7 +2,7 @@ from datetime import datetime
 from urllib.parse import parse_qs, urlparse
 
 import pandas as pd
-from flask import Blueprint, flash, jsonify, redirect, request, url_for
+from flask import Blueprint, flash, jsonify, redirect, request, session, url_for
 
 from app_config import DEFAULT_BRAND_CODE
 from repository import fetch_daily_attendance, get_db_connection, set_month_input_source, sync_attendance_summary
@@ -89,6 +89,8 @@ def update_daily_records():
     brand_code = _resolve_brand_code()
     calc_month = request.form.get("calc_month")
     record_ids = request.form.getlist("record_id[]")
+    roster_in_list = request.form.getlist("roster_in[]")
+    roster_out_list = request.form.getlist("roster_out[]")
     in_times = request.form.getlist("in_time[]")
     out_times = request.form.getlist("out_time[]")
     normal_hours_list = request.form.getlist("normal_hours[]")
@@ -102,6 +104,8 @@ def update_daily_records():
     for index, record_id in enumerate(record_ids):
         in_time = in_times[index]
         out_time = out_times[index]
+        r_in = roster_in_list[index] if index < len(roster_in_list) else None
+        r_out = roster_out_list[index] if index < len(roster_out_list) else None
         normal_hours = float(normal_hours_list[index] or 8.0)
         try:
             delta = datetime.strptime(out_time, "%H:%M") - datetime.strptime(in_time, "%H:%M")
@@ -112,10 +116,10 @@ def update_daily_records():
         conn.execute(
             """
             UPDATE DailyAttendance
-            SET in_time = ?, out_time = ?, normal_hours = ?, actual_hours = ?, ot_hours = ?
+            SET roster_in = ?, roster_out = ?, in_time = ?, out_time = ?, normal_hours = ?, actual_hours = ?, ot_hours = ?
             WHERE id = ? AND brand_code = ?
             """,
-            (in_time, out_time, normal_hours, actual_hours, raw_ot, record_id, brand_code),
+            (r_in, r_out, in_time, out_time, normal_hours, actual_hours, raw_ot, record_id, brand_code),
         )
 
     conn.commit()
@@ -154,6 +158,8 @@ def add_daily_attendance():
     location = request.form.get("location")
     in_time = request.form.get("in_time")
     out_time = request.form.get("out_time")
+    roster_in = request.form.get("roster_in")
+    roster_out = request.form.get("roster_out")
     normal_hours = float(request.form.get("normal_hours", 8.0))
 
     try:
@@ -166,10 +172,10 @@ def add_daily_attendance():
     conn = get_db_connection()
     cursor = conn.execute(
         """
-        INSERT INTO DailyAttendance (brand_code, payroll_month, work_date, nick_name, location, in_time, out_time, normal_hours, actual_hours, ot_hours)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO DailyAttendance (brand_code, payroll_month, work_date, nick_name, location, roster_in, roster_out, in_time, out_time, normal_hours, actual_hours, ot_hours)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
-        (brand_code, month, date, name, location, in_time, out_time, normal_hours, actual_hours, raw_ot),
+        (brand_code, month, date, name, location, roster_in or None, roster_out or None, in_time, out_time, normal_hours, actual_hours, raw_ot),
     )
     conn.commit()
     record_id = cursor.lastrowid
@@ -198,6 +204,55 @@ def add_daily_attendance():
     set_month_input_source(month, "web", brand_code=brand_code)
     sync_attendance_summary(month, name, location, brand_code=brand_code)
     return jsonify({"status": "success", "message": "已新增考勤紀錄並同步總表"})
+
+
+@bp.route("/update_daily_record_api", methods=["POST"])
+def update_daily_record_api():
+    if not session.get("user"):
+        return {"status": "error", "message": "Unauthorized"}, 403
+
+    record_id = request.form.get("id")
+    roster_in = request.form.get("roster_in")
+    roster_out = request.form.get("roster_out")
+    in_time = request.form.get("in_time")
+    out_time = request.form.get("out_time")
+    normal_hours = float(request.form.get("normal_hours", 8.0))
+
+    if not record_id or not in_time or not out_time:
+        return jsonify({"status": "error", "message": "缺少必要的時間欄位"}), 400
+
+    # 強制只取前 5 字元 (HH:MM)，濾除秒數
+    in_hm = in_time[:5] if in_time else ""
+    out_hm = out_time[:5] if out_time else ""
+
+    try:
+        t1 = datetime.strptime(in_hm, "%H:%M")
+        t2 = datetime.strptime(out_hm, "%H:%M")
+        diff = (t2 - t1).total_seconds() / 3600.0
+        if diff < 0:
+            diff += 24.0
+        actual_hours = round(diff, 2)
+        ot_hours = round(actual_hours - normal_hours, 2)
+    except Exception:
+        actual_hours = 0
+        ot_hours = 0
+
+    conn = get_db_connection()
+    try:
+        conn.execute(
+            """
+            UPDATE DailyAttendance
+            SET roster_in = ?, roster_out = ?, in_time = ?, out_time = ?, normal_hours = ?, actual_hours = ?, ot_hours = ?
+            WHERE id = ?
+            """,
+            (roster_in, roster_out, in_hm, out_hm, normal_hours, actual_hours, ot_hours, record_id)
+        )
+        conn.commit()
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        conn.close()
 
 
 @bp.route("/delete_daily_attendance/<int:id>", methods=["POST"])
