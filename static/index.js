@@ -121,12 +121,11 @@ function toggleAttendanceSidebar() {
     isSidebarCollapsed = !isSidebarCollapsed;
     const sidebar = document.getElementById('attendanceSidebar');
     const icon = document.getElementById('sidebarToggleIcon');
-    const textEl = document.getElementById('sidebarToggleText'); // 💡 新增文字元素
+    const textEl = document.getElementById('sidebarToggleText');
     
     if (sidebar) sidebar.classList.toggle('is-collapsed', isSidebarCollapsed);
     if (icon) icon.classList.toggle('rotate-180', isSidebarCollapsed);
     
-    // 💡 根據狀態動態切換按鈕文字
     if (textEl) {
         textEl.textContent = isSidebarCollapsed ? '展開月曆' : '收起月曆';
     }
