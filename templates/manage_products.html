@@ -11,6 +11,29 @@
     </div>
   </div>
 
+  {# Excel 批量匯入產品 #}
+  <div class="bg-slate-800 rounded-2xl shadow-sm border border-emerald-800/40 overflow-hidden">
+    <div class="px-5 py-3.5 bg-emerald-900/20 text-emerald-300 font-bold text-base flex items-center justify-between border-b border-emerald-800/40">
+      <span>📋 Excel 批量貼上匯入產品</span>
+      <span class="text-xs bg-slate-800 text-emerald-300 px-2.5 py-1 rounded-full">欄位順序：型號 ▸ 系列 ▸ 產品分類</span>
+    </div>
+    <div class="p-5 space-y-3">
+      <p class="text-xs text-slate-400">從 Excel 複製三欄資料（Report-Model-List、Product Line、產品分類）後，貼入下方文字框，再按「匯入」。已存在的型號將更新系列與分類，新型號將自動新增（佣金比例預設 3%）。</p>
+      <textarea id="productPasteArea" rows="8" class="w-full px-3 py-2.5 text-xs font-mono border border-emerald-800/50 rounded-xl bg-slate-700 text-slate-100 focus:ring-2 focus:ring-emerald-500 outline-none resize-y" placeholder="在此貼上 Excel 複製的資料..."></textarea>
+      <div class="flex items-center gap-3">
+        <button onclick="processProductPaste()" class="px-5 py-2 text-sm font-bold text-slate-100 bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-colors shadow-sm">🚀 解析並匯入</button>
+        <button onclick="document.getElementById('productPasteArea').value='';document.getElementById('productPastePreview').innerHTML='';document.getElementById('productImportForm').style.display='none'" class="px-4 py-2 text-sm font-semibold text-slate-400 border border-slate-600 rounded-xl hover:bg-slate-700 transition-colors">✖ 清除</button>
+        <span id="productPasteCount" class="text-xs text-slate-400"></span>
+      </div>
+      <div id="productPastePreview" class="overflow-x-auto"></div>
+      <form id="productImportForm" action="/bulk_import_products" method="POST" style="display:none">
+        <input type="hidden" name="brand" value="{{ current_brand }}">
+        <input type="hidden" name="rows_data" id="productRowsData">
+        <button type="submit" class="px-5 py-2 text-sm font-bold text-slate-100 bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors shadow-sm">💾 確認儲存 (<span id="productImportCount">0</span> 筆)</button>
+      </form>
+    </div>
+  </div>
+
   {# 特佣規則卡片 #}
   <div class="bg-slate-800 rounded-2xl shadow-sm border border-cyan-800/40 overflow-hidden">
     <div class="px-5 py-3.5 bg-cyan-900/20 text-cyan-300 font-bold text-base flex items-center justify-between border-b border-cyan-800/40">
@@ -70,6 +93,10 @@
               系列
               <div class="flex gap-2 mt-1.5"><select id="filterLineDrop" class="text-slate-200 bg-slate-800 text-xs px-2 py-1 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" onchange="filterTable()"><option value="">✅ 所有系列</option></select><input type="text" id="filterLineText" class="text-slate-200 bg-slate-800 text-xs px-2 py-1 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-28" placeholder="搜尋..." onkeyup="filterTable()"></div>
             </th>
+            <th class="px-3 py-3 border-b border-slate-600 min-w-[160px]">
+              產品分類
+              <div class="flex gap-2 mt-1.5"><select id="filterCatDrop" class="text-slate-200 bg-slate-800 text-xs px-2 py-1 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" onchange="filterTable()"><option value="">✅ 所有分類</option></select><input type="text" id="filterCatText" class="text-slate-200 bg-slate-800 text-xs px-2 py-1 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-28" placeholder="搜尋..." onkeyup="filterTable()"></div>
+            </th>
             <th class="px-3 py-3 border-b border-slate-600">永久佣金比例</th>
             <th class="px-3 py-3 border-b border-slate-600">操作</th>
           </tr>
@@ -78,8 +105,9 @@
           {% for p in products %}
           <tr id="product-{{ p.id }}" class="text-center border-b border-slate-600 hover:bg-slate-700/60 odd:bg-slate-800 even:bg-slate-700/50 transition-colors product-row">
             <td class="px-3 py-2.5"><input type="checkbox" class="product-checkbox w-4 h-4 text-blue-600 rounded focus:ring-blue-500 border-slate-500" value="{{ p.id }}"></td>
-            <td class="px-3 py-2.5 font-bold text-left"><code class="text-sm bg-slate-700 px-2 py-0.5 rounded">{{ p.model }}</code></td>
-            <td class="px-3 py-2.5">{{ p.product_line if p.product_line else '-' }}</td>
+            <td class="px-3 py-2.5 font-bold text-left model-cell"><code class="text-sm bg-slate-700 px-2 py-0.5 rounded">{{ p.model }}</code></td>
+            <td class="px-3 py-2.5 line-cell">{{ p.product_line if p.product_line else '-' }}</td>
+            <td class="px-3 py-2.5 category-cell">{{ p.product_category if p.product_category else '-' }}</td>
             <td class="px-3 py-2.5 font-bold {{ 'text-red-400' if p.commission_rate != 0.03 else 'text-blue-300' }}">{{ "%.1f"|format(p.commission_rate * 100) }}%</td>
             <td class="px-3 py-2.5">
               <button class="px-3 py-1.5 text-xs font-semibold text-slate-100 bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors shadow-sm" onclick="openEditModal('{{ p.model }}', {{ p.commission_rate }})">⚙️ 修改 / 設定特佣</button>
@@ -187,17 +215,21 @@ function closeModal(el) {
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     // 自動生成下拉選單選項
-    let lines = new Set(), models = new Set();
+    let lines = new Set(), models = new Set(), cats = new Set();
     document.querySelectorAll(".product-row").forEach(row => {
         let l = row.querySelector(".line-cell").innerText.trim();
         let m = row.querySelector(".model-cell").innerText.trim();
+        let c = row.querySelector(".category-cell").innerText.trim();
         if(l && l !== '-') lines.add(l);
         if(m) models.add(m);
+        if(c && c !== '-') cats.add(c);
     });
     let lS = document.getElementById("filterLineDrop");
     Array.from(lines).sort().forEach(l => lS.appendChild(new Option("🏷️ " + l, l)));
     let mS = document.getElementById("filterModelDrop");
     Array.from(models).sort().forEach(m => mS.appendChild(new Option("📦 " + m, m)));
+    let cS = document.getElementById("filterCatDrop");
+    Array.from(cats).sort().forEach(c => cS.appendChild(new Option("🗂️ " + c, c)));
 });
 
 function filterTable() {
@@ -205,11 +237,16 @@ function filterTable() {
     let mT = document.getElementById("filterModelText").value.toUpperCase();
     let lD = document.getElementById("filterLineDrop").value.toUpperCase();
     let lT = document.getElementById("filterLineText").value.toUpperCase();
-    
+    let cD = document.getElementById("filterCatDrop").value.toUpperCase();
+    let cT = document.getElementById("filterCatText").value.toUpperCase();
+
     document.querySelectorAll(".product-row").forEach(row => {
         let cM = row.querySelector('.model-cell').innerText.toUpperCase().trim();
         let cL = row.querySelector('.line-cell').innerText.toUpperCase().trim();
-        if (((mD==="")||(cM===mD)) && (cM.indexOf(mT)>-1) && ((lD==="")||(cL===lD)) && (cL.indexOf(lT)>-1)) {
+        let cC = row.querySelector('.category-cell').innerText.toUpperCase().trim();
+        if (((mD==="")||(cM===mD)) && (cM.indexOf(mT)>-1) &&
+            ((lD==="")||(cL===lD)) && (cL.indexOf(lT)>-1) &&
+            ((cD==="")||(cC===cD)) && (cC.indexOf(cT)>-1)) {
             row.style.display = "";
         } else {
             row.style.display = "none";
@@ -254,6 +291,54 @@ function openEditModal(m, r) {
     toggleDateFields('edit');
     document.getElementById('productEditModal').classList.remove('hidden');
     document.getElementById('productEditModal').classList.add('flex');
+}
+
+function processProductPaste() {
+    const textarea = document.getElementById('productPasteArea');
+    const raw = textarea.value;
+    if (!raw.trim()) { alert('請先在文字框內貼上 Excel 資料！'); return; }
+
+    const rows = [];
+    raw.split('\n').forEach(line => {
+        if (!line.trim()) return;
+        const cols = line.split('\t').map(c => c.trim());
+        // 自動跳過標題列（第一欄含 "model" 或 "report"）
+        const firstLower = (cols[0] || '').toLowerCase();
+        if (firstLower.includes('model') || firstLower.includes('report') || firstLower.includes('list')) return;
+        const model = cols[0] || '';
+        if (!model) return;
+        rows.push({
+            model: model,
+            product_line: cols[1] || '',
+            product_category: cols[2] || '',
+        });
+    });
+
+    if (rows.length === 0) {
+        alert('⚠️ 無法解析資料，請確認格式為：型號<Tab>系列<Tab>產品分類');
+        return;
+    }
+
+    // 預覽表格
+    let html = '<table class="w-full text-xs border-collapse mt-2"><thead><tr class="bg-slate-700 text-slate-300">'
+        + '<th class="px-3 py-2 border border-slate-600 text-left">型號</th>'
+        + '<th class="px-3 py-2 border border-slate-600 text-left">系列</th>'
+        + '<th class="px-3 py-2 border border-slate-600 text-left">產品分類</th>'
+        + '</tr></thead><tbody>';
+    rows.forEach(r => {
+        html += `<tr class="border-b border-slate-600 odd:bg-slate-800 even:bg-slate-700/50">
+            <td class="px-3 py-1.5 border border-slate-600 font-mono">${r.model}</td>
+            <td class="px-3 py-1.5 border border-slate-600">${r.product_line || '-'}</td>
+            <td class="px-3 py-1.5 border border-slate-600">${r.product_category || '-'}</td>
+        </tr>`;
+    });
+    html += '</tbody></table>';
+
+    document.getElementById('productPastePreview').innerHTML = html;
+    document.getElementById('productRowsData').value = JSON.stringify(rows);
+    document.getElementById('productImportCount').textContent = rows.length;
+    document.getElementById('productPasteCount').textContent = `解析到 ${rows.length} 筆資料，請確認後儲存。`;
+    document.getElementById('productImportForm').style.display = '';
 }
 </script>
 {% endblock %}

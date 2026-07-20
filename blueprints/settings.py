@@ -124,7 +124,7 @@ def settings():
 def employees():
     current_month = request.args.get("month", pd.Timestamp.now().strftime("%Y-%m"))
     brand_code = _resolve_brand_code()
-    employees, monthly_map, monthly_comm_map = fetch_settings_context(current_month, brand_code=brand_code)
+    employees, monthly_map, monthly_comm_map, monthly_remarks_map = fetch_settings_context(current_month, brand_code=brand_code)
     return render_template(
         "employee.html",
         employees=employees,
@@ -134,6 +134,7 @@ def employees():
         available_brands=get_current_user_available_brands(),
         monthly_map=monthly_map,
         monthly_comm_map=monthly_comm_map,
+        monthly_remarks_map=monthly_remarks_map,
     )
 
 
@@ -869,6 +870,170 @@ def bulk_update_products():
     conn.close()
     flash(f"✅ 成功將 {len(product_ids)} 件產品的永久佣金比例更新為 {float(new_rate) * 100}%！", "success")
     return redirect(url_for("settings.manage_products", brand=brand_code))
+
+
+@bp.route("/bulk_import_products", methods=["POST"])
+def bulk_import_products():
+    brand_code = _resolve_brand_code()
+    rows_json = request.form.get("rows_data", "[]")
+    try:
+        rows = json.loads(rows_json)
+    except (ValueError, TypeError):
+        flash("❌ 資料格式錯誤，請重試。", "danger")
+        return redirect(url_for("settings.manage_products", brand=brand_code))
+
+    conn = get_db_connection()
+    inserted = 0
+    updated = 0
+    for row in rows:
+        model = (row.get("model") or "").strip()
+        product_line = (row.get("product_line") or "").strip() or None
+        product_category = (row.get("product_category") or "").strip() or None
+        if not model:
+            continue
+        existing = conn.execute(
+            "SELECT id FROM Products WHERE brand_code = ? AND model = ?",
+            (brand_code, model),
+        ).fetchone()
+        if existing:
+            conn.execute(
+                "UPDATE Products SET product_line = ?, product_category = ? WHERE brand_code = ? AND model = ?",
+                (product_line, product_category, brand_code, model),
+            )
+            updated += 1
+        else:
+            conn.execute(
+                "INSERT INTO Products (brand_code, model, product_line, product_category) VALUES (?, ?, ?, ?)",
+                (brand_code, model, product_line, product_category),
+            )
+            inserted += 1
+    conn.commit()
+    try:
+        log_audit("bulk_import", "Products", record_id=None,
+                  new_value={"inserted": inserted, "updated": updated},
+                  user=None, ip=request.remote_addr)
+    except Exception:
+        pass
+    conn.close()
+    flash(f"✅ 批量匯入完成：新增 {inserted} 筆，更新 {updated} 筆產品資料。", "success")
+    return redirect(url_for("settings.manage_products", brand=brand_code))
+
+
+@bp.route("/bulk_import_employees", methods=["POST"])
+def bulk_import_employees():
+    brand_code = _resolve_brand_code()
+    payroll_month = request.form.get("payroll_month") or pd.Timestamp.now().strftime("%Y-%m")
+    salary_type = request.form.get("salary_type", "hourly")
+    rows_json = request.form.get("rows_data", "[]")
+    try:
+        rows = json.loads(rows_json)
+    except (ValueError, TypeError):
+        flash("❌ 資料格式錯誤，請重試。", "danger")
+        return redirect(url_for("settings.employees", month=payroll_month, brand=brand_code))
+
+    if salary_type not in ("hourly", "monthly"):
+        salary_type = "hourly"
+
+    def _to_float(v, default=0.0):
+        try:
+            return float(str(v).replace(",", "").strip())
+        except (TypeError, ValueError):
+            return float(default)
+
+    def _parse_percent(v):
+        """Parse '3.0%' or '0.03' → float like 0.03"""
+        s = str(v or "").strip().replace("%", "")
+        try:
+            f = float(s)
+            return f / 100 if f > 1 else f
+        except (TypeError, ValueError):
+            return 0.03
+
+    conn = get_db_connection()
+    inserted = 0
+    updated_mr = 0
+    try:
+        for row in rows:
+            nick_name = (row.get("nick_name") or "").strip()
+            if not nick_name:
+                continue
+            full_name = (row.get("full_name") or "").strip() or None
+            remarks = (row.get("remarks") or "").strip() or None
+
+            existing = conn.execute(
+                "SELECT id FROM Employees WHERE brand_code = ? AND nick_name = ?",
+                (brand_code, nick_name),
+            ).fetchone()
+
+            if not existing:
+                # Insert new employee
+                if salary_type == "hourly":
+                    hourly_rate = _to_float(row.get("hourly_rate"), 0)
+                    allowance = _to_float(row.get("allowance"), 0)
+                    commission_rate = _parse_percent(row.get("commission_rate"))
+                    conn.execute(
+                        """
+                        INSERT INTO Employees (brand_code, nick_name, full_name, hourly_rate, allowance,
+                                              commission_rate, salary_type)
+                        VALUES (?, ?, ?, ?, ?, ?, 'hourly')
+                        """,
+                        (brand_code, nick_name, full_name, hourly_rate, allowance, commission_rate),
+                    )
+                else:
+                    monthly_salary = _to_float(row.get("monthly_salary"), 0)
+                    allowance = _to_float(row.get("allowance"), 0)
+                    conn.execute(
+                        """
+                        INSERT INTO Employees (brand_code, nick_name, full_name, allowance,
+                                              monthly_salary, salary_type)
+                        VALUES (?, ?, ?, ?, ?, 'monthly')
+                        """,
+                        (brand_code, nick_name, full_name, allowance, monthly_salary),
+                    )
+                inserted += 1
+
+            # Upsert MonthlyRates for this month with remarks (and overrides for new employees)
+            if salary_type == "hourly":
+                hr_val = _to_float(row.get("hourly_rate"), 0) or None
+                comm_val = _parse_percent(row.get("commission_rate")) or None
+                conn.execute(
+                    """
+                    INSERT INTO MonthlyRates (brand_code, payroll_month, nick_name, hourly_rate, commission_rate, remarks)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                    ON CONFLICT(brand_code, payroll_month, nick_name) DO UPDATE SET
+                        hourly_rate = excluded.hourly_rate,
+                        commission_rate = excluded.commission_rate,
+                        remarks = excluded.remarks
+                    """,
+                    (brand_code, payroll_month, nick_name, hr_val, comm_val, remarks),
+                )
+            else:
+                ms_val = _to_float(row.get("monthly_salary"), 0) or None
+                conn.execute(
+                    """
+                    INSERT INTO MonthlyRates (brand_code, payroll_month, nick_name, monthly_salary, remarks)
+                    VALUES (?, ?, ?, ?, ?)
+                    ON CONFLICT(brand_code, payroll_month, nick_name) DO UPDATE SET
+                        monthly_salary = excluded.monthly_salary,
+                        remarks = excluded.remarks
+                    """,
+                    (brand_code, payroll_month, nick_name, ms_val, remarks),
+                )
+            updated_mr += 1
+
+        conn.commit()
+        try:
+            log_audit("bulk_import", "Employees", record_id=None,
+                      new_value={"salary_type": salary_type, "new_employees": inserted, "monthly_rate_rows": updated_mr},
+                      user=None, ip=request.remote_addr)
+        except Exception:
+            pass
+        flash(f"✅ 批量匯入完成：新增員工 {inserted} 位，更新 {payroll_month} 月薪資紀錄 {updated_mr} 筆。", "success")
+    except Exception as exc:
+        flash(f"❌ 批量匯入失敗：{str(exc)}", "danger")
+    finally:
+        conn.close()
+    return redirect(url_for("settings.employees", month=payroll_month, brand=brand_code))
 
 
 @bp.route("/manage_locations")

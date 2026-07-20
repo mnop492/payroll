@@ -52,6 +52,7 @@ def index():
         locations=context["locations"],
         products=context["products"],
         employees=context["employees"],
+        monthly_remarks_map=context["monthly_remarks_map"],
         month_input_source=context["month_input_source"],
         has_excel_history=context["has_excel_history"],
         index_page_data={

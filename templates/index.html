@@ -511,6 +511,7 @@
                     <th class="py-3 px-4 border-b border-slate-600">考勤狀態</th>
                     <th class="py-3 px-4 border-b border-slate-600">預估薪資</th>
                     <th class="py-3 px-4 border-b border-slate-600">結算狀態</th>
+                    <th class="py-3 px-4 border-b border-slate-600 text-yellow-400">備註</th>
                 </tr>
             </thead>
             <tbody>
@@ -582,6 +583,9 @@
                             </span>
                         {% endif %}
                     </td>
+                    <td class="px-3 py-3 text-xs text-yellow-300 max-w-[180px] whitespace-normal">
+                        {{ (monthly_remarks_map or {}).get(emp.nick_name) or '' }}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -596,20 +600,20 @@
 </div>
 {% endif %}
 
-<div class="fixed inset-0 z-50 items-start justify-center py-8 hidden modal overflow-y-auto" id="attendanceModal">
+<div class="fixed inset-0 z-50 items-start justify-center py-8 hidden modal overflow-hidden" id="attendanceModal">
   <div class="absolute inset-0 bg-black/40" onclick="closeModal(this)"></div>
-  <div class="relative bg-slate-800 rounded-2xl shadow-xl w-full max-w-6xl mx-4 z-10">
-    <div class="sticky top-0 z-20 px-5 py-3 bg-slate-900 rounded-t-2xl border-b border-slate-700 flex flex-wrap items-center justify-between gap-4">
-      <div class="flex items-center gap-3 flex-1">
+  <div class="attendance-modal-panel relative bg-slate-800 rounded-2xl shadow-xl w-full max-w-[96vw] 2xl:max-w-[1600px] mx-4 z-10">
+    <div class="sticky top-0 z-20 px-6 py-4 bg-slate-900 rounded-t-2xl border-b border-slate-700 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3 md:gap-4 flex-1">
         <span class="text-lg font-semibold text-slate-100 whitespace-nowrap">📅 編輯考勤明細</span>
-        <select id="att_modal_promoter" class="text-blue-300 bg-slate-800 px-3 py-1.5 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-40 text-sm font-bold" onchange="handleAttModalChange()">
+        <select id="att_modal_promoter" class="text-blue-300 bg-slate-800 px-3 py-2 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-44 text-sm font-bold" onchange="handleAttModalChange()">
           <option value="" data-hr="">-- 選擇推廣員 --</option>
           {% for emp in employees %}
           <option value="{{ emp.nick_name }}" data-hr="{{ emp.hourly_rate }}">{{ emp.nick_name }}</option>
           {% endfor %}
         </select>
         <span class="text-slate-500">📍</span>
-        <select id="att_modal_loc" class="text-slate-300 bg-slate-800 px-3 py-1.5 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-48 text-sm" onchange="handleAttModalChange()">
+        <select id="att_modal_loc" class="text-slate-300 bg-slate-800 px-3 py-2 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-52 text-sm" onchange="handleAttModalChange()">
           <option value="">-- 選擇地點 --</option>
           {% for loc in locations %}
           <option value="{{ loc.name }}">{{ loc.name }}</option>
@@ -618,123 +622,181 @@
       </div>
       <button class="text-slate-500 hover:text-slate-400 text-2xl leading-none" onclick="closeModal(this)">&times;</button>
     </div>
-    <div class="p-0">
-      <!-- 💡 考勤 Excel 貼上提示框 -->
-      <div class="mx-5 mt-4 mb-2 p-3 bg-blue-900/20 border border-blue-800/50 rounded-xl text-sm">
-        <div class="flex items-start gap-3">
-          <div class="text-xl leading-none mt-0.5">💡</div>
-          <div class="flex-1">
-            <strong class="text-blue-300 font-bold tracking-wide">支援 Excel 批次貼上！</strong>
-            <p class="mt-1 text-slate-400 text-xs">
-              點開下方選單，將 Excel 資料貼入文字框即可秒速新增。
-            </p>
-            <details class="mt-2 group">
-              <summary class="text-xs font-semibold text-blue-400 hover:text-blue-300 cursor-pointer select-none outline-none">
-                展開貼上區與格式要求 ▾
-              </summary>
-              <div class="mt-3 p-3 bg-slate-900/70 rounded-lg border border-slate-700">
-                <table class="w-full text-xs text-left text-slate-300 border-collapse mb-3 bg-slate-900/50 rounded-lg overflow-hidden">
-                  <thead>
-                    <tr class="border-b border-slate-700 text-slate-400">
-                      <th class="py-2 px-2">第1-3欄</th><th class="py-2 px-2">第4欄</th><th class="py-2 px-2 text-emerald-400">第5-6欄</th><th class="py-2 px-2">第7-8欄</th><th class="py-2 px-2 text-indigo-400">第9-10欄</th><th class="py-2 px-2 text-amber-200">第11欄</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td class="py-3 px-2 font-bold text-slate-200">Date<br>Nick Name<br>Location</td>
-                      <td class="py-3 px-2 text-slate-500">Name<br>(自動忽略)</td>
-                      <td class="py-3 px-2 font-bold text-emerald-400">In-Time<br>Out-Time<br><span class="text-[10px] text-slate-500">(實際)</span></td>
-                      <td class="py-3 px-2 text-slate-500">工時與OT<br>(自動忽略)</td>
-                      <td class="py-3 px-2 font-bold text-indigo-400">In-Time2<br>Out-Time2<br><span class="text-[10px] text-slate-500">(表定)</span></td>
-                      <td class="py-3 px-2 font-bold text-amber-200">Normal<br>working<br>hours</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <div class="flex flex-col sm:flex-row gap-2">
-                  <textarea id="att_bulk_paste" rows="2" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2 text-sm text-slate-300 focus:ring-2 focus:ring-blue-500 outline-none resize-y" placeholder="請直接將 Excel 整列資料複製貼在此處..."></textarea>
-                  <button type="button" class="shrink-0 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-4 py-2 rounded-lg transition-colors" onclick="processAttendancePaste()">⬇️ 解析並新增</button>
-                </div>
+    <!-- 💡 加入側邊欄微縮的專屬 CSS -->
+    <style>
+      @media (min-width: 1280px) {
+        .sidebar-calendar .attendance-calendar-grid { gap: 0.25rem; }
+        .sidebar-calendar .attendance-calendar-cell { min-height: 4.2rem; padding: 0.35rem; }
+        .sidebar-calendar .attendance-calendar-date { font-size: 0.75rem; margin-bottom: 2px; }
+        .sidebar-calendar .attendance-calendar-meta { font-size: 0.6rem; letter-spacing: -0.5px; }
+        .sidebar-calendar .attendance-calendar-badge { padding: 0.1rem 0.25rem; font-size: 0.5rem; transform: scale(0.9); transform-origin: left center; }
+        .sidebar-calendar .attendance-calendar-header { flex-direction: column; align-items: stretch; gap: 0.5rem; }
+      }
+    </style>
+
+    <div class="p-0 bg-slate-800 flex flex-col xl:flex-row items-stretch border-y border-slate-700">
+      
+      <!-- ================= 左側 Sidebar: 月曆狀態 ================= -->
+      <div class="w-full xl:w-[360px] 2xl:w-[400px] shrink-0 border-b xl:border-b-0 xl:border-r border-slate-700 bg-slate-900/40 p-4 lg:p-5 flex flex-col overflow-y-auto max-h-[75vh] sidebar-calendar">
+          
+          <div class="flex items-center justify-between mb-3">
+              <div>
+                  <div class="text-sm font-bold text-slate-100">🗓️ 月曆考勤狀態</div>
+                  <div id="attendance_calendar_hint" class="text-[11px] text-slate-400 mt-1">請選擇推廣員與地點。</div>
               </div>
-            </details>
+              <!-- 保留手機版的摺疊按鈕，桌機版常駐展開 -->
+              <button type="button" class="xl:hidden shrink-0 text-slate-400 hover:text-slate-200 transition-colors" onclick="toggleAttendanceCalendar()" id="attendanceCalendarToggle">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+              </button>
           </div>
-        </div>
-      </div>
-      <!-- 提示框結束 -->
-      <!-- 提示框結束 -->
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm border-collapse">
-          <thead class="sticky top-0 z-10">
-            <tr class="bg-slate-900 border-y border-slate-700 text-sm font-semibold text-slate-500 uppercase tracking-wider text-center">
-              <th class="px-2 py-3 border-b border-slate-600 w-[6%]">ID</th>
-              <th class="px-2 py-3 border-b border-slate-600 w-[10%]">日期</th>
-              <th class="px-2 py-3 border-b border-slate-600 w-[14%]">地點</th>
-              <th class="px-2 py-3 border-b border-slate-600 w-[10%] text-indigo-300">表定班表</th>
-              <th class="px-2 py-3 border-b border-slate-600 w-[10%] text-emerald-300">實際簽到退</th>
-              <th class="px-2 py-3 border-b border-slate-600 w-[8%]">常規</th>
-              <th class="px-2 py-3 border-b border-slate-600 w-[8%]">實際</th>
-              <th class="px-2 py-3 border-b border-slate-600 w-[8%]">OT</th>
-              <th class="px-2 py-3 border-b border-slate-600 w-[10%]">操作</th>
-            </tr>
-          </thead>
-          <tbody id="daily_records_body"><tr><td colspan="9" class="text-center text-slate-500 py-6">尚無紀錄。</td></tr></tbody>
-          <tfoot>
-            <tr class="bg-blue-900/20">
-              <td></td>
-              <td class="px-1 py-1.5 align-middle"><input type="date" id="new_date" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></td>
-              <td class="px-1 py-1.5 align-middle"><input type="text" id="new_loc" class="w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg bg-slate-700 text-slate-500" readonly></td>
-              <td class="px-1 py-1.5 align-middle">
-                  <div class="space-y-1">
-                      <input type="time" id="new_roster_in" class="text-indigo-200 bg-indigo-900/30 w-full px-2 py-1 text-xs border border-indigo-800/50 rounded focus:ring-1 focus:ring-indigo-500 outline-none" title="表定上班">
-                      <input type="time" id="new_roster_out" class="text-indigo-200 bg-indigo-900/30 w-full px-2 py-1 text-xs border border-indigo-800/50 rounded focus:ring-1 focus:ring-indigo-500 outline-none" title="表定下班">
+
+          <div class="flex flex-wrap items-center gap-1.5 text-[10px] mb-4 border-b border-slate-700/50 pb-3">
+              <span class="attendance-legend-chip attendance-legend-duty py-0.5 px-1.5">On Duty</span>
+              <span class="attendance-legend-chip attendance-legend-late py-0.5 px-1.5">遲到</span>
+              <span class="attendance-legend-chip attendance-legend-early py-0.5 px-1.5">早退</span>
+              <span class="attendance-legend-chip attendance-legend-ot py-0.5 px-1.5">OT</span>
+              <span class="attendance-legend-chip attendance-legend-pending py-0.5 px-1.5">待儲存</span>
+          </div>
+
+          <div id="attendanceCalendarContent" class="attendance-calendar-content collapsed xl:!max-h-none xl:!opacity-100 flex-1 flex flex-col">
+              <div class="flex flex-col gap-2 mb-3">
+                  <div class="flex items-center gap-2">
+                      <span id="attendance_calendar_month" class="text-sm font-bold text-slate-200">{{ current_month }}</span>
+                      <span id="attendance_selected_dates" class="text-[11px] text-slate-400 font-medium">未選取日期</span>
                   </div>
-              </td>
-              <td class="px-1 py-1.5 align-middle">
-                  <div class="space-y-1">
-                      <input type="time" id="new_in" class="text-emerald-200 bg-emerald-900/30 w-full px-2 py-1 text-xs border border-emerald-800/50 rounded focus:ring-1 focus:ring-emerald-500 outline-none" value="12:00">
-                      <input type="time" id="new_out" class="text-emerald-200 bg-emerald-900/30 w-full px-2 py-1 text-xs border border-emerald-800/50 rounded focus:ring-1 focus:ring-emerald-500 outline-none" value="20:00">
+                  <div class="flex items-center gap-2">
+                      <button type="button" class="flex-1 py-1.5 text-[11px] font-semibold text-cyan-200 bg-cyan-900/40 border border-cyan-800/50 rounded-lg hover:bg-cyan-800/40 transition-colors" onclick="applyAttendanceSelectionBulk()">批量套用(自下方)</button>
+                      <button type="button" class="px-2 py-1.5 text-[11px] font-semibold text-slate-300 border border-slate-600 rounded-lg hover:bg-slate-800 transition-colors" onclick="clearAttendanceCalendarSelection()">清除</button>
                   </div>
-              </td>
-              <td class="px-1 py-1.5 align-middle"><input type="number" step="0.5" id="new_normal" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" value="8.0"></td>
-              <td colspan="3" class="px-1 py-1.5 align-middle"><button class="w-full px-2 py-1.5 text-sm font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors" onclick="addNewRecordFromUI()">➕ 新增紀錄</button></td>
-            </tr>
-          </tfoot>
-        </table>
+              </div>
+              
+              <div class="attendance-calendar-weekdays grid grid-cols-7 gap-1 mb-1.5 text-[10px] uppercase tracking-wider text-slate-500">
+                  <div class="text-center">Sun</div><div class="text-center">Mon</div><div class="text-center">Tue</div><div class="text-center">Wed</div><div class="text-center">Thu</div><div class="text-center">Fri</div><div class="text-center">Sat</div>
+              </div>
+              <div id="attendance_calendar_grid" class="attendance-calendar-grid grid grid-cols-7 gap-2">
+                  <div class="col-span-7 py-8 text-center text-sm text-slate-500">請先選擇推廣員與地點以載入月曆。</div>
+              </div>
+          </div>
       </div>
-      <div class="p-4 bg-slate-900 border-t border-slate-700">
-        <h6 class="font-bold text-sm mb-3">💰 月結微調項目 (Monthly Adjustment)</h6>
-        <form id="adjustmentForm" action="/update_attendance" method="POST">
-          <input type="hidden" name="calc_month" value="{{ current_month }}">
-          <input type="hidden" name="nick_name" id="att_name_hidden">
-          <input type="hidden" name="location" id="att_loc_hidden">
-          <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
-            <div>
-              <label class="block text-sm font-bold text-cyan-300 mb-1">本月專屬時薪</label>
-              <div class="flex"><span class="inline-flex items-center px-2 bg-slate-700 border border-r-0 border-slate-600 rounded-l-lg text-sm">$</span><input type="number" step="0.1" name="monthly_hourly_rate" id="att_monthly_hr" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-r-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
-              <div class="text-sm text-slate-500 mt-1" id="att_hr_hint"></div>
-            </div>
-            <div>
-              <label class="block text-sm font-bold text-purple-300 mb-1">本月專屬月薪</label>
-              <div class="flex"><span class="inline-flex items-center px-2 bg-slate-700 border border-r-0 border-slate-600 rounded-l-lg text-sm">$</span><input type="number" step="1" name="monthly_salary_override" id="att_monthly_salary" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-r-lg focus:ring-2 focus:ring-purple-500 outline-none"></div>
-              <div class="text-sm text-slate-500 mt-1" id="att_salary_hint"></div>
-            </div>
-            <div>
-              <label class="block text-sm font-bold text-slate-200 mb-1">實報實銷</label>
-              <div class="flex"><span class="inline-flex items-center px-2 bg-slate-700 border border-r-0 border-slate-600 rounded-l-lg text-sm">$</span><input type="number" step="0.1" name="expenses" id="att_exp" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-r-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
-            </div>
-            <div>
-              <label class="block text-sm font-bold text-slate-200 mb-1">勤工獎</label>
-              <div class="flex"><span class="inline-flex items-center px-2 bg-slate-700 border border-r-0 border-slate-600 rounded-l-lg text-sm">$</span><input type="number" step="0.1" name="attendance_bonus" id="att_bonus" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-r-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
-            </div>
-            <div>
-              <label class="block text-sm font-bold text-slate-200 mb-1">其他調整</label>
-              <div class="flex"><span class="inline-flex items-center px-2 bg-slate-700 border border-r-0 border-slate-600 rounded-l-lg text-sm">$</span><input type="number" step="0.1" name="adjustment" id="att_adj" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-sm border border-slate-600 rounded-r-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
-            </div>
+
+      <!-- ================= 右側 Main: 提示、表格與微調 ================= -->
+      <div class="w-full flex-1 flex flex-col min-w-0 bg-slate-800">
+          
+          <!-- 💡 考勤 Excel 貼上提示框 -->
+          <div class="m-4 mb-3 p-4 bg-blue-900/20 border border-blue-800/50 rounded-2xl text-sm shrink-0">
+              <div class="flex items-start gap-3">
+                  <div class="text-xl leading-none mt-0.5">💡</div>
+                  <div class="flex-1">
+                      <strong class="text-blue-300 font-bold tracking-wide">支援 Excel 批次貼上！</strong>
+                      <p class="mt-1 text-slate-400 text-xs">點開下方選單，將 Excel 資料貼入文字框即可秒速新增。</p>
+                      <details class="mt-2 group">
+                          <summary class="text-xs font-semibold text-blue-400 hover:text-blue-300 cursor-pointer select-none outline-none">
+                              展開貼上區與格式要求 ▾
+                          </summary>
+                          <div class="mt-3 p-3 bg-slate-900/70 rounded-xl border border-slate-700">
+                              <table class="w-full text-[11px] text-left text-slate-300 border-collapse mb-3 bg-slate-900/50 rounded-lg overflow-hidden">
+                                <thead>
+                                  <tr class="border-b border-slate-700 text-slate-400">
+                                    <th class="py-1.5 px-2">第1-3欄</th><th class="py-1.5 px-2">第4欄</th><th class="py-1.5 px-2 text-emerald-400">第5-6欄</th><th class="py-1.5 px-2">第7-8欄</th><th class="py-1.5 px-2 text-indigo-400">第9-10欄</th><th class="py-1.5 px-2 text-amber-200">第11欄</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td class="py-2 px-2 font-bold text-slate-200">Date<br>Nick Name<br>Location</td>
+                                    <td class="py-2 px-2 text-slate-500">Name<br>(忽略)</td>
+                                    <td class="py-2 px-2 font-bold text-emerald-400">In-Time<br>Out-Time<br><span class="text-[9px] text-slate-500">(實際)</span></td>
+                                    <td class="py-2 px-2 text-slate-500">工時與OT<br>(忽略)</td>
+                                    <td class="py-2 px-2 font-bold text-indigo-400">In-Time2<br>Out-Time2<br><span class="text-[9px] text-slate-500">(表定)</span></td>
+                                    <td class="py-2 px-2 font-bold text-amber-200">Normal<br>hours</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              <div class="flex flex-col sm:flex-row gap-2 items-stretch sm:items-end">
+                                  <textarea id="att_bulk_paste" rows="2" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2 text-xs text-slate-300 focus:ring-2 focus:ring-blue-500 outline-none resize-y" placeholder="請直接將 Excel 整列資料複製貼在此處..."></textarea>
+                                  <button type="button" class="shrink-0 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors" onclick="processAttendancePaste()">⬇️ 解析並新增</button>
+                              </div>
+                          </div>
+                      </details>
+                  </div>
+              </div>
           </div>
-          <div class="mt-3 flex items-center justify-between">
-            <span class="text-sm text-slate-500">時薪或月薪若留空，系統將自動使用員工主檔的預設金額。</span>
-            <button type="submit" class="px-4 py-2 text-sm font-bold text-amber-200 bg-amber-900/40 rounded-xl hover:bg-amber-800/40 transition-colors">儲存月結微調與薪資</button>
+
+          <!-- 考勤明細表格 (自動產生捲軸) -->
+          <div class="overflow-x-auto overflow-y-auto flex-1 border-t border-slate-700 min-h-[250px] max-h-[50vh]">
+              <table class="attendance-modal-table w-full text-sm border-collapse relative">
+                  <thead class="sticky top-0 z-10">
+                      <tr class="bg-slate-900 border-b border-slate-700 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center">
+                          <th class="px-2 py-2 border-r border-slate-700 w-[6%]">ID</th>
+                          <th class="px-2 py-2 border-r border-slate-700 w-[10%]">日期</th>
+                          <th class="px-2 py-2 border-r border-slate-700 w-[12%]">地點</th>
+                          <th class="px-2 py-2 border-r border-slate-700 w-[11%] text-indigo-300">表定班表</th>
+                          <th class="px-2 py-2 border-r border-slate-700 w-[11%] text-emerald-300">實際簽到退</th>
+                          <th class="px-2 py-2 border-r border-slate-700 w-[8%]">常規</th>
+                          <th class="px-2 py-2 border-r border-slate-700 w-[8%]">實際</th>
+                          <th class="px-2 py-2 border-r border-slate-700 w-[8%]">OT</th>
+                          <th class="px-2 py-2 w-[10%]">操作</th>
+                      </tr>
+                      <tr class="bg-blue-900/20 border-b border-blue-800/30">
+                          <td class="border-r border-blue-800/30"></td>
+                          <td class="px-1 py-1.5 align-middle border-r border-blue-800/30"><input type="date" id="new_date" class="text-slate-200 bg-slate-800 w-full px-1.5 py-1 text-xs border border-slate-600 rounded focus:ring-2 focus:ring-blue-500 outline-none"></td>
+                          <td class="px-1 py-1.5 align-middle border-r border-blue-800/30"><input type="text" id="new_loc" class="w-full px-1.5 py-1 text-xs border border-slate-600 rounded bg-slate-700 text-slate-500" readonly></td>
+                          <td class="px-1 py-1.5 align-middle border-r border-blue-800/30">
+                              <div class="space-y-1">
+                                  <input type="time" id="new_roster_in" class="text-indigo-200 bg-indigo-900/30 w-full px-1.5 py-1 text-xs border border-indigo-800/50 rounded focus:ring-1 focus:ring-indigo-500 outline-none" value="12:00">
+                                  <input type="time" id="new_roster_out" class="text-indigo-200 bg-indigo-900/30 w-full px-1.5 py-1 text-xs border border-indigo-800/50 rounded focus:ring-1 focus:ring-indigo-500 outline-none" value="20:00">
+                              </div>
+                          </td>
+                          <td class="px-1 py-1.5 align-middle border-r border-blue-800/30">
+                              <div class="space-y-1">
+                                  <input type="time" id="new_in" class="text-emerald-200 bg-emerald-900/30 w-full px-1.5 py-1 text-xs border border-emerald-800/50 rounded focus:ring-1 focus:ring-emerald-500 outline-none" value="12:00">
+                                  <input type="time" id="new_out" class="text-emerald-200 bg-emerald-900/30 w-full px-1.5 py-1 text-xs border border-emerald-800/50 rounded focus:ring-1 focus:ring-emerald-500 outline-none" value="20:00">
+                              </div>
+                          </td>
+                          <td class="px-1 py-1.5 align-middle border-r border-blue-800/30"><input type="number" step="0.5" id="new_normal" class="text-slate-200 bg-slate-800 w-full px-1.5 py-1 text-xs border border-slate-600 rounded focus:ring-2 focus:ring-blue-500 outline-none" value="8.0"></td>
+                          <td colspan="3" class="px-1 py-1.5 align-middle"><button class="w-full px-2 py-1.5 text-xs font-bold text-white bg-green-600 rounded hover:bg-green-700 transition-colors" onclick="addNewRecordFromUI()">➕ 新增紀錄</button></td>
+                      </tr>
+                  </thead>
+                  <tbody id="daily_records_body"><tr><td colspan="9" class="text-center text-slate-500 py-6">尚無紀錄。</td></tr></tbody>
+              </table>
           </div>
-        </form>
+
+          <!-- 💰 月結微調項目 -->
+          <div class="attendance-adjustment-section p-4 bg-slate-900 border-t border-slate-700 shrink-0">
+              <h6 class="font-bold text-sm mb-3">💰 月結微調項目 (Monthly Adjustment)</h6>
+              <form id="adjustmentForm" action="/update_attendance" method="POST">
+                  <input type="hidden" name="calc_month" value="{{ current_month }}">
+                  <input type="hidden" name="nick_name" id="att_name_hidden">
+                  <input type="hidden" name="location" id="att_loc_hidden">
+                  <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                      <div>
+                          <label class="block text-xs font-bold text-cyan-300 mb-1">本月專屬時薪</label>
+                          <div class="flex"><span class="inline-flex items-center px-2 bg-slate-700 border border-r-0 border-slate-600 rounded-l-lg text-xs">$</span><input type="number" step="0.1" name="monthly_hourly_rate" id="att_monthly_hr" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-xs border border-slate-600 rounded-r-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                          <div class="text-[10px] text-slate-500 mt-1" id="att_hr_hint"></div>
+                      </div>
+                      <div>
+                          <label class="block text-xs font-bold text-purple-300 mb-1">本月專屬月薪</label>
+                          <div class="flex"><span class="inline-flex items-center px-2 bg-slate-700 border border-r-0 border-slate-600 rounded-l-lg text-xs">$</span><input type="number" step="1" name="monthly_salary_override" id="att_monthly_salary" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-xs border border-slate-600 rounded-r-lg focus:ring-2 focus:ring-purple-500 outline-none"></div>
+                          <div class="text-[10px] text-slate-500 mt-1" id="att_salary_hint"></div>
+                      </div>
+                      <div>
+                          <label class="block text-xs font-bold text-slate-200 mb-1">實報實銷</label>
+                          <div class="flex"><span class="inline-flex items-center px-2 bg-slate-700 border border-r-0 border-slate-600 rounded-l-lg text-xs">$</span><input type="number" step="0.1" name="expenses" id="att_exp" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-xs border border-slate-600 rounded-r-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                      </div>
+                      <div>
+                          <label class="block text-xs font-bold text-slate-200 mb-1">勤工獎</label>
+                          <div class="flex"><span class="inline-flex items-center px-2 bg-slate-700 border border-r-0 border-slate-600 rounded-l-lg text-xs">$</span><input type="number" step="0.1" name="attendance_bonus" id="att_bonus" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-xs border border-slate-600 rounded-r-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                      </div>
+                      <div>
+                          <label class="block text-xs font-bold text-slate-200 mb-1">其他調整</label>
+                          <div class="flex"><span class="inline-flex items-center px-2 bg-slate-700 border border-r-0 border-slate-600 rounded-l-lg text-xs">$</span><input type="number" step="0.1" name="adjustment" id="att_adj" class="text-slate-200 bg-slate-800 w-full px-2 py-1.5 text-xs border border-slate-600 rounded-r-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                      </div>
+                  </div>
+                  <div class="mt-3 flex items-center justify-between">
+                      <span class="text-[11px] text-slate-500">時/月薪若留空將使用預設設定。</span>
+                      <button type="submit" class="px-3 py-1.5 text-xs font-bold text-amber-200 bg-amber-900/40 rounded-lg hover:bg-amber-800/40 transition-colors">儲存微調設定</button>
+                  </div>
+              </form>
+          </div>
       </div>
     </div>
     <div class="px-5 py-3 bg-slate-700 flex items-center justify-between rounded-b-2xl">
@@ -941,6 +1003,32 @@
 
 {# 新增銷售 Modal #}
 <script id="index-page-data" type="application/json">{{ index_page_data | tojson }}</script>
+
+<script id="att-loc-map" type="application/json">
+{% set att_map = {} %}
+{% for att in attendances %}
+    {% set locs = att.location.split("、") if att.location else [] %}
+    {% set _ = att_map.setdefault(att.nick_name, []) %}
+    {% for l in locs %}
+        {% if l not in att_map[att.nick_name] %}
+            {% set _ = att_map[att.nick_name].append(l) %}
+        {% endif %}
+    {% endfor %}
+{% endfor %}
+{{ att_map | tojson }}
+</script>
+
+<script id="sales-loc-map" type="application/json">
+{% set sales_map = {} %}
+{% for staff in staff_summary %}
+    {% set _ = sales_map.setdefault(staff.name, []) %}
+    {% if staff.main_location not in sales_map[staff.name] %}
+        {% set _ = sales_map[staff.name].append(staff.main_location) %}
+    {% endif %}
+{% endfor %}
+{{ sales_map | tojson }}
+</script>
+
 <script id="brand-list-data" type="application/json">{{ available_brands | tojson }}</script>
 <script src="{{ url_for('static', filename='index.js') }}"></script>
 <script>
