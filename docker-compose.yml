@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  payroll-app:
+    build: .
+    container_name: sharpsing_payroll
+    restart: unless-stopped
+    ports:
+      - "5001:5001"
+    volumes:
+      # 將資料庫檔案與實體機綁定 (注意：實體機上需先有一個 payroll.db 檔案，否則 Docker 會誤建為資料夾)
+      - ./payroll.db:/app/payroll.db
+      # 將 API 設定檔掛載出來方便隨時修改
+      - ./external_api_config.json:/app/external_api_config.json
+      # 掛載各個持久化資料夾
+      - ./history:/app/history
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+      - ./backups:/app/backups
+    environment:
+      # 可以在這裡傳入你在 app_config.py 中設定的環境變數
+      - PAYROLL_SESSION_COOKIE_SECURE=0
+      - PAYROLL_TRUST_PROXY_HEADERS=1
+      # - EXTERNAL_API_BASE_URL=http://your-api-server:5000
