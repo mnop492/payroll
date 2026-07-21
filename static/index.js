@@ -580,6 +580,11 @@ function editAttendance(name, loc, days, hours, ot, exp, adj, bonus, monthly_hr,
     // 💡 觸發推廣員排序
     const attMap = getLocMap('att-loc-map');
     const activeAttPromoters = Array.from(new Set([...Object.keys(attMap), ...pendingAttendanceRows.map(r => r.nick_name)]));
+    
+    // 🌟 補上這行：強制將下拉選單的值設定為選中的推廣員
+    const promoterSelect = document.getElementById('att_modal_promoter');
+    if (promoterSelect) promoterSelect.value = name;
+    
     reorderPromoterDropdown('att_modal_promoter', activeAttPromoters);
 
     document.getElementById('att_modal_loc').value = loc;
@@ -698,6 +703,11 @@ function openSalesModal(name, location, monthlyComm, defaultComm) {
     // 💡 觸發銷售推廣員排序
     const salesMap = getLocMap('sales-loc-map');
     const activeSalesPromoters = Array.from(new Set([...Object.keys(salesMap), ...pendingSalesRows.map(r => r.promoter_name)]));
+    
+    // 🌟 補上這行：強制將下拉選單的值設定為選中的推廣員
+    const salesPromoterSelect = document.getElementById('sales_modal_promoter');
+    if (salesPromoterSelect) salesPromoterSelect.value = name;
+
     reorderPromoterDropdown('sales_modal_promoter', activeSalesPromoters);
 
     document.getElementById('sales_modal_loc').value = location;
