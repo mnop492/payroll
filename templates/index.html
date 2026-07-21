@@ -131,7 +131,7 @@
 
     {# === 薪資結算工作流 === #}
     <div class="bg-slate-800 rounded-xl shadow-sm border border-slate-700 overflow-hidden mb-6" id="payroll-workflow-panel">
-
+        
         {# --- State A: 無數據 --- #}
         {% if not attendances and not staff_summary %}
         <div class="px-6 py-5 border-b border-slate-700 flex flex-wrap items-center justify-between gap-3">
@@ -139,19 +139,21 @@
                 <h3 class="text-lg font-semibold text-slate-100">
                     <svg class="w-5 h-5 inline-block text-slate-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     薪資結算
-                </h3>
+                </h3>                
             </div>
         </div>
         <div class="p-6">
             <p class="text-sm text-slate-500 mb-6">本月尚無任何考勤或銷售數據，請先選擇一種方式建立資料。</p>
-
+            
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+                
                 <!-- Excel 匯入路徑 -->
                 <div class="border border-slate-700 rounded-lg p-5 hover:border-slate-600 transition-colors">
                     <div class="flex items-center gap-2 mb-3">
                         <svg class="w-5 h-5 text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                         <span class="font-semibold text-slate-100 text-sm">Excel 匯入</span>
                     </div>
+                    
                     <p class="text-sm text-slate-500 mb-4">上傳 Excel 檔案，系統自動解析考勤與銷售數據</p>
                     <form action="/upload_and_import" method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="calc_month" value="{{ current_month }}">
@@ -171,6 +173,14 @@
                             匯入並開始結算
                         </button>
                     </form>
+                    <!-- 🌟 加在這裡：讓 User 在上傳前，可以先下載最新的動態模板 -->
+                    <div class="mt-3 border-t border-slate-700 pt-3">
+                        <a href="/download_standard_template?month={{ current_month }}&brand={{ current_brand }}" 
+                        class="w-full flex items-center justify-center gap-2 text-sm text-green-400 border border-green-800/50 rounded-lg py-2 hover:bg-green-900/30 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        下載本月空白智慧模板 (含聯動公式)
+                        </a>
+                    </div>
                 </div>
 
                 <!-- 網頁輸入路徑 -->
@@ -230,7 +240,7 @@
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm py-2.5 px-6 rounded-lg shadow-sm transition">
                     進行薪資結算
                 </button>
-            </form>
+            </form>        
         </div>
 
         <div class="p-6">
@@ -260,6 +270,9 @@
                         <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
                         <span class="text-sm font-medium text-slate-200">重新上傳 Excel 覆蓋本月資料</span>
                     </div>
+                    <a href="/download_standard_template?month={{ current_month }}&brand={{ current_brand }}" class="text-xs font-semibold text-green-400 bg-green-900/20 hover:bg-green-900/40 border border-green-800/50 px-3 py-1.5 rounded-md transition-colors flex items-center gap-1">
+                        📥 匯出當前數據為 Excel 模板
+                    </a>
                     <form action="/upload_and_import" method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="calc_month" value="{{ current_month }}">
                         <input type="hidden" name="brand" value="{{ current_brand }}">

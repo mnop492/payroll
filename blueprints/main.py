@@ -6,6 +6,7 @@ import pandas as pd
 from flask import Blueprint, flash, redirect, render_template, request, send_file, session, url_for
 
 from app_config import DEFAULT_BRAND_CODE, HISTORY_FOLDER
+from exporter import generate_standard_template
 from importer import dispatch_import, sync_toshiba_from_api, validate_import_brand, validate_import_month
 from payroll_engine import process_payroll_from_db
 from repository import fetch_index_context, get_brand_name, set_month_input_source
@@ -427,3 +428,21 @@ def logout():
     session.clear()
     flash("已登出", "info")
     return redirect(url_for("main.index"))
+
+
+# 貼在 main.py 裡面
+@bp.route("/download_standard_template")
+def download_standard_template():
+    calc_month = request.args.get("month", pd.Timestamp.now().strftime("%Y-%m"))
+    brand_code = resolve_brand_code(request.args.get("brand"))
+    
+    # 呼叫剛才寫的函數
+    filepath = generate_standard_template(calc_month, brand_code=brand_code)
+    
+    filename = os.path.basename(filepath)
+    return send_file(
+        filepath,
+        as_attachment=True,
+        download_name=filename,
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
