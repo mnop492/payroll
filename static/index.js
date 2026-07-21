@@ -95,6 +95,45 @@ function reorderLocationDropdown(selectId, activeLocs) {
 
     sel.value = currentVal; // 恢復選擇
 }
+
+// ── 智慧推廣員排序工具 ──
+function reorderPromoterDropdown(selectId, activePromoters) {
+    const sel = document.getElementById(selectId);
+    if (!sel) return;
+
+    const currentVal = sel.value; // 記住當前選擇
+    const options = Array.from(sel.options).slice(1); // 排除第一個 "-- 選擇推廣員 --"
+
+    const activeOptions = [];
+    const inactiveOptions = [];
+
+    options.forEach(opt => {
+        // 先還原最純淨的文字與樣式
+        let pureVal = opt.value;
+        opt.text = pureVal;
+        
+        if (activePromoters.includes(pureVal)) {
+            opt.text = '⭐ ' + pureVal;
+            opt.style.backgroundColor = '#1e293b'; // 深色背景
+            opt.style.color = '#fbbf24';           // 琥珀亮黃字體
+            opt.style.fontWeight = 'bold';
+            activeOptions.push(opt);
+        } else {
+            opt.style.backgroundColor = '';
+            opt.style.color = '';
+            opt.style.fontWeight = '';
+            inactiveOptions.push(opt);
+        }
+    });
+
+    // 清空並依序塞回：Placeholder -> 活躍推廣員 -> 其他推廣員
+    sel.options.length = 1;
+    activeOptions.forEach(opt => sel.add(opt));
+    inactiveOptions.forEach(opt => sel.add(opt));
+
+    sel.value = currentVal; // 恢復選擇
+}
+
 let currentAttendanceRecords = [];
 let selectedAttendanceDates = new Set();
 let isAttendanceCalendarCollapsed = true;
@@ -136,6 +175,46 @@ function parseTimeToMinutes(value) {
     const match = String(value).match(/^(\d{1,2}):(\d{2})/);
     if (!match) return null;
     return parseInt(match[1], 10) * 60 + parseInt(match[2], 10);
+}
+
+// ── 自動計算常規工時 (支援跨夜) ──
+function calculateHoursDiff(inTime, outTime) {
+    if (!inTime || !outTime) return 0;
+    const inMins = parseTimeToMinutes(inTime);
+    const outMins = parseTimeToMinutes(outTime);
+    if (inMins === null || outMins === null) return 0;
+    
+    let diff = outMins - inMins;
+    if (diff < 0) diff += 24 * 60; // 處理跨夜 (例如 22:00 ~ 06:00)
+    return diff / 60;
+}
+
+// 供「新增紀錄」頂部輸入框使用
+function updateNewNormalHours() {
+    const inTime = document.getElementById('new_roster_in').value;
+    const outTime = document.getElementById('new_roster_out').value;
+    const normalInput = document.getElementById('new_normal');
+    if (normalInput) {
+        normalInput.textContent = calculateHoursDiff(inTime, outTime).toFixed(1);
+    }
+}
+
+// 供「歷史紀錄」與「待儲存紀錄」列使用
+function updateRowNormalHours(el) {
+    const tr = el.closest('tr');
+    // 判斷是歷史紀錄列還是待儲存列
+    const isPending = tr.classList.contains('bg-amber-900/40');
+    const inSelector = isPending ? '.pending-roster-in' : '.edit-roster-in';
+    const outSelector = isPending ? '.pending-roster-out' : '.edit-roster-out';
+    const normalSelector = isPending ? '.pending-normal' : '.edit-normal-hours';
+    
+    const inTime = tr.querySelector(inSelector).value;
+    const outTime = tr.querySelector(outSelector).value;
+    const normalInput = tr.querySelector(normalSelector);
+    
+    if (normalInput) {
+        normalInput.textContent = calculateHoursDiff(inTime, outTime).toFixed(1);
+    }
 }
 
 function getAttendanceStatus(record) {
@@ -184,9 +263,19 @@ function updateAttendanceCalendarSummary() {
 }
 
 function clearAttendanceCalendarSelection() {
+    const name = getActiveAttName();
+    const location = getActiveAttLoc();
+    
+    // 將畫面上選取的日期中，屬於「待儲存」的紀錄全部清空
+    if (name && location) {
+        pendingAttendanceRows = pendingAttendanceRows.filter(r => !(r.nick_name === name && r.location === location && selectedAttendanceDates.has(r.work_date)));
+    }
+    
     selectedAttendanceDates.clear();
     updateAttendanceCalendarSummary();
     renderAttendanceCalendar(getActiveAttName(), getActiveAttLoc(), currentAttendanceRecords);
+    refreshDailyTable(name, location);
+    updateSaveAllButtons();
 }
 
 function focusAttendanceRowByDate(workDate) {
@@ -198,88 +287,64 @@ function focusAttendanceRowByDate(workDate) {
     window.setTimeout(() => row.classList.remove('attendance-row-focus'), 1800);
 }
 
+// ── 點擊月曆：即時新增/移除待儲存紀錄 ──
 function toggleAttendanceCalendarDate(workDate) {
     if (!workDate) return;
-    if (selectedAttendanceDates.has(workDate)) selectedAttendanceDates.delete(workDate);
-    else selectedAttendanceDates.add(workDate);
-
-    const dateInput = document.getElementById('new_date');
-    if (dateInput) dateInput.value = workDate;
-
-    if (getExistingAttendanceRecord(workDate)) {
-        focusAttendanceRowByDate(workDate);
-    }
-
-    updateAttendanceCalendarSummary();
-    renderAttendanceCalendar(getActiveAttName(), getActiveAttLoc(), currentAttendanceRecords);
-}
-
-function applyAttendanceSelectionBulk() {
     const name = getActiveAttName();
     const location = getActiveAttLoc();
+    
     if (!name || !location) {
-        alert('請先選擇推廣員與地點。');
-        return;
-    }
-    if (selectedAttendanceDates.size === 0) {
-        alert('請先在月曆中選擇日期。');
+        alert('請先在上方選擇推廣員與地點。');
         return;
     }
 
-    const inInput = document.getElementById('new_in').value;
-    const outInput = document.getElementById('new_out').value;
-    const normalInput = parseFloat(document.getElementById('new_normal').value || 8.0);
-    const rosterIn = document.getElementById('new_roster_in') ? document.getElementById('new_roster_in').value : '';
-    const rosterOut = document.getElementById('new_roster_out') ? document.getElementById('new_roster_out').value : '';
+    const existing = getExistingAttendanceRecord(workDate);
 
-    if (!inInput || !outInput) {
-        alert('請先填好下方新增列的實際簽到與簽退時間。');
-        return;
-    }
+    if (selectedAttendanceDates.has(workDate)) {
+        // 1. 取消選取
+        selectedAttendanceDates.delete(workDate);
+        
+        // 如果該日是一筆「待儲存」紀錄，將它從暫存陣列中刪除
+        if (!existing) {
+            pendingAttendanceRows = pendingAttendanceRows.filter(r => !(r.nick_name === name && r.location === location && r.work_date === workDate));
+        }
+    } else {
+        // 2. 加入選取
+        selectedAttendanceDates.add(workDate);
+        
+        // 更新頂部的日期輸入框
+        const dateInput = document.getElementById('new_date');
+        if (dateInput) dateInput.value = workDate;
 
-    let createdCount = 0;
-    let updatedPendingCount = 0;
-    let skippedExistingCount = 0;
-
-    Array.from(selectedAttendanceDates).sort().forEach(workDate => {
-        const existing = getExistingAttendanceRecord(workDate);
         if (existing) {
-            skippedExistingCount++;
-            return;
+            // 如果資料庫已經有這筆紀錄了，只做畫面滾動提示
+            focusAttendanceRowByDate(workDate);
+        } else {
+            // 💡 魔法發生處：即時抓取頂部預設時間，建立一筆待儲存紀錄
+            const rosterIn = document.getElementById('new_roster_in') ? document.getElementById('new_roster_in').value : '12:00';
+            const rosterOut = document.getElementById('new_roster_out') ? document.getElementById('new_roster_out').value : '20:00';
+            const inInput = document.getElementById('new_in').value || '12:00';
+            const outInput = document.getElementById('new_out').value || '20:00';
+            const normalInput = document.getElementById('new_normal').textContent || 8.0;
+
+            pendingAttendanceRows.push({
+                nick_name: name,
+                work_date: workDate,
+                location: location,
+                roster_in: rosterIn,
+                roster_out: rosterOut,
+                in_time: inInput,
+                out_time: outInput,
+                normal_hours: parseFloat(normalInput),
+            });
         }
+    }
 
-        const pending = getPendingAttendanceRow(name, location, workDate);
-        if (pending) {
-            pending.roster_in = rosterIn || undefined;
-            pending.roster_out = rosterOut || undefined;
-            pending.in_time = inInput;
-            pending.out_time = outInput;
-            pending.normal_hours = normalInput;
-            updatedPendingCount++;
-            return;
-        }
-
-        pendingAttendanceRows.push({
-            nick_name: name,
-            work_date: workDate,
-            location: location,
-            roster_in: rosterIn || undefined,
-            roster_out: rosterOut || undefined,
-            in_time: inInput,
-            out_time: outInput,
-            normal_hours: normalInput,
-        });
-        createdCount++;
-    });
-
+    // 3. 同步更新日曆與右側的資料表格
+    updateAttendanceCalendarSummary();
+    renderAttendanceCalendar(name, location, currentAttendanceRecords);
     refreshDailyTable(name, location);
     updateSaveAllButtons();
-
-    const messages = [];
-    if (createdCount > 0) messages.push(`新增待儲存 ${createdCount} 天`);
-    if (updatedPendingCount > 0) messages.push(`更新暫存 ${updatedPendingCount} 天`);
-    if (skippedExistingCount > 0) messages.push(`略過已有紀錄 ${skippedExistingCount} 天`);
-    alert(messages.length ? `✅ 批量套用完成：${messages.join('；')}` : '沒有可套用的日期。');
 }
 
 function renderAttendanceCalendar(name, location, data) {
@@ -414,13 +479,21 @@ function openNewAttendanceModal() {
     const toggle = document.getElementById('attendanceCalendarToggle');
     if (content) content.classList.add('collapsed');
     if (toggle) toggle.classList.add('collapsed');
-    document.getElementById('att_modal_promoter').value = '';
+    
+    // 💡 觸發推廣員排序 (抓取資料庫已有的 + 剛暫存的)
+    const attMap = getLocMap('att-loc-map');
+    const activeAttPromoters = Array.from(new Set([...Object.keys(attMap), ...pendingAttendanceRows.map(r => r.nick_name)]));
+    reorderPromoterDropdown('att_modal_promoter', activeAttPromoters);
+
+    document.getElementById('att_modal_loc').value = '';
+    reorderLocationDropdown('att_modal_loc', []);
+
     document.getElementById('att_modal_loc').value = '';
     reorderLocationDropdown('att_modal_loc', []);
     document.getElementById('att_name_hidden').value = '';
     document.getElementById('att_loc_hidden').value = '';
     const nl = document.getElementById('new_loc');
-    if (nl) nl.value = '';
+    if (nl) nl.textContent = '';
     ['att_exp','att_adj','att_bonus','att_monthly_hr','att_monthly_salary'].forEach(id => {
         const el = document.getElementById(id); if (el) el.value = '';
     });
@@ -476,7 +549,7 @@ function handleAttModalChangeImpl() {
     document.getElementById('att_name_hidden').value = name;
     document.getElementById('att_loc_hidden').value = location;
     const nl = document.getElementById('new_loc');
-    if (nl) nl.value = location;
+    if (nl) nl.textContent = location;
 
     if (domCache.dailyRecordsBody) {
         if (name && location) {
@@ -503,14 +576,22 @@ function editAttendance(name, loc, days, hours, ot, exp, adj, bonus, monthly_hr,
 
     currentAttendanceRecords = [];
     selectedAttendanceDates.clear();
-    document.getElementById('att_modal_promoter').value = name;
+    
+    // 💡 觸發推廣員排序
+    const attMap = getLocMap('att-loc-map');
+    const activeAttPromoters = Array.from(new Set([...Object.keys(attMap), ...pendingAttendanceRows.map(r => r.nick_name)]));
+    reorderPromoterDropdown('att_modal_promoter', activeAttPromoters);
+
+    document.getElementById('att_modal_loc').value = loc;
+    reorderLocationDropdown('att_modal_loc', attMap[name] || []);
+
     document.getElementById('att_modal_loc').value = loc;
     const attLocMap = getLocMap('att-loc-map');
     reorderLocationDropdown('att_modal_loc', attLocMap[name] || []);
     document.getElementById('att_name_hidden').value = name;
     document.getElementById('att_loc_hidden').value = loc;
     const nl = document.getElementById('new_loc');
-    if (nl) nl.value = loc;
+    if (nl) nl.textContent = loc;
 
     setDateRange(document.getElementById('new_date'), currentMonth, true);
     document.getElementById('att_exp').value = exp || 0;
@@ -546,7 +627,15 @@ function editAttendance(name, loc, days, hours, ot, exp, adj, bonus, monthly_hr,
 // ==========================================
 
 function openNewSalesModal() {
-    document.getElementById('sales_modal_promoter').value = '';
+    
+    // 💡 觸發銷售推廣員排序
+    const salesMap = getLocMap('sales-loc-map');
+    const activeSalesPromoters = Array.from(new Set([...Object.keys(salesMap), ...pendingSalesRows.map(r => r.promoter_name)]));
+    reorderPromoterDropdown('sales_modal_promoter', activeSalesPromoters);
+
+    document.getElementById('sales_modal_loc').value = '';
+    reorderLocationDropdown('sales_modal_loc', []);
+
     document.getElementById('sales_modal_loc').value = '';
     reorderLocationDropdown('sales_modal_loc', []);
     const nsl = document.getElementById('new_sales_loc');
@@ -606,7 +695,14 @@ function handleSalesModalChangeImpl() {
 }
 
 function openSalesModal(name, location, monthlyComm, defaultComm) {
-    document.getElementById('sales_modal_promoter').value = name;
+    // 💡 觸發銷售推廣員排序
+    const salesMap = getLocMap('sales-loc-map');
+    const activeSalesPromoters = Array.from(new Set([...Object.keys(salesMap), ...pendingSalesRows.map(r => r.promoter_name)]));
+    reorderPromoterDropdown('sales_modal_promoter', activeSalesPromoters);
+
+    document.getElementById('sales_modal_loc').value = location;
+    reorderLocationDropdown('sales_modal_loc', salesMap[name] || []);
+
     document.getElementById('sales_modal_loc').value = location;
     const salesLocMap = getLocMap('sales-loc-map');
     reorderLocationDropdown('sales_modal_loc', salesLocMap[name] || []);
@@ -756,9 +852,9 @@ function refreshDailyTable(name, location) {
 
                     <td class="px-1 py-1.5 align-middle">
                         <div class="flex items-center gap-1">
-                            <input type="time" class="edit-roster-in bg-slate-800/50 border border-slate-600 rounded px-1 py-1 text-[11px] text-indigo-300 w-full text-center" value="${rIn}">
+                            <input type="time" class="edit-roster-in bg-slate-800/50 border border-slate-600 rounded px-1 py-1 text-[11px] text-indigo-300 w-full text-center" value="${rIn}" oninput="updateRowNormalHours(this)">
                             <span class="text-slate-500 text-xs">-</span>
-                            <input type="time" class="edit-roster-out bg-slate-800/50 border border-slate-600 rounded px-1 py-1 text-[11px] text-indigo-300 w-full text-center" value="${rOut}">
+                            <input type="time" class="edit-roster-out bg-slate-800/50 border border-slate-600 rounded px-1 py-1 text-[11px] text-indigo-300 w-full text-center" value="${rOut}" oninput="updateRowNormalHours(this)">
                         </div>
                     </td>
 
@@ -770,8 +866,8 @@ function refreshDailyTable(name, location) {
                         </div>
                     </td>
 
-                    <td class="px-1 py-1.5 align-middle">
-                        <input type="number" step="0.5" class="edit-normal-hours bg-slate-800 border border-slate-600 rounded px-2 py-1 text-sm text-slate-200 w-full" value="${parseFloat(record.normal_hours || 8.0).toFixed(1)}">
+                    <td class="px-1 py-1.5 align-middle text-center text-[11px] font-bold text-slate-500 edit-normal-hours">
+                        ${parseFloat(record.normal_hours || 0).toFixed(1)}
                     </td>
                     <td class="text-center font-bold text-sm align-middle">${parseFloat(record.actual_hours).toFixed(2)}</td>
                     <td class="text-center text-red-400 text-sm align-middle">${parseFloat(record.ot_hours).toFixed(2)}</td>
@@ -811,7 +907,7 @@ function saveDailyRecord(id, name, location) {
     const rosterOut = row.querySelector('.edit-roster-out').value;
     const inTime = row.querySelector('.edit-in-time').value;
     const outTime = row.querySelector('.edit-out-time').value;
-    const normalHrs = row.querySelector('.edit-normal-hours').value;
+    const normalHrs = row.querySelector('.edit-normal-hours').textContent;
 
     if (!inTime || !outTime) {
         alert('請完整填寫實際簽到與簽退時間！');
@@ -1023,6 +1119,8 @@ function addNewSalesRecordFromUI() {
 
 // ── 批次寫入與暫存渲染 ──
 
+// ── 批次寫入與暫存渲染 ──
+
 function renderPendingAttendanceRows(tbody, name, location) {
     const filtered = pendingAttendanceRows.filter(r => r.nick_name === name && r.location === location);
     if (filtered.length === 0 && tbody.children.length === 0) {
@@ -1033,21 +1131,84 @@ function renderPendingAttendanceRows(tbody, name, location) {
         const tr = document.createElement('tr');
         tr.className = 'bg-amber-900/40 border-b border-amber-800/30';
         tr.innerHTML = `
-            <td class="text-center text-sm text-amber-300 font-bold">⏳</td>
-            <td class="text-center font-bold text-sm text-amber-100">${row.work_date}</td>
-            <td class="text-center"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-sm font-medium bg-amber-900/60 text-amber-100">${row.location}</span></td>
-            <td class="text-center text-sm text-amber-100">${row.roster_in || '—'}<br><span class="text-xs text-amber-700">~</span><br>${row.roster_out || '—'}</td>
-            <td class="text-center text-sm text-amber-100 font-medium">${row.in_time}<br><span class="text-xs text-amber-700">~</span><br>${row.out_time}</td>
-            <td class="text-center text-sm text-amber-100 font-medium">${row.normal_hours.toFixed(1)}</td>
-            <td class="text-center text-sm text-amber-300">—</td>
-            <td class="text-center text-sm text-amber-300">—</td>
-            <td class="text-center">
-                <button type="button" class="border border-red-800/50 text-red-400 hover:bg-red-900/30 text-sm font-medium py-1 px-2 rounded-lg transition-colors"
-                    onclick="removePendingAttendance('${location}', ${i})">✕</button>
+            <td class="text-center text-sm text-amber-400 font-bold align-middle">⏳</td>
+            <td class="text-center font-bold text-sm text-amber-200 align-middle">${row.work_date}</td>
+            <td class="text-center align-middle"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-900/60 text-amber-200">${row.location}</span></td>
+            
+            <!-- 表定班表 (加上 oninput) -->
+            <td class="px-1 py-1.5 align-middle">
+                <div class="flex items-center gap-1">
+                    <input type="time" class="pending-roster-in bg-amber-900/40 border border-amber-700/50 rounded px-1 py-1 text-[11px] text-amber-200 w-full text-center focus:ring-1 focus:ring-amber-400 outline-none" value="${row.roster_in || ''}" oninput="updateRowNormalHours(this)">
+                    <span class="text-amber-700 text-xs">-</span>
+                    <input type="time" class="pending-roster-out bg-amber-900/40 border border-amber-700/50 rounded px-1 py-1 text-[11px] text-amber-200 w-full text-center focus:ring-1 focus:ring-amber-400 outline-none" value="${row.roster_out || ''}" oninput="updateRowNormalHours(this)">
+                </div>
+            </td>
+            
+            <!-- 實際簽到退 (左右並排輸入) -->
+            <td class="px-1 py-1.5 align-middle">
+                <div class="flex items-center gap-1">
+                    <input type="time" class="pending-in bg-amber-900/40 border border-amber-700/50 rounded px-1 py-1 text-[11px] text-amber-200 w-full text-center focus:ring-1 focus:ring-amber-400 outline-none" value="${row.in_time || ''}">
+                    <span class="text-amber-700 text-xs">-</span>
+                    <input type="time" class="pending-out bg-amber-900/40 border border-amber-700/50 rounded px-1 py-1 text-[11px] text-amber-200 w-full text-center focus:ring-1 focus:ring-amber-400 outline-none" value="${row.out_time || ''}">
+                </div>
+            </td>
+            
+            <!-- 常規工時 (改為唯讀與低調色) -->
+            <td class="px-1 py-1.5 align-middle text-center text-[11px] font-bold text-amber-600/70 pending-normal">
+                ${parseFloat(row.normal_hours || 0).toFixed(1)}
+            </td>
+            
+            <td class="text-center text-sm text-amber-400 align-middle">—</td>
+            <td class="text-center text-sm text-amber-400 align-middle">—</td>
+            
+            <!-- 操作按鈕 (修改 ＋ 刪除) -->
+            <td class="text-center align-middle px-1">
+                <div class="flex items-center gap-1.5 justify-center">
+                    <button type="button" class="flex-1 bg-amber-600 hover:bg-amber-500 text-white text-[11px] font-medium py-1 px-2 rounded transition-colors whitespace-nowrap"
+                        onclick="updatePendingAttendance(this, '${location}', ${i})">📝 修改</button>
+                    <button type="button" class="flex-1 border border-red-800/50 text-red-400 hover:bg-red-900/30 text-[11px] font-medium py-1 px-2 rounded transition-colors whitespace-nowrap"
+                        onclick="removePendingAttendance('${location}', ${i})">✕ 刪除</button>
+                </div>
             </td>
         `;
         tbody.appendChild(tr);
     });
+}
+
+// ── 待儲存列的修改更新 ──
+function updatePendingAttendance(btn, location, index) {
+    const tr = btn.closest('tr');
+    const name = getActiveAttName();
+    const filtered = pendingAttendanceRows.filter(r => r.nick_name === name && r.location === location);
+
+    if (index < filtered.length) {
+        const targetRow = filtered[index];
+        const globalIdx = pendingAttendanceRows.indexOf(targetRow);
+
+        if (globalIdx !== -1) {
+            // 從這行 HTML 取出新的數值
+            const rosterIn = tr.querySelector('.pending-roster-in').value;
+            const rosterOut = tr.querySelector('.pending-roster-out').value;
+            const inTime = tr.querySelector('.pending-in').value;
+            const outTime = tr.querySelector('.pending-out').value;
+            const normal = tr.querySelector('.pending-normal').textContent;
+
+            if (!inTime || !outTime) {
+                alert('請完整填寫實際簽到與簽退時間！');
+                return;
+            }
+
+            // 更新 JS 記憶體中的暫存陣列
+            pendingAttendanceRows[globalIdx].roster_in = rosterIn || undefined;
+            pendingAttendanceRows[globalIdx].roster_out = rosterOut || undefined;
+            pendingAttendanceRows[globalIdx].in_time = inTime;
+            pendingAttendanceRows[globalIdx].out_time = outTime;
+            pendingAttendanceRows[globalIdx].normal_hours = parseFloat(normal || 8.0);
+
+            // 重新渲染畫面並顯示成功提示
+            refreshDailyTable(name, location);
+        }
+    }
 }
 
 function removePendingAttendance(location, index) {
@@ -1056,11 +1217,17 @@ function removePendingAttendance(location, index) {
     if (index < filtered.length) {
         const row = filtered[index];
         const globalIdx = pendingAttendanceRows.indexOf(row);
-        if (globalIdx !== -1) pendingAttendanceRows.splice(globalIdx, 1);
+        if (globalIdx !== -1) {
+            // 💡 同步將該日期從月曆的選取狀態中移除
+            selectedAttendanceDates.delete(row.work_date);
+            pendingAttendanceRows.splice(globalIdx, 1);
+        }
     }
-    // Re-render
+    // 重新渲染表格與月曆
     refreshDailyTable(name, location);
     updateSaveAllButtons();
+    updateAttendanceCalendarSummary();
+    renderAttendanceCalendar(name, location, currentAttendanceRecords);
 }
 
 function renderPendingSalesRows(tbody, name, location) {

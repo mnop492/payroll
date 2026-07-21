@@ -607,30 +607,41 @@
       <div class="flex items-center gap-3 md:gap-4 flex-1">
         <div class="flex items-center gap-2">
             <span class="text-lg font-semibold text-slate-100 whitespace-nowrap">📅 編輯考勤明細</span>
-            
-            <!-- 💡 更新：帶有明確文字與圖示的折疊按鈕 -->
+            <!-- (這是原本的收合按鈕，保留不變) -->
             <button type="button" onclick="toggleAttendanceSidebar()" class="hidden xl:flex items-center gap-1.5 ml-2 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-cyan-400 transition-colors border border-slate-600 shadow-sm group">
-                <!-- 小日曆圖示 -->
                 <svg class="w-4 h-4 text-slate-400 group-hover:text-cyan-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                <!-- 動態文字標籤 -->
                 <span id="sidebarToggleText" class="text-xs font-bold tracking-wide">收起月曆</span>
-                <!-- 旋轉箭頭 -->
                 <svg id="sidebarToggleIcon" class="w-4 h-4 text-slate-500 group-hover:text-cyan-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path></svg>
             </button>
         </div>
-        <select id="att_modal_promoter" class="text-blue-300 bg-slate-800 px-3 py-2 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-44 text-sm font-bold" onchange="handleAttModalChange()">
-          <option value="" data-hr="">-- 選擇推廣員 --</option>
-          {% for emp in employees %}
-          <option value="{{ emp.nick_name }}" data-hr="{{ emp.hourly_rate }}">{{ emp.nick_name }}</option>
-          {% endfor %}
-        </select>
+
+        <!-- 💡 推廣員下拉選單 ＋ 新增按鈕 -->
+        <div class="flex items-center gap-1">
+            <select id="att_modal_promoter" class="text-blue-300 bg-slate-800 px-3 py-2 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-44 text-sm font-bold" onchange="handleAttModalChange()">
+              <option value="" data-hr="">-- 選擇推廣員 --</option>
+              {% for emp in employees %}
+              <option value="{{ emp.nick_name }}" data-hr="{{ emp.hourly_rate }}">{{ emp.nick_name }}</option>
+              {% endfor %}
+            </select>
+            <a href="/employees?month={{ current_month }}&brand={{ current_brand }}" class="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-800 border border-slate-600 text-slate-400 hover:text-blue-400 hover:bg-slate-700 transition-colors shadow-sm" title="找不到人？前往新增推廣員">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            </a>
+        </div>
+
         <span class="text-slate-500">📍</span>
-        <select id="att_modal_loc" class="text-slate-300 bg-slate-800 px-3 py-2 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-52 text-sm" onchange="handleAttModalChange()">
-          <option value="">-- 選擇地點 --</option>
-          {% for loc in locations %}
-          <option value="{{ loc.name }}">{{ loc.name }}</option>
-          {% endfor %}
-        </select>
+
+        <!-- 💡 地點下拉選單 ＋ 新增按鈕 -->
+        <div class="flex items-center gap-1">
+            <select id="att_modal_loc" class="text-slate-300 bg-slate-800 px-3 py-2 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-52 text-sm" onchange="handleAttModalChange()">
+              <option value="">-- 選擇地點 --</option>
+              {% for loc in locations %}
+              <option value="{{ loc.name }}">{{ loc.name }}</option>
+              {% endfor %}
+            </select>
+            <a href="/manage_locations?brand={{ current_brand }}" class="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-800 border border-slate-600 text-slate-400 hover:text-blue-400 hover:bg-slate-700 transition-colors shadow-sm" title="找不到地點？前往新增店鋪">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            </a>
+        </div>
       </div>
       <button class="text-slate-500 hover:text-slate-400 text-2xl leading-none" onclick="closeModal(this)">&times;</button>
     </div>
@@ -690,8 +701,8 @@
                       <span id="attendance_selected_dates" class="text-[11px] text-slate-400 font-medium">未選取日期</span>
                   </div>
                   <div class="flex items-center gap-2">
-                      <button type="button" class="flex-1 py-1.5 text-[11px] font-semibold text-cyan-200 bg-cyan-900/40 border border-cyan-800/50 rounded-lg hover:bg-cyan-800/40 transition-colors" onclick="applyAttendanceSelectionBulk()">批量套用(自下方)</button>
-                      <button type="button" class="px-2 py-1.5 text-[11px] font-semibold text-slate-300 border border-slate-600 rounded-lg hover:bg-slate-800 transition-colors" onclick="clearAttendanceCalendarSelection()">清除</button>
+                      <!-- 💡 移除批量按鈕，改由月曆直接連動。並讓清除按鈕佔滿寬度 -->
+                      <button type="button" class="w-full py-1.5 text-[11px] font-semibold text-slate-300 border border-slate-600 rounded-lg hover:bg-slate-800 transition-colors" onclick="clearAttendanceCalendarSelection()">清除所有未儲存選取</button>
                   </div>
               </div>
               
@@ -755,7 +766,7 @@
                           <th class="bg-slate-900 px-2 py-2 border-b border-r border-slate-700 w-[6%]">ID</th>
                           <th class="bg-slate-900 px-1 py-2 border-b border-r border-slate-700 w-[10%]">日期</th>
                           <th class="bg-slate-900 px-2 py-2 border-b border-r border-slate-700 w-[12%]">地點</th>
-                          <th class="bg-slate-900 px-2 py-2 border-b border-r border-slate-700 w-[14%] text-indigo-300">表定班表</th>
+                          <th class="bg-slate-900 px-2 py-2 border-b border-r border-slate-700 w-[14%] text-indigo-300">預定班表</th>
                           <th class="bg-slate-900 px-2 py-2 border-b border-r border-slate-700 w-[14%] text-emerald-300">實際簽到退</th>
                           <th class="bg-slate-900 px-2 py-2 border-b border-r border-slate-700 w-[5%]">常規</th>
                           <th class="bg-slate-900 px-2 py-2 border-b border-r border-slate-700 w-[5%]">實際</th>
@@ -769,15 +780,15 @@
                           <td class="bg-slate-800 border-r border-slate-700 px-1 py-1.5 align-middle">
                               <input type="date" id="new_date" class="text-slate-200 bg-slate-900 w-full px-1.5 py-1 text-xs border border-slate-600 rounded focus:ring-2 focus:ring-blue-500 outline-none">
                           </td>
-                          <td class="bg-slate-800 border-r border-slate-700 px-1 py-1.5 align-middle">
-                              <input type="text" id="new_loc" class="w-full px-1.5 py-1 text-xs border border-slate-600 rounded bg-slate-700 text-slate-400" readonly>
+                          <td class="bg-slate-800 border-r border-slate-700 px-1 py-1.5 align-middle text-center text-[11px] font-bold text-slate-400" id="new_loc">
+                              <!-- 純文字地點顯示區 -->
                           </td>
                           <!-- 表定班表 (左右並排) -->
                           <td class="bg-slate-800 border-r border-slate-700 px-1 py-1.5 align-middle">
                               <div class="flex items-center gap-1">
-                                  <input type="time" id="new_roster_in" class="text-indigo-200 bg-indigo-900/60 w-full px-1 py-1 text-[11px] border border-indigo-800/50 rounded focus:ring-1 focus:ring-indigo-500 outline-none text-center" value="12:00">
+                                  <input type="time" oninput="updateNewNormalHours()" id="new_roster_in" class="text-indigo-200 bg-indigo-900/60 w-full px-1 py-1 text-[11px] border border-indigo-800/50 rounded focus:ring-1 focus:ring-indigo-500 outline-none text-center" value="12:00">
                                   <span class="text-slate-500 text-xs">-</span>
-                                  <input type="time" id="new_roster_out" class="text-indigo-200 bg-indigo-900/60 w-full px-1 py-1 text-[11px] border border-indigo-800/50 rounded focus:ring-1 focus:ring-indigo-500 outline-none text-center" value="20:00">
+                                  <input type="time" oninput="updateNewNormalHours()" id="new_roster_out" class="text-indigo-200 bg-indigo-900/60 w-full px-1 py-1 text-[11px] border border-indigo-800/50 rounded focus:ring-1 focus:ring-indigo-500 outline-none text-center" value="20:00">
                               </div>
                           </td>
                           <!-- 實際簽到退 (左右並排) -->
@@ -788,8 +799,8 @@
                                   <input type="time" id="new_out" class="text-emerald-200 bg-emerald-900/60 w-full px-1 py-1 text-[11px] border border-emerald-800/50 rounded focus:ring-1 focus:ring-emerald-500 outline-none text-center" value="20:00">
                               </div>
                           </td>
-                          <td class="bg-slate-800 border-r border-slate-700 px-1 py-1.5 align-middle">
-                              <input type="number" step="0.5" id="new_normal" class="text-slate-200 bg-slate-900 w-full px-1.5 py-1 text-xs border border-slate-600 rounded focus:ring-2 focus:ring-blue-500 outline-none text-center" value="8.0">
+                          <td class="bg-slate-800 border-r border-slate-700 px-1 py-1.5 align-middle text-center text-[11px] font-bold text-slate-500" id="new_normal">
+                              8.0
                           </td>
                           <td colspan="3" class="bg-slate-800 px-2 py-1.5 align-middle">
                               <button class="w-full px-2 py-1.5 text-xs font-bold text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors shadow-sm" onclick="addNewRecordFromUI()">➕ 儲存新增</button>
@@ -853,19 +864,34 @@
     <div class="sticky top-0 z-20 px-5 py-3 bg-slate-900 rounded-t-2xl border-b border-slate-700 flex flex-wrap items-center justify-between gap-4">
       <div class="flex items-center gap-3 flex-1">
         <span class="text-lg font-semibold text-slate-100 whitespace-nowrap">🛒 編輯銷售明細</span>
-        <select id="sales_modal_promoter" class="text-blue-300 bg-slate-800 px-3 py-1.5 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-40 text-sm font-bold" onchange="handleSalesModalChange()">
-          <option value="" data-comm="">-- 選擇推廣員 --</option>
-          {% for emp in employees %}
-          <option value="{{ emp.nick_name }}" data-comm="{{ emp.commission_rate }}">{{ emp.nick_name }}</option>
-          {% endfor %}
-        </select>
+        
+        <!-- 💡 推廣員下拉選單 ＋ 新增按鈕 -->
+        <div class="flex items-center gap-1">
+            <select id="sales_modal_promoter" class="text-blue-300 bg-slate-800 px-3 py-1.5 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-40 text-sm font-bold" onchange="handleSalesModalChange()">
+              <option value="" data-comm="">-- 選擇推廣員 --</option>
+              {% for emp in employees %}
+              <option value="{{ emp.nick_name }}" data-comm="{{ emp.commission_rate }}">{{ emp.nick_name }}</option>
+              {% endfor %}
+            </select>
+            <a href="/employees?month={{ current_month }}&brand={{ current_brand }}" class="flex items-center justify-center w-[34px] h-[34px] rounded-lg bg-slate-800 border border-slate-600 text-slate-400 hover:text-emerald-400 hover:bg-slate-700 transition-colors shadow-sm" title="找不到人？前往新增推廣員">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            </a>
+        </div>
+
         <span class="text-slate-500">📍</span>
-        <select id="sales_modal_loc" class="text-slate-300 bg-slate-800 px-3 py-1.5 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-48 text-sm" onchange="handleSalesModalChange()">
-          <option value="">-- 選擇地點 --</option>
-          {% for loc in locations %}
-          <option value="{{ loc.name }}">{{ loc.name }}</option>
-          {% endfor %}
-        </select>
+
+        <!-- 💡 地點下拉選單 ＋ 新增按鈕 -->
+        <div class="flex items-center gap-1">
+            <select id="sales_modal_loc" class="text-slate-300 bg-slate-800 px-3 py-1.5 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-48 text-sm" onchange="handleSalesModalChange()">
+              <option value="">-- 選擇地點 --</option>
+              {% for loc in locations %}
+              <option value="{{ loc.name }}">{{ loc.name }}</option>
+              {% endfor %}
+            </select>
+            <a href="/manage_locations?brand={{ current_brand }}" class="flex items-center justify-center w-[34px] h-[34px] rounded-lg bg-slate-800 border border-slate-600 text-slate-400 hover:text-emerald-400 hover:bg-slate-700 transition-colors shadow-sm" title="找不到地點？前往新增店鋪">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            </a>
+        </div>
       </div>
       <button class="text-slate-500 hover:text-slate-400 text-2xl leading-none" onclick="closeModal(this)">&times;</button>
     </div>
