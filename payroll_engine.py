@@ -233,7 +233,7 @@ def process_payroll_from_db(calc_month, brand_code='century_field', db_path='pay
 
         # 否則維持原來的時薪計算邏輯
         effective_hr = row.get('monthly_hourly_rate') if pd.notna(row.get('monthly_hourly_rate')) else row.get('hourly_rate', 0)
-        return row.get('hours', 0) * effective_hr
+        return row.get('Hours', 0) * effective_hr  # 🌟 這裡改成大寫的 'Hours'！
 
     # 應用公式計算底薪 (注意：依據你原本的 DataFrame 欄位名稱可能是 'hours' 或 'Reg.Hrs')
     final_df['底薪'] = final_df.apply(calculate_basic_pay, axis=1)
