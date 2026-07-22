@@ -325,15 +325,20 @@ def update_attendance():
     hr_val = float(monthly_rate_str) if monthly_rate_str != "" else None
     salary_val = float(monthly_salary_str) if monthly_salary_str != "" else None
 
+    # 🌟 1. 接收備註欄位
+    remarks = request.form.get("remarks", "").strip()
+
+    # 🌟 2. 更新 SQL 語法，加入 remarks
     conn.execute(
         """
-        INSERT INTO MonthlyRates (brand_code, payroll_month, nick_name, hourly_rate, monthly_salary)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO MonthlyRates (brand_code, payroll_month, nick_name, hourly_rate, monthly_salary, remarks)
+        VALUES (?, ?, ?, ?, ?, ?)
         ON CONFLICT(brand_code, payroll_month, nick_name) DO UPDATE SET
             hourly_rate = excluded.hourly_rate,
-            monthly_salary = excluded.monthly_salary
+            monthly_salary = excluded.monthly_salary,
+            remarks = excluded.remarks
         """,
-        (brand_code, month, name, hr_val, salary_val)
+        (brand_code, month, name, hr_val, salary_val, remarks)
     )
     conn.commit()
     set_month_input_source(month, "web", brand_code=brand_code)
